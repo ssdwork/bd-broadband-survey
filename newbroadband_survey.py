@@ -92,6 +92,10 @@ st.markdown("""
     .main-title { color: #006A4E !important; text-align: center; font-size: 2.2rem; font-weight: 700; border-bottom: 4px solid #F42A41; padding-bottom: 10px; }
     .section-head { background: #006A4E !important; color: white !important; padding: 10px 15px; border-radius: 8px; font-weight: 700; margin-top: 25px; border-left: 6px solid #F42A41; }
     div[data-baseweb="input"], div[data-baseweb="select"] { background-color: rgba(255, 255, 255, 0.9) !important; border: 1px solid #006A4E !important; border-radius: 8px !important; }
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    .viewerBadge_container__1QSob {display: none !important;}
     </style>
 """, unsafe_allow_html=True)
 
@@ -244,3 +248,4 @@ def main():
 if __name__ == "__main__":
 
     main()
+
