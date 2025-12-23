@@ -195,20 +195,13 @@ def main():
                 st.error(f"Error: {e}")
                 st.info("নিশ্চিত করুন যে আপনি Service Account ইমেলটি Google Sheet-এ Editor হিসেবে যোগ করেছেন।")
 
- # --- ADMIN PANEL ---
-
+# --- ADMIN PANEL ---
     st.sidebar.header('🔐 Admin Panel')
-
     pwd = st.sidebar.text_input('Password', type='password')
 
-    
-
     if pwd == 'Bccadmin2025':
-
         st.sidebar.success('Authenticated')
-
-     try:
-            # 1. Load Data
+        try: # <--- This is Line 210. Ensure it has the same spaces as st.sidebar.success
             df_admin = conn.read(ttl=0)
             
             if df_admin.empty:
@@ -219,11 +212,11 @@ def main():
                     st.markdown("---")
                     st.header("🔍 Data Search & Analytics")
 
-                    # 2. Filtering Logic (The code you mentioned)
+                    # Filtering Logic
                     f1, f2 = st.columns(2)
                     filtered_df = df_admin.copy()
                     
-                    # Convert to numeric to ensure charts don't crash
+                    # Convert columns to numeric for calculation
                     filtered_df['মোট গ্রাম'] = pd.to_numeric(filtered_df['মোট গ্রাম'], errors='coerce').fillna(0)
                     filtered_df['আওতাভুক্ত গ্রাম'] = pd.to_numeric(filtered_df['আওতাভুক্ত গ্রাম'], errors='coerce').fillna(0)
 
@@ -232,7 +225,7 @@ def main():
                     if div_search != "All": 
                         filtered_df = filtered_df[filtered_df['বিভাগ'] == div_search]
 
-                    # 3. Metrics Calculations
+                    # Metrics Calculations
                     m1, m2, m3 = st.columns(3)
                     total_vills = int(filtered_df['মোট গ্রাম'].sum())
                     covered_vills = int(filtered_df['আওতাভুক্ত গ্রাম'].sum())
@@ -242,7 +235,7 @@ def main():
                     m2.metric("Total Villages", total_vills)
                     m3.metric("Covered Villages", covered_vills)
 
-                    # 4. Pie Chart (Coverage Ratio)
+                    # Charts
                     st.write("**ইন্টারনেট কভারেজ অনুপাত (Coverage Ratio)**")
                     if total_vills > 0:
                         pie_data = pd.DataFrame({
@@ -253,25 +246,11 @@ def main():
                                          color_discrete_map={"আওতাভুক্ত (Covered)": "#006A4E", "বাকি (Uncovered)": "#F42A41"})
                         st.plotly_chart(fig_pie, use_container_width=True)
 
-                    # 5. Bar Chart (Total vs Covered)
-                    st.write("**বিভাগীয় তুলনা (Division Comparison)**")
-                    chart_data = filtered_df.groupby('বিভাগ')[['মোট গ্রাম', 'আওতাভুক্ত গ্রাম']].sum().reset_index()
-                    chart_melted = chart_data.melt(id_vars='বিভাগ', value_vars=['মোট গ্রাম', 'আওতাভুক্ত গ্রাম'],
-                                                  var_name='Category', value_name='Village Count')
-                    
-                    fig_bar = px.bar(chart_melted, x='বিভাগ', y='Village Count', color='Category', 
-                                     barmode='group', text_auto=True,
-                                     color_discrete_map={'মোট গ্রাম': '#006A4E', 'আওতাভুক্ত গ্রাম': '#F42A41'})
-                    st.plotly_chart(fig_bar, use_container_width=True)
-
-                    # 6. Data Table
                     st.subheader("📋 Search Results")
                     st.dataframe(filtered_df, use_container_width=True)
 
         except Exception as e:
-            # THIS BLOCK PREVENTS THE SYNTAX ERROR
             st.sidebar.error(f"Error: {e}")
-
                     
 
 
@@ -306,6 +285,7 @@ if __name__ == "__main__":
 
 
     main()
+
 
 
 
