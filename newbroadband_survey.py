@@ -257,7 +257,7 @@ def main():
 
 
 
-    # --- ADMIN PANEL ---
+      # --- ADMIN PANEL ---
     st.sidebar.markdown("---")
     
     # TOGGLE BUTTON: Only shows the login field if checked
@@ -335,12 +335,11 @@ def main():
 
 
 
-
 if __name__ == "__main__":
 
 
-
     main()
+
 
 
 
