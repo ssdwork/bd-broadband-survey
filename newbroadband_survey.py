@@ -195,14 +195,8 @@ def main():
                 st.error(f"Error: {e}")
                 st.info("নিশ্চিত করুন যে আপনি Service Account ইমেলটি Google Sheet-এ Editor হিসেবে যোগ করেছেন।")
 
-This IndentationError means that the "Delete Data Entry" code is sitting too far to the right (or too far to the left) compared to the lines above it. In Python, code inside the same block must be aligned perfectly.
 
-To fix this, the with st.expander block must be aligned exactly with the st.dataframe or st.plotly_chart lines above it.
 
-🚀 The Full Fixed Admin Panel (Corrected Indentation)
-Replace your entire Admin Panel block with this. I have meticulously aligned every line so there are no more indentation errors.
-
-Python
 
     # --- ADMIN PANEL ---
     st.sidebar.header('🔐 Admin Panel')
@@ -279,6 +273,7 @@ if __name__ == "__main__":
 
 
     main()
+
 
 
 
