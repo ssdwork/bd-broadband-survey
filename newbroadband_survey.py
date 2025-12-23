@@ -267,6 +267,37 @@ def main():
 
                     st.dataframe(filtered_df, use_container_width=True)
 
+                    # --- Updated Chart: Total vs Covered Villages ---
+st.write("**ইউনিয়নে গ্রামের সংখ্যা vs ইন্টারনেটের আওতাভুক্ত গ্রামের সংখ্যা**")
+
+# Group data by Division and sum the village counts
+chart_data = filtered_df.groupby('বিভাগ')[['মোট গ্রাম', 'আওতাভুক্ত গ্রাম']].sum().reset_index()
+
+# Reshape data for Plotly (from Wide to Long format)
+chart_melted = chart_data.melt(
+    id_vars='বিভাগ', 
+    value_vars=['মোট গ্রাম', 'আওতাভুক্ত গ্রাম'],
+    var_name='Category', 
+    value_name='Village Count'
+)
+
+# Create Grouped Bar Chart
+fig = px.bar(
+    chart_melted, 
+    x='বিভাগ', 
+    y='Village Count', 
+    color='Category',
+    barmode='group',
+    text_auto=True,
+    color_discrete_map={
+        'মোট গ্রাম': '#006A4E',      # BCC Green
+        'আওতাভুক্ত গ্রাম': '#F42A41'   # Red for contrast
+    },
+    labels={'বিভাগ': 'বিভাগ', 'Village Count': 'গ্রামের সংখ্যা'}
+)
+
+st.plotly_chart(fig, use_container_width=True)
+
 
 
                     # Delete Logic
@@ -300,6 +331,7 @@ if __name__ == "__main__":
 
 
     main()
+
 
 
 
