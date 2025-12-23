@@ -256,14 +256,13 @@ def main():
                 st.info("নিশ্চিত করুন যে আপনি Service Account ইমেলটি Google Sheet-এ Editor হিসেবে যোগ করেছেন।")
 
 
-
-      # --- ADMIN PANEL ---
-    st.sidebar.markdown("---")
+    # --- ADMIN PANEL ---
+    st.sidebar.markdown("---") # Visual separator
     
-    # TOGGLE BUTTON: Only shows the login field if checked
-    if st.sidebar.checkbox("🔐 Show Admin Panel", value=False):
+    # This checkbox controls the visibility
+    if st.sidebar.checkbox("🔐 Admin Login", value=False):
         
-        st.sidebar.header('🔐 Admin Access')
+        st.sidebar.header('🔐 Admin Panel')
         pwd = st.sidebar.text_input('Password', type='password')
         
         if pwd == 'Bccadmin2025':
@@ -278,7 +277,7 @@ def main():
                         st.markdown("---")
                         st.header("🔍 Data Search & Analytics")
                         
-                        # Ensure numeric data
+                        # Ensure numeric data for calculations
                         filtered_df = df_admin.copy()
                         filtered_df['মোট গ্রাম'] = pd.to_numeric(filtered_df['মোট গ্রাম'], errors='coerce').fillna(0)
                         filtered_df['আওতাভুক্ত গ্রাম'] = pd.to_numeric(filtered_df['আওতাভুক্ত গ্রাম'], errors='coerce').fillna(0)
@@ -290,7 +289,7 @@ def main():
                         if div_search != "All": 
                             filtered_df = filtered_df[filtered_df['বিভাগ'] == div_search]
     
-                        # 2. Metrics
+                        # 2. Metrics Calculations
                         m1, m2, m3 = st.columns(3)
                         total_vills = int(filtered_df['মোট গ্রাম'].sum())
                         covered_vills = int(filtered_df['আওতাভুক্ত গ্রাম'].sum())
@@ -300,7 +299,7 @@ def main():
                         m2.metric("Total Villages", total_vills)
                         m3.metric("Covered Villages", covered_vills)
     
-                        # 3. Charts
+                        # 3. Pie Chart
                         st.write("**ইন্টারনেট কভারেজ অনুপাত (Coverage Ratio)**")
                         if total_vills > 0:
                             pie_data = pd.DataFrame({
@@ -311,15 +310,17 @@ def main():
                                              color_discrete_map={"আওতাভুক্ত (Covered)": "#006A4E", "বাকি (Uncovered)": "#F42A41"})
                             st.plotly_chart(fig_pie, use_container_width=True)
 
+                        # 4. Bar Chart
                         st.write("**Submissions by Division**")
                         div_counts = filtered_df['বিভাগ'].value_counts().reset_index()
                         div_counts.columns = ['Division', 'Count']
                         st.plotly_chart(px.bar(div_counts, x='Division', y='Count', text_auto=True, color_discrete_sequence=['#006A4E']), use_container_width=True)
     
-                        # 4. Table & Delete
+                        # 5. Search Results Table
                         st.subheader("📋 Search Results")
                         st.dataframe(filtered_df, use_container_width=True)
     
+                        # 6. Delete Logic
                         with st.expander("🗑️ Delete Data Entry"):
                             delete_index = st.number_input("Enter Row Index:", min_value=0, max_value=max(0, len(df_admin)-1), step=1)
                             if st.button("Confirm Delete"):
@@ -327,6 +328,7 @@ def main():
                                 conn.update(data=df_admin)
                                 st.success("Deleted!")
                                 st.rerun()
+    
             except Exception as e:
                 st.sidebar.error(f"Error: {e}")
                 
@@ -335,10 +337,12 @@ def main():
 
 
 
+
 if __name__ == "__main__":
 
 
     main()
+
 
 
 
