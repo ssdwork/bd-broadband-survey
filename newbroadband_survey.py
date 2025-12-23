@@ -195,84 +195,111 @@ def main():
                 st.error(f"Error: {e}")
                 st.info("নিশ্চিত করুন যে আপনি Service Account ইমেলটি Google Sheet-এ Editor হিসেবে যোগ করেছেন।")
 
-    # --- ADMIN PANEL ---
-st.sidebar.header('🔐 Admin Panel')
-pwd = st.sidebar.text_input('Password', type='password')
+ # --- ADMIN PANEL ---
 
-if pwd == 'Bccadmin2025':
-    st.sidebar.success('Authenticated')
-    try:
-        df_admin = conn.read(ttl=0) # ttl=0 ensures you see the latest data
-        if df_admin.empty:
-            st.sidebar.info("জরিপের কোনো তথ্য এখনো জমা পড়েনি।")
-        else:
-            show_stats = st.sidebar.checkbox("📊 View Dashboard & Search", value=False)
-            if show_stats:
-                st.markdown("---")
-                st.header("🔍 Data Search & Analytics")
-                
-                # 1. Filtering Logic
-                f1, f2 = st.columns(2)
-                filtered_df = df_admin.copy()
-                
-                # Convert columns to numeric for calculation/charting
-                filtered_df['মোট গ্রাম'] = pd.to_numeric(filtered_df['মোট গ্রাম'], errors='coerce').fillna(0)
-                filtered_df['আওতাভুক্ত গ্রাম'] = pd.to_numeric(filtered_df['আওতাভুক্ত গ্রাম'], errors='coerce').fillna(0)
+    st.sidebar.header('🔐 Admin Panel')
 
-                with f1: 
-                    div_search = st.selectbox("বিভাগ ফিল্টার", ["All"] + sorted(df_admin['বিভাগ'].unique().tolist()))
-                if div_search != "All": 
-                    filtered_df = filtered_df[filtered_df['বিভাগ'] == div_search]
-                
-                # 2. Metrics
-                m1, m2, m3 = st.columns(3)
-                m1.metric("Submissions", len(filtered_df))
-                m2.metric("Total Villages", int(filtered_df['মোট গ্রাম'].sum()))
-                m3.metric("Covered Villages", int(filtered_df['আওতাভুক্ত গ্রাম'].sum()))
-                
-                # 3. COMPARISON CHART (Total vs Covered)
-                st.write("**ইউনিয়নে গ্রামের সংখ্যা বনাম ইন্টারনেটের আওতাভুক্ত গ্রামের সংখ্যা**")
-                
-                chart_data = filtered_df.groupby('বিভাগ')[['মোট গ্রাম', 'আওতাভুক্ত গ্রাম']].sum().reset_index()
-                chart_melted = chart_data.melt(id_vars='বিভাগ', value_vars=['মোট গ্রাম', 'আওতাভুক্ত গ্রাম'],
-                                              var_name='বিভাগীয় পরিসংখ্যান', value_name='গ্রামের সংখ্যা')
-                
-                fig = px.bar(chart_melted, x='বিভাগ', y='গ্রামের সংখ্যা', color='বিভাগীয় পরিসংখ্যান',
-                             barmode='group', text_auto=True,
-                             color_discrete_map={'মোট গ্রাম': '#006A4E', 'আওতাভুক্ত গ্রাম': '#F42A41'})
-                st.plotly_chart(fig, use_container_width=True)
-                
-                # 4. DOWNLOAD DATA
-                st.subheader("📥 Download Data")
-                # Convert DF to Excel compatible CSV
-                csv = filtered_df.to_csv(index=False).encode('utf-8-sig') # utf-8-sig handles Bangla characters
-                st.download_button(
-                    label="Download Results as CSV (Excel compatible)",
-                    data=csv,
-                    file_name=f"BCC_Survey_Data_{datetime.now().strftime('%Y%m%d')}.csv",
-                    mime='text/csv',
-                    use_container_width=True
-                )
+    pwd = st.sidebar.text_input('Password', type='password')
 
-                # 5. SEARCH RESULTS TABLE
-                st.subheader("📋 Search Results")
-                st.dataframe(filtered_df, use_container_width=True)
+    
 
-                # 6. DELETE LOGIC
-                with st.expander("🗑️ Delete Data Entry"):
-                    delete_index = st.number_input("Enter Row Index:", min_value=0, max_value=len(df_admin)-1, step=1)
-                    if st.button("Confirm Delete"):
-                        df_admin = df_admin.drop(delete_index)
-                        conn.update(data=df_admin)
-                        st.success("Deleted!")
-                        st.rerun()
-    except Exception as e:
-        st.sidebar.error(f"Error: {e}")
-elif pwd:
-    st.sidebar.error('ভুল পাসওয়ার্ড')
+    if pwd == 'Bccadmin2025':
+
+        st.sidebar.success('Authenticated')
+
+        try:
+
+            df_admin = conn.read()
+
+            if df_admin.empty:
+
+                st.sidebar.info("জরিপের কোনো তথ্য এখনো জমা পড়েনি।")
+
+            else:
+
+                show_stats = st.sidebar.checkbox("📊 View Dashboard & Search", value=False)
+
+                if show_stats:
+
+                    st.markdown("---")
+
+                    st.header("🔍 Data Search & Analytics")
+
+                    
+
+                    # Filtering Logic
+
+                    f1, f2 = st.columns(2)
+
+                    filtered_df = df_admin.copy()
+
+                    with f1: div_search = st.selectbox("বিভাগ ফিল্টার", ["All"] + sorted(df_admin['বিভাগ'].unique().tolist()))
+
+                    if div_search != "All": filtered_df = filtered_df[filtered_df['বিভাগ'] == div_search]
+
+                    
+
+                    # Metrics
+
+                    m1, m2, m3 = st.columns(3)
+
+                    m1.metric("Submissions", len(filtered_df))
+
+                    m2.metric("Total Villages", int(filtered_df['মোট গ্রাম'].sum()))
+
+                    m3.metric("Covered Villages", int(filtered_df['আওতাভুক্ত গ্রাম'].sum()))
+
+                    
+
+                    # Chart
+
+                    st.write("**Submissions by Division**")
+
+                    div_counts = filtered_df['বিভাগ'].value_counts().reset_index()
+
+                    div_counts.columns = ['Division', 'Count']
+
+                    st.plotly_chart(px.bar(div_counts, x='Division', y='Count', text_auto=True, color_discrete_sequence=['#006A4E']), use_container_width=True)
+
+                    
+
+                    st.subheader("📋 Search Results")
+
+                    st.dataframe(filtered_df, use_container_width=True)
+
+
+
+                    # Delete Logic
+
+                    with st.expander("🗑️ Delete Data Entry"):
+
+                        delete_index = st.number_input("Enter Row Index:", min_value=0, max_value=len(df_admin)-1, step=1)
+
+                        if st.button("Confirm Delete"):
+
+                            df_admin = df_admin.drop(delete_index)
+
+                            conn.update(data=df_admin)
+
+                            st.success("Deleted!")
+
+                            st.rerun()
+
+        except:
+
+            st.sidebar.error("Could not connect to Google Sheets.")
+
+    elif pwd:
+
+        st.sidebar.error('ভুল পাসওয়ার্ড')
+
+
 
 if __name__ == "__main__":
 
+
+
     main()
+
 
 
