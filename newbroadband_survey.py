@@ -207,77 +207,70 @@ def main():
 
         st.sidebar.success('Authenticated')
 
-        try:
-
-            df_admin = conn.read()
-
+     try:
+            # 1. Load Data
+            df_admin = conn.read(ttl=0)
+            
             if df_admin.empty:
-
                 st.sidebar.info("জরিপের কোনো তথ্য এখনো জমা পড়েনি।")
-
             else:
-
                 show_stats = st.sidebar.checkbox("📊 View Dashboard & Search", value=False)
-
                 if show_stats:
-
                     st.markdown("---")
-
                     st.header("🔍 Data Search & Analytics")
 
-                    
-
-                    # Filtering Logic
-
+                    # 2. Filtering Logic (The code you mentioned)
                     f1, f2 = st.columns(2)
-
                     filtered_df = df_admin.copy()
-
-                    with f1: div_search = st.selectbox("বিভাগ ফিল্টার", ["All"] + sorted(df_admin['বিভাগ'].unique().tolist()))
-
-                    if div_search != "All": filtered_df = filtered_df[filtered_df['বিভাগ'] == div_search]
-
                     
+                    # Convert to numeric to ensure charts don't crash
+                    filtered_df['মোট গ্রাম'] = pd.to_numeric(filtered_df['মোট গ্রাম'], errors='coerce').fillna(0)
+                    filtered_df['আওতাভুক্ত গ্রাম'] = pd.to_numeric(filtered_df['আওতাভুক্ত গ্রাম'], errors='coerce').fillna(0)
 
-                   # --- Metrics ---
-m1, m2, m3 = st.columns(3)
-total_vills = int(filtered_df['মোট গ্রাম'].sum())
-covered_vills = int(filtered_df['আওতাভুক্ত গ্রাম'].sum())
-uncovered_vills = max(0, total_vills - covered_vills) # Calculate the gap
+                    with f1: 
+                        div_search = st.selectbox("বিভাগ ফিল্টার", ["All"] + sorted(df_admin['বিভাগ'].unique().tolist()))
+                    if div_search != "All": 
+                        filtered_df = filtered_df[filtered_df['বিভাগ'] == div_search]
 
-m1.metric("Submissions", len(filtered_df))
-m2.metric("Total Villages", total_vills)
-m3.metric("Covered Villages", covered_vills)
+                    # 3. Metrics Calculations
+                    m1, m2, m3 = st.columns(3)
+                    total_vills = int(filtered_df['মোট গ্রাম'].sum())
+                    covered_vills = int(filtered_df['আওতাভুক্ত গ্রাম'].sum())
+                    uncovered_vills = max(0, total_vills - covered_vills)
+                    
+                    m1.metric("Submissions", len(filtered_df))
+                    m2.metric("Total Villages", total_vills)
+                    m3.metric("Covered Villages", covered_vills)
 
-# --- NEW: Pie Chart for Coverage Overview ---
-st.write("**সারাদেশে ইন্টারনেট কভারেজ অনুপাত (Total Coverage Ratio)**")
+                    # 4. Pie Chart (Coverage Ratio)
+                    st.write("**ইন্টারনেট কভারেজ অনুপাত (Coverage Ratio)**")
+                    if total_vills > 0:
+                        pie_data = pd.DataFrame({
+                            "Category": ["আওতাভুক্ত (Covered)", "বাকি (Uncovered)"],
+                            "Count": [covered_vills, uncovered_vills]
+                        })
+                        fig_pie = px.pie(pie_data, values='Count', names='Category', hole=0.4,
+                                         color_discrete_map={"আওতাভুক্ত (Covered)": "#006A4E", "বাকি (Uncovered)": "#F42A41"})
+                        st.plotly_chart(fig_pie, use_container_width=True)
 
-if total_vills > 0:
-    pie_data = pd.DataFrame({
-        "Category": ["আওতাভুক্ত গ্রাম (Covered)", "আওতাভুক্ত নয় (Uncovered)"],
-        "Count": [covered_vills, uncovered_vills]
-    })
-    
-    fig_pie = px.pie(
-        pie_data, 
-        values='Count', 
-        names='Category',
-        hole=0.4, # This makes it a Donut chart (cleaner look)
-        color_discrete_map={
-            "আওতাভুক্ত গ্রাম (Covered)": "#006A4E", # BCC Green
-            "আওতাভুক্ত নয় (Uncovered)": "#F42A41"  # Contrast Red
-        }
-    )
-    fig_pie.update_traces(textposition='inside', textinfo='percent+label')
-    st.plotly_chart(fig_pie, use_container_width=True)
-else:
-    st.warning("Pie chart cannot be displayed because total villages count is 0.")
+                    # 5. Bar Chart (Total vs Covered)
+                    st.write("**বিভাগীয় তুলনা (Division Comparison)**")
+                    chart_data = filtered_df.groupby('বিভাগ')[['মোট গ্রাম', 'আওতাভুক্ত গ্রাম']].sum().reset_index()
+                    chart_melted = chart_data.melt(id_vars='বিভাগ', value_vars=['মোট গ্রাম', 'আওতাভুক্ত গ্রাম'],
+                                                  var_name='Category', value_name='Village Count')
+                    
+                    fig_bar = px.bar(chart_melted, x='বিভাগ', y='Village Count', color='Category', 
+                                     barmode='group', text_auto=True,
+                                     color_discrete_map={'মোট গ্রাম': '#006A4E', 'আওতাভুক্ত গ্রাম': '#F42A41'})
+                    st.plotly_chart(fig_bar, use_container_width=True)
 
-# --- Existing Bar Chart ---
-st.write("**বিভাগ অনুযায়ী সাবমিশন (Submissions by Division)**")
-div_counts = filtered_df['বিভাগ'].value_counts().reset_index()
-div_counts.columns = ['Division', 'Count']
-st.plotly_chart(px.bar(div_counts, x='Division', y='Count', text_auto=True, color_discrete_sequence=['#006A4E']), use_container_width=True)
+                    # 6. Data Table
+                    st.subheader("📋 Search Results")
+                    st.dataframe(filtered_df, use_container_width=True)
+
+        except Exception as e:
+            # THIS BLOCK PREVENTS THE SYNTAX ERROR
+            st.sidebar.error(f"Error: {e}")
 
                     
 
@@ -313,6 +306,7 @@ if __name__ == "__main__":
 
 
     main()
+
 
 
 
