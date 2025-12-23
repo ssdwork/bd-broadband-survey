@@ -342,6 +342,23 @@ if __name__ == "__main__":
 
 
     main()
+        # --- THIS PART GOES AT THE VERY END OF YOUR main() FUNCTION ---
+    
+    st.sidebar.markdown("---") # Adds a line to separate from other sidebar items
+    
+    # 1. The Toggle Button
+    show_admin = st.sidebar.toggle("🛠️ Admin Mode") # Using 'toggle' instead of 'checkbox' for better visibility
+    
+    # 2. The Logic
+    if show_admin:
+        st.sidebar.subheader("🔐 Admin Access")
+        pwd = st.sidebar.text_input('Password', type='password')
+        
+        if pwd == 'Bccadmin2025':
+            # ... (Rest of your Admin Panel code goes here) ...
+            st.sidebar.success("Access Granted")
+
+
 
 
 
