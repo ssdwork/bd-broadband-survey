@@ -150,29 +150,46 @@ def main():
         st.rerun()
 
     st.write("---")
+    # Replace the Submission logic in your main() function with this:
+
     if st.button("জমা দিন (Submit Data)", use_container_width=True, type="primary"):
         if not (name and final_div and final_dist):
             st.error("দয়া করে নাম এবং ভৌগোলিক তথ্য নিশ্চিত করুন।")
         else:
-            isp_final = " | ".join([f"{r['name']}({r['phone']}):{r['subs']}" for r in isp_records])
-            new_record = pd.DataFrame([{
-                "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                "নাম": name, "পদবী": designation, "কর্মস্থল": workplace,
-                "বিভাগ": final_div, "জেলা": final_dist, "উপজেলা": final_upz, "ইউনিয়ন": final_uni,
-                "মোট গ্রাম": total_villages, "আওতাভুক্ত গ্রাম": covered_villages,
-                "ISP তথ্য": isp_final
-            }])
-            
             try:
-                # Fetch existing data
-                existing_data = conn.read()
-                updated_df = pd.concat([existing_data, new_record], ignore_index=True)
+                # 1. Prepare the record
+                isp_final = " | ".join([f"{r['name']}({r['phone']}):{r['subs']}" for r in isp_records])
+                new_record = pd.DataFrame([{
+                    "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "নাম": name, "পদবী": designation, "কর্মস্থল": workplace,
+                    "বিভাগ": final_div, "জেলা": final_dist, "উপজেলা": final_upz, "ইউনিয়ন": final_uni,
+                    "মোট গ্রাম": total_villages, "আওতাভুক্ত গ্রাম": covered_villages,
+                    "ISP তথ্য": isp_final
+                }])
+                
+                # 2. Connect and update
+                # The "ttl=0" ensures we don't use old cached data when writing
+                existing_data = conn.read(ttl=0) 
+                
+                # Handling empty sheet vs existing data
+                if existing_data is not None and not existing_data.empty:
+                    updated_df = pd.concat([existing_data, new_record], ignore_index=True)
+                else:
+                    updated_df = new_record
+                
+                # 3. Push to Google Sheets
                 conn.update(data=updated_df)
-                st.success("✅ আপনার তথ্য সফলভাবে Google Sheet-এ রেকর্ড করা হয়েছে।")
+                
+                st.success("✅ আপনার তথ্য সফলভাবে সংরক্ষিত হয়েছে।")
                 st.balloons()
                 st.session_state.rows = 1
+                
+                # Optional: Delay then rerun to clear form
+                # st.rerun() 
+                
             except Exception as e:
-                st.error(f"Error: {e}. Please ensure Google Sheet is connected.")
+                st.error(f"Error: {e}")
+                st.info("নিশ্চিত করুন যে আপনি Service Account ইমেলটি Google Sheet-এ Editor হিসেবে যোগ করেছেন।")
 
     # --- ADMIN PANEL ---
     st.sidebar.header('🔐 Admin Panel')
@@ -225,4 +242,5 @@ def main():
         st.sidebar.error('ভুল পাসওয়ার্ড')
 
 if __name__ == "__main__":
+
     main()
