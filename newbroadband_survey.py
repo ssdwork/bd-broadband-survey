@@ -247,6 +247,16 @@ def main():
                                          color_discrete_map={"আওতাভুক্ত (Covered)": "#006A4E", "বাকি (Uncovered)": "#F42A41"})
                         st.plotly_chart(fig_pie, use_container_width=True)
 
+                             # Chart
+
+                    st.write("**Submissions by Division**")
+
+                    div_counts = filtered_df['বিভাগ'].value_counts().reset_index()
+
+                    div_counts.columns = ['Division', 'Count']
+
+                    st.plotly_chart(px.bar(div_counts, x='Division', y='Count', text_auto=True, color_discrete_sequence=['#006A4E']), use_container_width=True)
+
                     # 4. Search Results Table
                     st.subheader("📋 Search Results")
                     st.dataframe(filtered_df, use_container_width=True)
@@ -273,6 +283,7 @@ if __name__ == "__main__":
 
 
     main()
+
 
 
 
