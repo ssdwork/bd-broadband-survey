@@ -239,33 +239,45 @@ def main():
 
                     
 
-                    # Metrics
+                   # --- Metrics ---
+m1, m2, m3 = st.columns(3)
+total_vills = int(filtered_df['মোট গ্রাম'].sum())
+covered_vills = int(filtered_df['আওতাভুক্ত গ্রাম'].sum())
+uncovered_vills = max(0, total_vills - covered_vills) # Calculate the gap
 
-                    m1, m2, m3 = st.columns(3)
+m1.metric("Submissions", len(filtered_df))
+m2.metric("Total Villages", total_vills)
+m3.metric("Covered Villages", covered_vills)
 
-                    m1.metric("Submissions", len(filtered_df))
+# --- NEW: Pie Chart for Coverage Overview ---
+st.write("**সারাদেশে ইন্টারনেট কভারেজ অনুপাত (Total Coverage Ratio)**")
 
-                    m2.metric("Total Villages", int(filtered_df['মোট গ্রাম'].sum()))
+if total_vills > 0:
+    pie_data = pd.DataFrame({
+        "Category": ["আওতাভুক্ত গ্রাম (Covered)", "আওতাভুক্ত নয় (Uncovered)"],
+        "Count": [covered_vills, uncovered_vills]
+    })
+    
+    fig_pie = px.pie(
+        pie_data, 
+        values='Count', 
+        names='Category',
+        hole=0.4, # This makes it a Donut chart (cleaner look)
+        color_discrete_map={
+            "আওতাভুক্ত গ্রাম (Covered)": "#006A4E", # BCC Green
+            "আওতাভুক্ত নয় (Uncovered)": "#F42A41"  # Contrast Red
+        }
+    )
+    fig_pie.update_traces(textposition='inside', textinfo='percent+label')
+    st.plotly_chart(fig_pie, use_container_width=True)
+else:
+    st.warning("Pie chart cannot be displayed because total villages count is 0.")
 
-                    m3.metric("Covered Villages", int(filtered_df['আওতাভুক্ত গ্রাম'].sum()))
-
-                    
-
-                    # Chart
-
-                    st.write("**Submissions by Division**")
-
-                    div_counts = filtered_df['বিভাগ'].value_counts().reset_index()
-
-                    div_counts.columns = ['Division', 'Count']
-
-                    st.plotly_chart(px.bar(div_counts, x='Division', y='Count', text_auto=True, color_discrete_sequence=['#006A4E']), use_container_width=True)
-
-                    
-
-                    st.subheader("📋 Search Results")
-
-                    st.dataframe(filtered_df, use_container_width=True)
+# --- Existing Bar Chart ---
+st.write("**বিভাগ অনুযায়ী সাবমিশন (Submissions by Division)**")
+div_counts = filtered_df['বিভাগ'].value_counts().reset_index()
+div_counts.columns = ['Division', 'Count']
+st.plotly_chart(px.bar(div_counts, x='Division', y='Count', text_auto=True, color_discrete_sequence=['#006A4E']), use_container_width=True)
 
                     
 
@@ -301,6 +313,7 @@ if __name__ == "__main__":
 
 
     main()
+
 
 
 
