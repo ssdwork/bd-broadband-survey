@@ -195,15 +195,23 @@ def main():
                 st.error(f"Error: {e}")
                 st.info("নিশ্চিত করুন যে আপনি Service Account ইমেলটি Google Sheet-এ Editor হিসেবে যোগ করেছেন।")
 
-# --- ADMIN PANEL ---
+This IndentationError means that the "Delete Data Entry" code is sitting too far to the right (or too far to the left) compared to the lines above it. In Python, code inside the same block must be aligned perfectly.
+
+To fix this, the with st.expander block must be aligned exactly with the st.dataframe or st.plotly_chart lines above it.
+
+🚀 The Full Fixed Admin Panel (Corrected Indentation)
+Replace your entire Admin Panel block with this. I have meticulously aligned every line so there are no more indentation errors.
+
+Python
+
+    # --- ADMIN PANEL ---
     st.sidebar.header('🔐 Admin Panel')
     pwd = st.sidebar.text_input('Password', type='password')
-
+    
     if pwd == 'Bccadmin2025':
         st.sidebar.success('Authenticated')
-        try: # <--- This is Line 210. Ensure it has the same spaces as st.sidebar.success
+        try:
             df_admin = conn.read(ttl=0)
-            
             if df_admin.empty:
                 st.sidebar.info("জরিপের কোনো তথ্য এখনো জমা পড়েনি।")
             else:
@@ -211,21 +219,20 @@ def main():
                 if show_stats:
                     st.markdown("---")
                     st.header("🔍 Data Search & Analytics")
-
-                    # Filtering Logic
-                    f1, f2 = st.columns(2)
-                    filtered_df = df_admin.copy()
                     
-                    # Convert columns to numeric for calculation
+                    # Ensure numeric data for calculations
+                    filtered_df = df_admin.copy()
                     filtered_df['মোট গ্রাম'] = pd.to_numeric(filtered_df['মোট গ্রাম'], errors='coerce').fillna(0)
                     filtered_df['আওতাভুক্ত গ্রাম'] = pd.to_numeric(filtered_df['আওতাভুক্ত গ্রাম'], errors='coerce').fillna(0)
 
+                    # 1. Filtering Logic
+                    f1, f2 = st.columns(2)
                     with f1: 
                         div_search = st.selectbox("বিভাগ ফিল্টার", ["All"] + sorted(df_admin['বিভাগ'].unique().tolist()))
                     if div_search != "All": 
                         filtered_df = filtered_df[filtered_df['বিভাগ'] == div_search]
 
-                    # Metrics Calculations
+                    # 2. Metrics Calculations
                     m1, m2, m3 = st.columns(3)
                     total_vills = int(filtered_df['মোট গ্রাম'].sum())
                     covered_vills = int(filtered_df['আওতাভুক্ত গ্রাম'].sum())
@@ -235,7 +242,7 @@ def main():
                     m2.metric("Total Villages", total_vills)
                     m3.metric("Covered Villages", covered_vills)
 
-                    # Charts
+                    # 3. Pie Chart
                     st.write("**ইন্টারনেট কভারেজ অনুপাত (Coverage Ratio)**")
                     if total_vills > 0:
                         pie_data = pd.DataFrame({
@@ -246,36 +253,23 @@ def main():
                                          color_discrete_map={"আওতাভুক্ত (Covered)": "#006A4E", "বাকি (Uncovered)": "#F42A41"})
                         st.plotly_chart(fig_pie, use_container_width=True)
 
+                    # 4. Search Results Table
                     st.subheader("📋 Search Results")
                     st.dataframe(filtered_df, use_container_width=True)
 
-        except Exception as e:
-            st.sidebar.error(f"Error: {e}")
-                    
-
-
-                    # Delete Logic
-
+                    # 5. Delete Logic (ALIGNED CORRECTLY NOW)
                     with st.expander("🗑️ Delete Data Entry"):
-
-                        delete_index = st.number_input("Enter Row Index:", min_value=0, max_value=len(df_admin)-1, step=1)
-
+                        delete_index = st.number_input("Enter Row Index:", min_value=0, max_value=max(0, len(df_admin)-1), step=1)
                         if st.button("Confirm Delete"):
-
                             df_admin = df_admin.drop(delete_index)
-
                             conn.update(data=df_admin)
-
                             st.success("Deleted!")
-
                             st.rerun()
 
-        except:
-
-            st.sidebar.error("Could not connect to Google Sheets.")
-
+        except Exception as e:
+            st.sidebar.error(f"Error: {e}")
+            
     elif pwd:
-
         st.sidebar.error('ভুল পাসওয়ার্ড')
 
 
@@ -285,6 +279,7 @@ if __name__ == "__main__":
 
 
     main()
+
 
 
 
