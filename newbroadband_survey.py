@@ -201,7 +201,14 @@ def main():
         st.markdown(f"**ISP নং {i+1}**")
         ic1, ic2, ic3 = st.columns([3, 2, 2])
         with ic1: iname = st.text_input("ISP নাম", key=f"in_{i}")
-        with ic2: icontact = st.text_input("যোগাযোগের নম্বর", key=f"ic_{i}")
+        with ic2: 
+                icontact = st.text_input("যোগাযোগের নম্বর", key=f"ic_{i}", help="১১ ডিজিটের মোবাইল নম্বর দিন")
+                # মোবাইল নম্বর ভ্যালিডেশন চেক
+                if icontact:
+                    if not icontact.isdigit():
+                        st.error("⚠️ শুধুমাত্র সংখ্যা ব্যবহার করুন")
+                    elif len(icontact) != 11:
+                        st.warning("⚠️ নম্বরটি অবশ্যই ১১ ডিজিটের হতে হবে")
         with ic3: isubs = st.number_input("গ্রাহক সংখ্যা", min_value=0, key=f"is_{i}", step=1)
         if iname: isp_records.append({"name": iname, "phone": icontact, "subs": isubs})
 
@@ -217,8 +224,14 @@ def main():
     # Replace the Submission logic in your main() function with this:
 
     if st.button("জমা দিন (Submit Data)", use_container_width=True, type="primary"):
+        # ১. সব নম্বরের দৈর্ঘ্য চেক করা
+        all_numbers_valid = all(len(r['phone']) == 11 and r['phone'].isdigit() for r in isp_records)
+
         if not (name and final_div and final_dist):
             st.error("দয়া করে নাম এবং ভৌগোলিক তথ্য নিশ্চিত করুন।")
+        elif not all_numbers_valid:
+            st.error("❌ ISP যোগাযোগের নম্বর সঠিক নয় (১১ ডিজিট ও শুধুমাত্র সংখ্যা হতে হবে)।")
+            
         else:
             try:
                 # 1. Prepare the record
@@ -268,7 +281,7 @@ def main():
         if pwd == 'Bccadmin2025':
             st.sidebar.success('Authenticated')
             try:
-                df_admin = conn.read(ttl=0)
+                df_admin = conn.read(ttl="5m")
                 if df_admin.empty:
                     st.sidebar.info("জরিপের কোনো তথ্য এখনো জমা পড়েনি।")
                 else:
@@ -343,6 +356,7 @@ if __name__ == "__main__":
 
     main()
        
+
 
 
 
