@@ -282,21 +282,18 @@ def main():
                 # 3. Push to Google Sheets
                 conn.update(data=updated_df)
                 
-                # এখানে স্পেসিং ঠিক করা হয়েছে
                 st.success("✅ আপনার তথ্য সফলভাবে সংরক্ষিত হয়েছে।")
                 st.balloons()
-                
-                # --- ফরম রিসেট করার লজিক ---
                 st.session_state.rows = 1
                 
-                # ২ সেকেন্ড অপেক্ষা করে অটোমেটিক পেজ রিফ্রেশ হবে
-                import time
-                time.sleep(2) 
-                st.rerun() 
+                # Optional: Delay then rerun to clear form
+                # st.rerun() 
                 
             except Exception as e:
                 st.error(f"Error: {e}")
-                
+                st.info("নিশ্চিত করুন যে আপনি Service Account ইমেলটি Google Sheet-এ Editor হিসেবে যোগ করেছেন।")
+
+
     # --- ADMIN PANEL ---
     st.sidebar.markdown("---") # Visual separator
     
