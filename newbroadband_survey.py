@@ -191,11 +191,18 @@ def main():
         final_uni = smart_geo_input('ইউনিয়ন (Union)', uni_opts, 'geo_uni')
 
     st.markdown('<div class="section-head">২. ইউনিয়ন ও গ্রামের তথ্য</div>', unsafe_allow_html=True)
+    
+    # ব্রডব্যান্ড ড্রপডাউন
     is_broadband = st.selectbox("ইউনিয়নটি ব্রডব্যান্ড এর আওতাভুক্ত? *", ["-- নির্বাচন করুন --", "হ্যাঁ", "না"], key="bb_coverage")
-	st.write("##")
-	gv1, gv2 = st.columns(2)
-    with gv1: total_villages = st.number_input("ইউনিয়নে মোট গ্রামের সংখ্যা", min_value=0, step=1)
-    with gv2: covered_villages = st.number_input("ইন্টারনেটের আওতাভুক্ত গ্রামের সংখ্যা", min_value=0, step=1)
+    
+    st.write("##")
+    
+    # গ্রামের সংখ্যা ইনপুট (সম্পূর্ণ স্পেস দিয়ে ইনডেন্ট করা)
+    gv1, gv2 = st.columns(2)
+    with gv1:
+        total_villages = st.number_input("ইউনিয়নে মোট গ্রামের সংখ্যা", min_value=0, step=1, key="total_v")
+    with gv2:
+        covered_villages = st.number_input("ইন্টারনেটের আওতাভুক্ত গ্রামের সংখ্যা", min_value=0, max_value=total_villages, step=1, key="covered_v")
 
     st.markdown('<div class="section-head">৩. উপজেলাতে সেবা প্রদানকৃত ISP এর তথ্য</div>', unsafe_allow_html=True)
     isp_records = []
