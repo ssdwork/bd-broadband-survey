@@ -192,6 +192,7 @@ def main():
 
     st.markdown('<div class="section-head">২. ইউনিয়ন ও গ্রামের তথ্য</div>', unsafe_allow_html=True)
     is_broadband = st.selectbox("ইউনিয়নটি ব্রডব্যান্ড এর আওতাভুক্ত? *", ["-- নির্বাচন করুন --", "হ্যাঁ", "না"], key="bb_coverage")
+	st.write("##")
 	gv1, gv2 = st.columns(2)
     with gv1: total_villages = st.number_input("ইউনিয়নে মোট গ্রামের সংখ্যা", min_value=0, step=1)
     with gv2: covered_villages = st.number_input("ইন্টারনেটের আওতাভুক্ত গ্রামের সংখ্যা", min_value=0, step=1)
