@@ -86,7 +86,7 @@ st.markdown("""
         background-size: cover; background-position: center; background-attachment: fixed;
     }
 
-    /* 2. Global Text Color - White */
+    /* 2. Global Text Color - White (ব্যাকগ্রাউন্ড ডার্ক তাই টেক্সট সবসময় সাদা থাকবে) */
     html, body, [class*="css"], .stMarkdown, p, label, .stTextInput > label, .stNumberInput > label { 
         font-family: 'Hind Siliguri', sans-serif; 
         color: #FFFFFF !important; 
@@ -98,19 +98,23 @@ st.markdown("""
         color: #FFFFFF !important;
     }
 
-    /* 4. Input Fields & Dropdowns (Dark Mode Style) */
+    /* 4. Input Fields & Dropdowns - ব্রাউজারের লাইট মোড এরর ফিক্স */
     div[data-baseweb="input"], div[data-baseweb="select"] { 
-        background-color: #262730 !important; 
-        border: 1px solid #4A4A4A !important; 
+        background-color: #F0F2F6 !important; /* হালকা গ্রে ব্যাকগ্রাউন্ড যাতে টেক্সট ফুটে ওঠে */
+        border: 2px solid #00D487 !important; 
         border-radius: 8px !important; 
     }
+
+    /* ইনপুট বক্সের ভিতরের টেক্সট কালার কালো করা হয়েছে যাতে স্পষ্ট পড়া যায় */
     div[data-baseweb="input"] input, div[data-baseweb="select"] div {
-        color: #FFFFFF !important;
+        color: #000000 !important;
+        -webkit-text-fill-color: #000000 !important; /* Chrome/Safari ফিক্স */
     }
-    /* Fix for dropdown menu items text color */
+
+    /* ড্রপডাউন মেনু আইটেম */
     ul[data-baseweb="menu"] li {
-        color: #FFFFFF !important;
-        background-color: #262730 !important;
+        color: #000000 !important;
+        background-color: #FFFFFF !important;
     }
 
     /* 5. Sidebar - Dark Grey */
@@ -125,6 +129,11 @@ st.markdown("""
         border: 2px solid #00D487 !important; 
         background-color: rgba(0, 0, 0, 0.5) !important; 
         font-weight: 700 !important; 
+        border-radius: 8px !important;
+    }
+    div.stButton > button:hover {
+        background-color: #00D487 !important;
+        color: #000000 !important;
     }
     div.stButton > button[kind="primary"] { 
         background-color: #00D487 !important; 
@@ -143,7 +152,7 @@ st.markdown("""
     }
     .section-head { 
         background: #00D487 !important; 
-        color: #000000 !important; /* Black text on Green background */
+        color: #000000 !important; 
         padding: 10px 15px; 
         border-radius: 8px; 
         font-weight: 700; 
@@ -397,6 +406,7 @@ if __name__ == "__main__":
 
     main()
        
+
 
 
 
