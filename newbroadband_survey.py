@@ -123,10 +123,28 @@ st.markdown("""
         color: #000000 !important;
     }
 
-    /* 5. Sidebar - Dark Grey */
+    /* 5. Sidebar - adaptive background */
     [data-testid="stSidebar"] { 
-        background-color: rgba(38, 39, 48, 0.95) !important; 
+        /* ব্যাকগ্রাউন্ড আর হার্ডকোড করা নেই, এটি এখন কন্টেন্টের সাথে সামঞ্জস্য করবে */
         border-right: 1px solid #333;
+    }
+
+    /* অ্যাডমিন প্যানেলের টেবিল এবং ফিল্টার বক্সের জন্য বিশেষ ফিক্স */
+    /* এটি ডার্ক মোডেও ইনপুট বক্সগুলোকে সাদাটে/হালকা রাখবে যাতে কালো লেখা পড়া যায় */
+    .stSelectbox div[data-baseweb="select"], 
+    .stTextInput div[data-baseweb="input"], 
+    .stNumberInput div[data-baseweb="input"] {
+        background-color: #FFFFFF !important; 
+        color: #000000 !important;
+    }
+
+    /* ডাটা টেবিলের (Dataframe) ভেতরের লেখা ডার্ক মোডেও কালো রাখার জন্য */
+    [data-testid="stDataFrame"] {
+        background-color: #FFFFFF !important;
+    }
+    
+    [data-testid="stDataFrame"] div[role="gridcell"] {
+        color: #000000 !important;
     }
 
     /* 6. Buttons */
@@ -412,6 +430,7 @@ if __name__ == "__main__":
 
     main()
        
+
 
 
 
