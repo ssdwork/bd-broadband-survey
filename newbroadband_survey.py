@@ -195,7 +195,7 @@ def main():
     with gv1: total_villages = st.number_input("ইউনিয়নে মোট গ্রামের সংখ্যা", min_value=0, step=1)
     with gv2: covered_villages = st.number_input("ইন্টারনেটের আওতাভুক্ত গ্রামের সংখ্যা", min_value=0, step=1)
 
-    st.markdown('<div class="section-head">৩. সেবা প্রদানকৃত ISP এর তথ্য</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-head">৩. উপজেলাতে সেবা প্রদানকৃত ISP এর তথ্য</div>', unsafe_allow_html=True)
     isp_records = []
     for i in range(st.session_state.rows):
         st.markdown(f"**ISP নং {i+1}**")
@@ -241,7 +241,7 @@ def main():
                     "নাম": name, "পদবী": designation, "কর্মস্থল": workplace,
                     "বিভাগ": final_div, "জেলা": final_dist, "উপজেলা": final_upz, "ইউনিয়ন": final_uni,
                     "মোট গ্রাম": total_villages, "আওতাভুক্ত গ্রাম": covered_villages,
-                    "ISP তথ্য": isp_final
+                    "উপজেলাতে ISP তথ্য": isp_final
                 }])
                 
                 # 2. Connect and update
