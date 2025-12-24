@@ -282,14 +282,14 @@ def main():
                 # 3. Push to Google Sheets
                 conn.update(data=updated_df)
                 
-               st.success("✅ আপনার তথ্য সফলভাবে সংরক্ষিত হয়েছে।")
+                # এখানে স্পেসিং ঠিক করা হয়েছে
+                st.success("✅ আপনার তথ্য সফলভাবে সংরক্ষিত হয়েছে।")
                 st.balloons()
                 
                 # --- ফরম রিসেট করার লজিক ---
-                # ISP রো ১-এ ফিরিয়ে নেওয়া
                 st.session_state.rows = 1
                 
-                # ৫ সেকেন্ড অপেক্ষা করে অটোমেটিক পেজ রিফ্রেশ হবে (যাতে ইউজার সাকসেস মেসেজ দেখতে পায়)
+                # ২ সেকেন্ড অপেক্ষা করে অটোমেটিক পেজ রিফ্রেশ হবে
                 import time
                 time.sleep(2) 
                 st.rerun() 
@@ -297,8 +297,6 @@ def main():
             except Exception as e:
                 st.error(f"Error: {e}")
                 
-
-
     # --- ADMIN PANEL ---
     st.sidebar.markdown("---") # Visual separator
     
