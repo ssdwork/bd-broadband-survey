@@ -306,7 +306,7 @@ def main():
         if pwd == 'Bccadmin2025':
             st.sidebar.success('Authenticated')
             try:
-                df_admin = conn.read(ttl="5m")
+                df_admin = conn.read(ttl=0)
                 if df_admin.empty:
                     st.sidebar.info("জরিপের কোনো তথ্য এখনো জমা পড়েনি।")
                 else:
@@ -381,6 +381,7 @@ if __name__ == "__main__":
 
     main()
        
+
 
 
 
