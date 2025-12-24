@@ -361,20 +361,27 @@ def main():
                         st.subheader("📋 Search Results")
                         st.dataframe(filtered_df, use_container_width=True)
     
-                        # 6. Delete Logic
+                       # 6. Delete Logic
                         with st.expander("🗑️ Delete Data Entry"):
                             delete_index = st.number_input("Enter Row Index:", min_value=0, max_value=max(0, len(df_admin)-1), step=1)
                             if st.button("Confirm Delete"):
-                                df_admin = df_admin.drop(delete_index)
+                                # ১. লোকাল ডাটাফ্রেম থেকে ড্রপ করা
+                                df_admin = df_admin.drop(df_admin.index[delete_index])
+                                
+                                # ২. গুগল শিটে আপডেট পাঠানো
                                 conn.update(data=df_admin)
+                                
+                                # ৩. গুরুত্বপূর্ণ: ক্যাশ মেমরি পরিষ্কার করা যাতে পরবর্তী রিড লাইভ হয়
+                                st.cache_data.clear()
+                                
                                 st.success("Deleted!")
+                                
+                                # ৪. গুগল শিট সিঙ্ক হওয়ার জন্য ১ সেকেন্ড বিরতি দেওয়া
+                                import time
+                                time.sleep(1)
+                                
+                                # ৫. পেজ রিরান করে নতুন ডাটা দেখানো
                                 st.rerun()
-    
-            except Exception as e:
-                st.sidebar.error(f"Error: {e}")
-                
-        elif pwd:
-            st.sidebar.error('ভুল পাসওয়ার্ড')
 
 
 
