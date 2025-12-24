@@ -164,7 +164,7 @@ def main():
     conn = st.connection("gsheets", type=GSheetsConnection)
 
     st.markdown('<div class="main-title">🌐 সমগ্র বাংলাদেশে ব্রডব্যান্ড কভারেজ জরিপ</div>', unsafe_allow_html=True)
-    st.markdown("<div style='text-align: center; margin-bottom: 30px; margin-top: 5px;'><p style='font-size: 1.2rem; color:#FFFFFF; background: rgba(255,255,255,0.1); border: 1px solid #555; display: inline-block; padding: 2px 15px; border-radius: 20px;'>বাংলাদেশ কম্পিউটার কাউন্সিল (BCC)</p></div>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align: center; margin-bottom: 30px; margin-top: 5px;'><p style='font-size: 1.2rem; color:#FFFFFF; background: rgba(255,255,255,0.1); border: 1px solid #555; display: inline-block; padding: 2px 15px; border-radius: 20px;'>Bangladesh Computer Council (BCC)</p></div>", unsafe_allow_html=True)
 
     if 'rows' not in st.session_state:
         st.session_state.rows = 1
@@ -397,6 +397,7 @@ if __name__ == "__main__":
 
     main()
        
+
 
 
 
