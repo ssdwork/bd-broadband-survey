@@ -175,7 +175,7 @@ def main():
         name = st.text_input("নাম (Name) *")
         designation = st.text_input("পদবী (Designation) *")
     with col2:
-        workplace = st.text_input("কর্মস্থলের নাম (Workplace Name) *")
+        workplace = st.text_input("কর্মস্থলের নাম (Workplace Name) *", placeholder="উপজেলা, জেলা")
 
     st.write("---")
     g1, g2 = st.columns(2)
@@ -190,8 +190,9 @@ def main():
         uni_opts = BD_DATA[final_div][final_dist][final_upz] if (final_div in BD_DATA and final_dist in BD_DATA[final_div] and final_upz in BD_DATA[final_div][final_dist]) else []
         final_uni = smart_geo_input('ইউনিয়ন (Union)', uni_opts, 'geo_uni')
 
-    st.markdown('<div class="section-head">২. গ্রামের তথ্য</div>', unsafe_allow_html=True)
-    gv1, gv2 = st.columns(2)
+    st.markdown('<div class="section-head">২. ইউনিয়ন ও গ্রামের তথ্য</div>', unsafe_allow_html=True)
+    is_broadband = st.selectbox("ইউনিয়নটি ব্রডব্যান্ড এর আওতাভুক্ত? *", ["-- নির্বাচন করুন --", "হ্যাঁ", "না"], key="bb_coverage")
+	gv1, gv2 = st.columns(2)
     with gv1: total_villages = st.number_input("ইউনিয়নে মোট গ্রামের সংখ্যা", min_value=0, step=1)
     with gv2: covered_villages = st.number_input("ইন্টারনেটের আওতাভুক্ত গ্রামের সংখ্যা", min_value=0, step=1)
 
@@ -209,8 +210,17 @@ def main():
                         st.error("⚠️ শুধুমাত্র সংখ্যা ব্যবহার করুন")
                     elif len(icontact) != 11:
                         st.warning("⚠️ নম্বরটি অবশ্যই ১১ ডিজিটের হতে হবে")
-        with ic3: isubs = st.number_input("গ্রাহক সংখ্যা", min_value=0, key=f"is_{i}", step=1)
-        if iname: isp_records.append({"name": iname, "phone": icontact, "subs": isubs})
+        with ic3: 
+            # শুধুমাত্র গ্রাহক সংখ্যার জন্য 'জানা নেই' চেক-বক্স
+            unknown_subs = st.checkbox("জানা নেই", key=f"un_subs_{i}")
+            if unknown_subs:
+                isubs = "জানা নেই"
+                st.text_input("গ্রাহক সংখ্যা", value="জানা নেই", key=f"is_dis_{i}", disabled=True)
+            else:
+                isubs = st.number_input("গ্রাহক সংখ্যা", min_value=0, key=f"is_{i}", step=1)
+        
+        if iname:
+            isp_records.append({"name": iname, "phone": icontact, "subs": isubs})
 
     b1, b2, _ = st.columns([1.5, 1, 4])
     if b1.button("➕ আরও ISP যোগ করুন"):
@@ -236,10 +246,11 @@ def main():
             try:
                 # 1. Prepare the record
                 isp_final = " | ".join([f"{r['name']}({r['phone']}):{r['subs']}" for r in isp_records])
+			
                 new_record = pd.DataFrame([{
                     "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     "নাম": name, "পদবী": designation, "কর্মস্থল": workplace,
-                    "বিভাগ": final_div, "জেলা": final_dist, "উপজেলা": final_upz, "ইউনিয়ন": final_uni,
+                    "বিভাগ": final_div, "জেলা": final_dist, "উপজেলা": final_upz, "ইউনিয়ন": final_uni,"ব্রডব্যান্ড আওতাভুক্ত": is_broadband,
                     "মোট গ্রাম": total_villages, "আওতাভুক্ত গ্রাম": covered_villages,
                     "উপজেলাতে ISP তথ্য": isp_final
                 }])
