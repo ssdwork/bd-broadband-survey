@@ -218,15 +218,21 @@ def main():
                         st.error("⚠️ শুধুমাত্র সংখ্যা ব্যবহার করুন")
                     elif len(icontact) != 11:
                         st.warning("⚠️ নম্বরটি অবশ্যই ১১ ডিজিটের হতে হবে")
-        with ic3: 
-            # শুধুমাত্র গ্রাহক সংখ্যার জন্য 'জানা নেই' চেক-বক্স
-            unknown_subs = st.checkbox("জানা নেই", key=f"un_subs_{i}")
-            if unknown_subs:
+        with ic3:
+            # ১. চেক-বক্সের মান আগে থেকে জেনে নেওয়া (যাতে নিচের ইনপুট বক্সটি নিয়ন্ত্রণ করা যায়)
+            is_unknown = st.session_state.get(f"un_subs_{i}", False)
+            
+            # ২. গ্রাহক সংখ্যা ইনপুট বক্স (উপরে থাকবে)
+            if is_unknown:
                 isubs = "জানা নেই"
                 st.text_input("গ্রাহক সংখ্যা", value="জানা নেই", key=f"is_dis_{i}", disabled=True)
             else:
                 isubs = st.number_input("গ্রাহক সংখ্যা", min_value=0, key=f"is_{i}", step=1)
+            
+            # ৩. চেক-বক্সটি এখন ইনপুট বক্সের নিচে দেখাবে
+            st.checkbox("জানা নেই", key=f"un_subs_{i}")
         
+        # ডাটা অ্যাপেন্ড করা
         if iname:
             isp_records.append({"name": iname, "phone": icontact, "subs": isubs})
 
