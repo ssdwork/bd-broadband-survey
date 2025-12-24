@@ -190,6 +190,8 @@ def main():
         name = st.text_input("নাম (Name) *")
         designation = st.text_input("পদবী (Designation) *")
     with col2:
+		# মোবাইল নম্বর ফিল্ড (১১ ডিজিট বাধ্যতামূলক)
+        user_phone = st.text_input("মোবাইল নম্বর (১১ ডিজিট) *", max_chars=11, help="উদাহরণ: 01712345678")
         workplace = st.text_input("কর্মস্থলের নাম (Workplace Name) *", placeholder="উপজেলা, জেলা")
 
     st.write("---")
@@ -263,48 +265,63 @@ def main():
     # Replace the Submission logic in your main() function with this:
 
     if st.button("জমা দিন (Submit Data)", use_container_width=True, type="primary"):
-        # ১. সব নম্বরের দৈর্ঘ্য চেক করা
-        all_numbers_valid = all(len(r['phone']) == 11 and r['phone'].isdigit() for r in isp_records)
+        # ১. ডাটাবেজ (Google Sheet) থেকে লাইভ ডাটা পড়া
+        existing_data = conn.read(ttl=0)
+        
+        # ২. ডুপ্লিকেট চেক (ইউজারের মোবাইল নম্বর দিয়ে)
+        is_duplicate = False
+        if existing_data is not None and not existing_data.empty:
+            if "মোবাইল নম্বর" in existing_data.columns:
+                # শিটের নম্বরগুলোকে টেক্সট হিসেবে নিয়ে চেক করা
+                if user_phone in existing_data["মোবাইল নম্বর"].astype(str).values:
+                    is_duplicate = True
 
-        if not (name and final_div and final_dist):
-            st.error("দয়া করে নাম এবং ভৌগোলিক তথ্য নিশ্চিত করুন।")
-        elif not all_numbers_valid:
-            st.error("❌ ISP যোগাযোগের নম্বর সঠিক নয় (১১ ডিজিট ও শুধুমাত্র সংখ্যা হতে হবে)।")
-            
+        # ৩. সব ISP নম্বরের বৈধতা চেক করা
+        all_isp_valid = all(len(r['phone']) == 11 and r['phone'].isdigit() for r in isp_records)
+
+        # ৪. কন্ডিশন ভ্যালিডেশন
+        if not (name and user_phone and final_div and final_dist):
+            st.error("দয়া করে নাম, আপনার মোবাইল নম্বর এবং ভৌগোলিক তথ্য নিশ্চিত করুন।")
+        elif len(user_phone) != 11 or not user_phone.isdigit():
+            st.error("❌ আপনার ব্যক্তিগত মোবাইল নম্বরটি সঠিক নয় (১১ ডিজিট হতে হবে)।")
+        elif is_duplicate:
+            st.warning("⚠️ আপনি ইতোমধ্যে একবার তথ্য দিয়েছেন।")
+        elif not all_isp_valid:
+            st.error("❌ ISP যোগাযোগের নম্বর সঠিক নয় (১১ ডিজিট ও শুধুমাত্র সংখ্যা হতে হবে)।")
         else:
             try:
-                # 1. Prepare the record
+                # ৫. ডাটা তৈরি করা
                 isp_final = " | ".join([f"{r['name']}({r['phone']}):{r['subs']}" for r in isp_records])
-			
+                
                 new_record = pd.DataFrame([{
                     "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    "নাম": name, "পদবী": designation, "কর্মস্থল": workplace,
-                    "বিভাগ": final_div, "জেলা": final_dist, "উপজেলা": final_upz, "ইউনিয়ন": final_uni,"ব্রডব্যান্ড আওতাভুক্ত": is_broadband,
-                    "মোট গ্রাম": total_villages, "আওতাভুক্ত গ্রাম": covered_villages,
+                    "নাম": name, 
+                    "পদবী": designation, 
+                    "মোবাইল নম্বর": user_phone,  # নতুন কলাম
+                    "কর্মস্থল": workplace,
+                    "বিভাগ": final_div, 
+                    "জেলা": final_dist, 
+                    "উপজেলা": final_upz, 
+                    "ইউনিয়ন": final_uni,
+                    "ব্রডব্যান্ড আওতাভুক্ত": is_broadband,
+                    "মোট গ্রাম": total_villages, 
+                    "আওতাভুক্ত গ্রাম": covered_villages,
                     "উপজেলাতে ISP তথ্য": isp_final
                 }])
                 
-                # 2. Connect and update
-                # The "ttl=0" ensures we don't use old cached data when writing
-                existing_data = conn.read(ttl=0) 
-                
-                # Handling empty sheet vs existing data
+                # ৬. গুগল শিটে আপডেট করা
                 if existing_data is not None and not existing_data.empty:
                     updated_df = pd.concat([existing_data, new_record], ignore_index=True)
                 else:
                     updated_df = new_record
                 
-                # 3. Push to Google Sheets
                 conn.update(data=updated_df)
                 
-                # এখানে স্পেসিং ঠিক করা হয়েছে
                 st.success("✅ আপনার তথ্য সফলভাবে সংরক্ষিত হয়েছে।")
                 st.balloons()
                 
-                # --- ফরম রিসেট করার লজিক ---
+                # ৭. রিসেট লজিক
                 st.session_state.rows = 1
-                
-                # ২ সেকেন্ড অপেক্ষা করে অটোমেটিক পেজ রিফ্রেশ হবে
                 import time
                 time.sleep(2) 
                 st.rerun() 
@@ -412,6 +429,7 @@ if __name__ == "__main__":
 
     main()
        
+
 
 
 
