@@ -282,16 +282,21 @@ def main():
                 # 3. Push to Google Sheets
                 conn.update(data=updated_df)
                 
-                st.success("✅ আপনার তথ্য সফলভাবে সংরক্ষিত হয়েছে।")
+               st.success("✅ আপনার তথ্য সফলভাবে সংরক্ষিত হয়েছে।")
                 st.balloons()
+                
+                # --- ফরম রিসেট করার লজিক ---
+                # ISP রো ১-এ ফিরিয়ে নেওয়া
                 st.session_state.rows = 1
                 
-                # Optional: Delay then rerun to clear form
-                # st.rerun() 
+                # ৫ সেকেন্ড অপেক্ষা করে অটোমেটিক পেজ রিফ্রেশ হবে (যাতে ইউজার সাকসেস মেসেজ দেখতে পায়)
+                import time
+                time.sleep(2) 
+                st.rerun() 
                 
             except Exception as e:
                 st.error(f"Error: {e}")
-                st.info("নিশ্চিত করুন যে আপনি Service Account ইমেলটি Google Sheet-এ Editor হিসেবে যোগ করেছেন।")
+                
 
 
     # --- ADMIN PANEL ---
@@ -306,7 +311,7 @@ def main():
         if pwd == 'Bccadmin2025':
             st.sidebar.success('Authenticated')
             try:
-                df_admin = conn.read(ttl=0)
+                df_admin = conn.read(ttl="5m")
                 if df_admin.empty:
                     st.sidebar.info("জরিপের কোনো তথ্য এখনো জমা পড়েনি।")
                 else:
@@ -381,7 +386,6 @@ if __name__ == "__main__":
 
     main()
        
-
 
 
 
