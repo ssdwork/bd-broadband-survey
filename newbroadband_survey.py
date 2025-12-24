@@ -361,7 +361,7 @@ def main():
                         st.subheader("📋 Search Results")
                         st.dataframe(filtered_df, use_container_width=True)
     
-                       # 6. Delete Logic
+                        # 6. Delete Logic
                         with st.expander("🗑️ Delete Data Entry"):
                             delete_index = st.number_input("Enter Row Index:", min_value=0, max_value=max(0, len(df_admin)-1), step=1)
                             if st.button("Confirm Delete"):
@@ -382,6 +382,12 @@ def main():
                                 
                                 # ৫. পেজ রিরান করে নতুন ডাটা দেখানো
                                 st.rerun()
+    
+            except Exception as e:
+                st.sidebar.error(f"Error: {e}")
+                
+        elif pwd:
+            st.sidebar.error('ভুল পাসওয়ার্ড')
 
 
 
