@@ -299,61 +299,66 @@ def main():
             
         else:
             try:
-            # ১. ডাটা প্রিপেয়ার করা
-            isp_final = " | ".join([f"{r['name']}({r['phone']}):{r['subs']}" for r in isp_records])
-            
-            new_record = pd.DataFrame([{
-                "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                "নাম": name, "পদবী": designation, "কর্মস্থল": workplace,
-                "বিভাগ": final_div, "জেলা": final_dist, "উপজেলা": final_upz, "ইউনিয়ন": final_uni,
-                "ব্রডব্যান্ড আওতাভুক্ত": is_broadband,
-                "মোট গ্রাম": total_villages, "আওতাভুক্ত গ্রাম": covered_villages,
-                "উপজেলাতে ISP তথ্য": isp_final
-            }])
-            
-            # ২. কানেক্ট এবং আপডেট
-            existing_data = conn.read(ttl=0) 
-            
-            if existing_data is not None and not existing_data.empty:
-                updated_df = pd.concat([existing_data, new_record], ignore_index=True)
-            else:
-                updated_df = new_record
-            
-            conn.update(data=updated_df)
-            
-            # ৩. সফলতার মেসেজ
-            st.success("✅ আপনার তথ্য সফলভাবে সংরক্ষিত হয়েছে।")
-            st.balloons()
-            
-            # ৪. সেশন স্টেট পরিষ্কার করার লজিক (রিসেট)
-            # ফিক্সড কী-গুলো পরিষ্কার করা
-            keys_to_clear = [
-                "user_name", "user_desig", "workplace_input", 
-                "geo_div", "geo_dist", "geo_upz", "geo_uni", 
-                "bb_coverage", "total_v", "covered_v",
-                "geo_div_other", "geo_dist_other", "geo_upz_other", "geo_uni_other"
-            ]
+                # ১. ডাটা প্রিপেয়ার করা
+                isp_final = " | ".join([f"{r['name']}({r['phone']}):{r['subs']}" for r in isp_records])
+                
+                new_record = pd.DataFrame([{
+                    "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "নাম": name, 
+                    "পদবী": designation, 
+                    "কর্মস্থল": workplace,
+                    "বিভাগ": final_div, 
+                    "জেলা": final_dist, 
+                    "উপজেলা": final_upz, 
+                    "ইউনিয়ন": final_uni,
+                    "ব্রডব্যান্ড আওতাভুক্ত": is_broadband,
+                    "মোট গ্রাম": total_villages, 
+                    "আওতাভুক্ত গ্রাম": covered_villages,
+                    "উপজেলাতে ISP তথ্য": isp_final
+                }])
+                
+                # ২. গুগল শিটে আপডেট পাঠানো
+                existing_data = conn.read(ttl=0) 
+                if existing_data is not None and not existing_data.empty:
+                    updated_df = pd.concat([existing_data, new_record], ignore_index=True)
+                else:
+                    updated_df = new_record
+                
+                conn.update(data=updated_df)
+                
+                # ৩. ইউজার ফিডব্যাক
+                st.success("✅ আপনার তথ্য সফলভাবে সংরক্ষিত হয়েছে।")
+                st.balloons()
+                
+                # ৪. সব ফিল্ড রিসেট করার কার্যকর লজিক
+                keys_to_clear = [
+                    "user_name", "user_desig", "workplace_input", 
+                    "geo_div", "geo_dist", "geo_upz", "geo_uni", 
+                    "bb_coverage", "total_v", "covered_v",
+                    "geo_div_other", "geo_dist_other", "geo_upz_other", "geo_uni_other"
+                ]
 
-            for key in keys_to_clear:
-                if key in st.session_state:
-                    # শুধু ডিলেট নয়, ভ্যালু খালি করে দেওয়া নিরাপদ
-                    st.session_state[key] = "" if isinstance(st.session_state[key], str) else None
-            
-            # ৫. ডায়নামিক ISP ফিল্ডগুলো মুছে ফেলা
-            for key in list(st.session_state.keys()):
-                if any(prefix in key for prefix in ["in_", "ic_", "is_", "un_subs_"]):
-                    del st.session_state[key]
+                # নির্দিষ্ট কীগুলো সেশন স্টেট থেকে মুছে ফেলা
+                for key in keys_to_clear:
+                    if key in st.session_state:
+                        del st.session_state[key]
 
-            # ৬. রো সংখ্যা রিসেট
-            st.session_state.rows = 1
-            
-            # ৭. পেজ রিফ্রেশ (১ সেকেন্ড বিরতি দিয়ে যাতে সাকসেস মেসেজ দেখা যায়)
-            import time
-            time.sleep(1) 
-            st.rerun() 
+                # ডায়নামিক ISP ফিল্ডগুলো (in_0, ic_0, etc.) মুছে ফেলা
+                current_keys = list(st.session_state.keys())
+                for key in current_keys:
+                    if any(prefix in key for prefix in ["in_", "ic_", "is_", "un_subs_", "is_dis_"]):
+                        del st.session_state[key]
 
-        except Exception as e:
-            st.error(f"Error: {e}")
+                # রো সংখ্যা ১-এ নামিয়ে আনা
+                st.session_state.rows = 1
+                
+                # ৫. পেজ রিরান (সব ডেটা ক্লিয়ার করতে)
+                import time
+                time.sleep(1.5) 
+                st.rerun() 
+
+            except Exception as e:
+                st.error(f"Error during submission: {e}")
                 
     # --- ADMIN PANEL ---
     st.sidebar.markdown("---") # Visual separator
@@ -455,6 +460,7 @@ if __name__ == "__main__":
 
     main()
        
+
 
 
 
