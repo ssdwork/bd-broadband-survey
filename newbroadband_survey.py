@@ -204,15 +204,18 @@ def main():
         designation = st.text_input("পদবী (Designation) *")
     with col2:
         
-        # এখানে Indentation ঠিক করা হয়েছে (৪টি স্পেস ডানে)
+        # কর্মস্থলের নাম ও উদাহরণের লেবেল (সঠিক স্পেসিং সহ)
         st.markdown("""
-            <div style="margin-bottom: -15px;">
-                <span style="font-size: 1rem; font-weight: bold; color: white;">কর্মস্থলের নাম (Workplace Name) *</span><br>
-                <span style="font-size: 0.85rem; color: #00D487; opacity: 1;">Example: উপজেলা অফিস, জেলা অফিস</span>
+            <div style="margin-bottom: 5px;"> <div style="font-size: 1rem; font-weight: bold; color: white; margin-bottom: 2px;">
+                    কর্মস্থলের নাম (Workplace Name) *
+                </div>
+                <div style="font-size: 0.85rem; color: #00D487; font-weight: 500;">
+                    Example: উপজেলা অফিস, জেলা অফিস
+                </div>
             </div>
         """, unsafe_allow_html=True)
         
-        # ইনপুট বক্স (লেবেল উপরে কাস্টম দেওয়া হয়েছে তাই এখানে ফাঁকা)
+        # ইনপুট বক্স (লেবেল হাইড করা, কারণ উপরে আমরা কাস্টম লেবেল দিয়েছি)
         workplace = st.text_input("", key="workplace_input", label_visibility="collapsed")
 
     st.write("---")
@@ -435,6 +438,7 @@ if __name__ == "__main__":
 
     main()
        
+
 
 
 
