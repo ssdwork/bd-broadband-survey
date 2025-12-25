@@ -299,68 +299,61 @@ def main():
             
         else:
             try:
-                # 1. Prepare the record
-                isp_final = " | ".join([f"{r['name']}({r['phone']}):{r['subs']}" for r in isp_records])
-			
-                new_record = pd.DataFrame([{
-                    "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    "নাম": name, "পদবী": designation, "কর্মস্থল": workplace,
-                    "বিভাগ": final_div, "জেলা": final_dist, "উপজেলা": final_upz, "ইউনিয়ন": final_uni,"ব্রডব্যান্ড আওতাভুক্ত": is_broadband,
-                    "মোট গ্রাম": total_villages, "আওতাভুক্ত গ্রাম": covered_villages,
-                    "উপজেলাতে ISP তথ্য": isp_final
-                }])
-                
-                # 2. Connect and update
-                # The "ttl=0" ensures we don't use old cached data when writing
-                existing_data = conn.read(ttl=0) 
-                
-                # Handling empty sheet vs existing data
-                if existing_data is not None and not existing_data.empty:
-                    updated_df = pd.concat([existing_data, new_record], ignore_index=True)
-                else:
-                    updated_df = new_record
-                
-                # 3. Push to Google Sheets
-                conn.update(data=updated_df)
-                
-                # এখানে স্পেসিং ঠিক করা হয়েছে
-                st.success("✅ আপনার তথ্য সফলভাবে সংরক্ষিত হয়েছে।")
-                st.balloons()
-                
-                # ==========================================
-                # 🔥 ফরম রিসেট করার নতুন লজিক (New Logic)
-                # ==========================================
-                
-                # ১. ফিক্সড ফিল্ডগুলোর Key এর তালিকা
-                keys_to_clear = [
-                    "user_name", "user_desig", "workplace_input", 
-                    "geo_div", "geo_dist", "geo_upz", "geo_uni", 
-                    "bb_coverage", "total_v", "covered_v",
-                    "geo_div_other", "geo_dist_other", "geo_upz_other", "geo_uni_other"
-                ]
+            # ১. ডাটা প্রিপেয়ার করা
+            isp_final = " | ".join([f"{r['name']}({r['phone']}):{r['subs']}" for r in isp_records])
+            
+            new_record = pd.DataFrame([{
+                "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "নাম": name, "পদবী": designation, "কর্মস্থল": workplace,
+                "বিভাগ": final_div, "জেলা": final_dist, "উপজেলা": final_upz, "ইউনিয়ন": final_uni,
+                "ব্রডব্যান্ড আওতাভুক্ত": is_broadband,
+                "মোট গ্রাম": total_villages, "আওতাভুক্ত গ্রাম": covered_villages,
+                "উপজেলাতে ISP তথ্য": isp_final
+            }])
+            
+            # ২. কানেক্ট এবং আপডেট
+            existing_data = conn.read(ttl=0) 
+            
+            if existing_data is not None and not existing_data.empty:
+                updated_df = pd.concat([existing_data, new_record], ignore_index=True)
+            else:
+                updated_df = new_record
+            
+            conn.update(data=updated_df)
+            
+            # ৩. সফলতার মেসেজ
+            st.success("✅ আপনার তথ্য সফলভাবে সংরক্ষিত হয়েছে।")
+            st.balloons()
+            
+            # ৪. সেশন স্টেট পরিষ্কার করার লজিক (রিসেট)
+            # ফিক্সড কী-গুলো পরিষ্কার করা
+            keys_to_clear = [
+                "user_name", "user_desig", "workplace_input", 
+                "geo_div", "geo_dist", "geo_upz", "geo_uni", 
+                "bb_coverage", "total_v", "covered_v",
+                "geo_div_other", "geo_dist_other", "geo_upz_other", "geo_uni_other"
+            ]
 
-                # ২. সেশন স্টেট থেকে এই Key গুলো মুছে ফেলা
-                for key in keys_to_clear:
-                    if key in st.session_state:
-                        del st.session_state[key]
+            for key in keys_to_clear:
+                if key in st.session_state:
+                    # শুধু ডিলেট নয়, ভ্যালু খালি করে দেওয়া নিরাপদ
+                    st.session_state[key] = "" if isinstance(st.session_state[key], str) else None
+            
+            # ৫. ডায়নামিক ISP ফিল্ডগুলো মুছে ফেলা
+            for key in list(st.session_state.keys()):
+                if any(prefix in key for prefix in ["in_", "ic_", "is_", "un_subs_"]):
+                    del st.session_state[key]
 
-                # ৩. ডায়নামিক ISP ফিল্ডগুলো (in_0, ic_0, etc.) মুছে ফেলা
-                # আমরা সেশন স্টেটের সব key চেক করছি
-                all_keys = list(st.session_state.keys())
-                for key in all_keys:
-                    if key.startswith("in_") or key.startswith("ic_") or key.startswith("is_") or key.startswith("un_subs_"):
-                        del st.session_state[key]
+            # ৬. রো সংখ্যা রিসেট
+            st.session_state.rows = 1
+            
+            # ৭. পেজ রিফ্রেশ (১ সেকেন্ড বিরতি দিয়ে যাতে সাকসেস মেসেজ দেখা যায়)
+            import time
+            time.sleep(1) 
+            st.rerun() 
 
-                # ৪. রো (Rows) রিসেট করা
-                st.session_state.rows = 1
-                
-                # ৫. পেজ রিফ্রেশ
-                import time
-                time.sleep(1) 
-                st.rerun() 
-
-            except Exception as e:
-                st.error(f"Error: {e}")
+        except Exception as e:
+            st.error(f"Error: {e}")
                 
     # --- ADMIN PANEL ---
     st.sidebar.markdown("---") # Visual separator
@@ -462,6 +455,7 @@ if __name__ == "__main__":
 
     main()
        
+
 
 
 
