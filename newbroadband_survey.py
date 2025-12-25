@@ -98,59 +98,38 @@ st.markdown("""
         color: #FFFFFF !important;
     }
 
-    /* 4. Input Fields & Dropdowns - High Visibility Fix */
+    /* 4. Input Fields & Dropdowns - Universal Visibility Fix */
     
-    /* ইনপুট বক্সের ব্যাকগ্রাউন্ড - একটু গাঢ় ধূসর করা হয়েছে */
+    /* ইনপুট বক্সের ব্যাকগ্রাউন্ড - ডার্ক গ্রে (সব মোডেই বক্স স্পষ্ট দেখাবে) */
     div[data-baseweb="input"], div[data-baseweb="select"] { 
-        background-color: #31333F !important; /* ডার্ক মোড ফ্রেন্ডলি ব্যাকগ্রাউন্ড */
+        background-color: #262730 !important; 
         border: 2px solid #00D487 !important; 
         border-radius: 8px !important; 
     }
 
-    /* ইনপুট বক্সের টেক্সট কালার - এখন সাদা (#FFFFFF) */
+    /* ইনপুট বক্সের টেক্সট - সব সময় সাদা (সাদা টেক্সট ডার্ক বক্সে সব মোডেই পড়া যায়) */
     div[data-baseweb="input"] input, 
     div[data-baseweb="select"] div,
     div[data-baseweb="select"] span {
         color: #FFFFFF !important; 
-        -webkit-text-fill-color: #FFFFFF !important; /* ব্রাউজারের ডার্ক মোড টেক্সট কালার ওভাররাইড */
+        -webkit-text-fill-color: #FFFFFF !important; /* ব্রাউজার লাইট মোডে যেন টেক্সট কালো না করে */
         font-weight: 500 !important;
     }
 
-    /* ড্রপডাউন মেনুর অপশনগুলো */
-    ul[data-baseweb="menu"] {
-        background-color: #31333F !important;
-    }
-    
-    ul[data-baseweb="menu"] li {
-        color: #FFFFFF !important;
-        background-color: transparent !important;
-    }
-
-    /* হোভার করলে অপশন হাইলাইট */
-    ul[data-baseweb="menu"] li:hover {
-        background-color: #00D487 !important;
-        color: #000000 !important;
-    }
-
-    /* পাসওয়ার্ড ইনপুট আইকন (চোখ) সাদা করা */
-    div[data-baseweb="input"] button svg {
-        fill: white !important;
-        color: white !important;
-    }
-
-    /* 5. Sidebar - Dark Grey */
+    /* ৫. Sidebar - সাইডবার যেন সবসময় পড়া যায় */
     [data-testid="stSidebar"] { 
-        background-color: rgba(38, 39, 48, 0.95) !important; 
+        background-color: #1E1E1E !important; /* ফিক্সড ডার্ক ব্যাকগ্রাউন্ড */
         border-right: 1px solid #333;
     }
 
-    /* ডাটা টেবিলের (Dataframe) ভেতরের লেখা ডার্ক মোডেও কালো রাখার জন্য */
-    [data-testid="stDataFrame"] {
-        background-color: #FFFFFF !important;
-    }
-    
-    [data-testid="stDataFrame"] div[role="gridcell"] {
-        color: #000000 !important;
+    /* সাইডবারের ভেতরের সব লেখা সাদা */
+    [data-testid="stSidebar"] p, 
+    [data-testid="stSidebar"] label, 
+    [data-testid="stSidebar"] span,
+    [data-testid="stSidebar"] h1,
+    [data-testid="stSidebar"] h2,
+    [data-testid="stSidebar"] h3 {
+        color: #FFFFFF !important;
     }
 
     /* 6. Buttons */
@@ -436,6 +415,7 @@ if __name__ == "__main__":
 
     main()
        
+
 
 
 
