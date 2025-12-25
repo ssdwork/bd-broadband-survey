@@ -98,22 +98,32 @@ st.markdown("""
         color: #FFFFFF !important;
     }
 
-    /* 4. Input Fields & Dropdowns - Universal Visibility Fix */
+    /* 4. Input Fields & Text Stroke - High Visibility Fix */
     
-    /* ইনপুট বক্সের ব্যাকগ্রাউন্ড - ডার্ক গ্রে (সব মোডেই বক্স স্পষ্ট দেখাবে) */
-    div[data-baseweb="input"], div[data-baseweb="select"] { 
-        background-color: #262730 !important; 
-        border: 2px solid #00D487 !important; 
-        border-radius: 8px !important; 
-    }
-
-    /* ইনপুট বক্সের টেক্সট - সব সময় সাদা (সাদা টেক্সট ডার্ক বক্সে সব মোডেই পড়া যায়) */
     div[data-baseweb="input"] input, 
     div[data-baseweb="select"] div,
     div[data-baseweb="select"] span {
+        /* টেক্সট কালার সাদা থাকবে */
         color: #FFFFFF !important; 
-        -webkit-text-fill-color: #FFFFFF !important; /* ব্রাউজার লাইট মোডে যেন টেক্সট কালো না করে */
-        font-weight: 500 !important;
+        -webkit-text-fill-color: #FFFFFF !important;
+        
+        /* আপনার চাহিদা অনুযায়ী টেক্সটের চারপাশ কালো বর্ডার (Stroke) দিয়ে ঘেরা */
+        text-shadow: 
+            -1px -1px 0 #000,  
+             1px -1px 0 #000,
+            -1px  1px 0 #000,
+             1px  1px 0 #000,
+             2px  2px 2px rgba(0,0,0,0.8); /* একটু শ্যাডো যাতে আরও ফুটে ওঠে */
+             
+        font-weight: 700 !important;
+    }
+
+    /* বক্সের ব্যাকগ্রাউন্ড লাইট মোডেও স্পষ্ট রাখার জন্য সামান্য ধূসর */
+    div[data-baseweb="input"], div[data-baseweb="select"] { 
+        background-color: rgba(255, 255, 255, 0.2) !important; /* হালকা স্বচ্ছ ব্যাকগ্রাউন্ড */
+        border: 2px solid #00D487 !important; 
+        border-radius: 8px !important; 
+        backdrop-filter: blur(5px); /* ব্যাকগ্রাউন্ড ব্লার ইফেক্ট */
     }
 
     /* ৫. Sidebar - সাইডবার যেন সবসময় পড়া যায় */
@@ -415,6 +425,7 @@ if __name__ == "__main__":
 
     main()
        
+
 
 
 
