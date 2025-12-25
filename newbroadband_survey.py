@@ -203,7 +203,8 @@ def main():
         name = st.text_input("নাম (Name) *")
         designation = st.text_input("পদবী (Designation) *")
     with col2:
-        workplace = st.text_input("কর্মস্থলের নাম (Workplace Name) *", placeholder="উপজেলা, জেলা")
+        workplace = st.text_input("কর্মস্থলের নাম (Workplace Name) *")
+        st.caption("Example: উপজেলা অফিস, জেলা অফিস")
 
     st.write("---")
     g1, g2 = st.columns(2)
@@ -425,6 +426,7 @@ if __name__ == "__main__":
 
     main()
        
+
 
 
 
