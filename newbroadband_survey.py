@@ -290,81 +290,75 @@ def main():
     # Replace the Submission logic in your main() function with this:
 
     if st.button("জমা দিন (Submit Data)", use_container_width=True, type="primary"):
-    # ১. সব নম্বরের দৈর্ঘ্য চেক করা
-    all_numbers_valid = all(len(r['phone']) == 11 and r['phone'].isdigit() for r in isp_records)
-    if not (name and final_div and final_dist):
-        st.error("দয়া করে নাম এবং ভৌগোলিক তথ্য নিশ্চিত করুন।")
-    elif not all_numbers_valid:
-        st.error("❌ ISP যোগাযোগের নম্বর সঠিক নয় (১১ ডিজিট ও শুধুমাত্র সংখ্যা হতে হবে)।")
-    else:
-        try:
-            # ১. ডাটা প্রিপেয়ার করা
-            isp_final = " | ".join([f"{r['name']}({r['phone']}):{r['subs']}" for r in isp_records])
-           
-            new_record = pd.DataFrame([{
-                "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                "নাম": name,
-                "পদবী": designation,
-                "কর্মস্থল": workplace,
-                "বিভাগ": final_div,
-                "জেলা": final_dist,
-                "উপজেলা": final_upz,
-                "ইউনিয়ন": final_uni,
-                "ব্রডব্যান্ড আওতাভুক্ত": is_broadband,
-                "মোট গ্রাম": total_villages,
-                "আওতাভুক্ত গ্রাম": covered_villages,
-                "উপজেলাতে ISP তথ্য": isp_final
-            }])
-           
-            # ২. গুগল শিটে আপডেট পাঠানো
-            existing_data = conn.read(ttl=0)
-            if existing_data is not None and not existing_data.empty:
-                updated_df = pd.concat([existing_data, new_record], ignore_index=True)
-            else:
-                updated_df = new_record
-           
-            conn.update(data=updated_df)
-           
-            # ৩. ইউজার ফিডব্যাক
-            st.success("✅ আপনার তথ্য সফলভাবে সংরক্ষিত হয়েছে।")
-            st.balloons()
-           
-            # ৪. সব ফিল্ড রিসেট করার কার্যকর লজিক (del এর পরিবর্তে set to default)
-            # Text inputs -> ""
-            for key in ["user_name", "user_desig", "workplace_input"]:
-                st.session_state[key] = ""
-           
-            # Selectboxes -> "-- নির্বাচন করুন --"
-            for key in ["geo_div", "geo_dist", "geo_upz", "geo_uni", "bb_coverage"]:
-                st.session_state[key] = "-- নির্বাচন করুন --"
-           
-            # Number inputs -> None (to make blank)
-            for key in ["total_v", "covered_v"]:
-                st.session_state[key] = None
-           
-            # ডায়নামিক ISP ফিল্ডগুলো এবং any _other fields
-            current_keys = list(st.session_state.keys())
-            for key in current_keys:
-                if "_other" in key:  # Dynamically handle any geo_other
-                    st.session_state[key] = ""
-                elif "in_" in key:  # ISP name
-                    st.session_state[key] = ""
-                elif "ic_" in key:  # Contact
-                    st.session_state[key] = ""
-                elif "is_" in key:  # Subs number
-                    st.session_state[key] = None
-                elif "un_subs_" in key:  # Unknown checkbox
-                    st.session_state[key] = False
-                elif "is_dis_" in key:  # Disabled text
-                    st.session_state[key] = ""
-           
-            # রো সংখ্যা ১-এ নামিয়ে আনা
-            st.session_state.rows = 1
-           
-            # ৫. পেজ রিরান (সব ডেটা ক্লিয়ার করতে)
-            st.rerun()
-        except Exception as e:
-            st.error(f"Error during submission: {e}")
+        # ১. সব নম্বরের দৈর্ঘ্য চেক করা
+        all_numbers_valid = all(len(r['phone']) == 11 and r['phone'].isdigit() for r in isp_records)
+        
+        if not (name and final_div and final_dist):
+            st.error("দয়া করে নাম এবং ভৌগোলিক তথ্য নিশ্চিত করুন।")
+        elif not all_numbers_valid:
+            st.error("❌ ISP যোগাযোগের নম্বর সঠিক নয় (১১ ডিজিট ও শুধুমাত্র সংখ্যা হতে হবে)।")
+        else:
+            try:
+                # ১. ডাটা প্রিপেয়ার করা
+                isp_final = " | ".join([f"{r['name']}({r['phone']}):{r['subs']}" for r in isp_records])
+                
+                new_record = pd.DataFrame([{
+                    "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "নাম": name,
+                    "পদবী": designation,
+                    "কর্মস্থল": workplace,
+                    "বিভাগ": final_div,
+                    "জেলা": final_dist,
+                    "উপজেলা": final_upz,
+                    "ইউনিয়ন": final_uni,
+                    "ব্রডব্যান্ড আওতাভুক্ত": is_broadband,
+                    "মোট গ্রাম": total_villages,
+                    "আওতাভুক্ত গ্রাম": covered_villages,
+                    "উপজেলাতে ISP তথ্য": isp_final
+                }])
+                
+                # ২. গুগল শিটে আপডেট পাঠানো
+                existing_data = conn.read(ttl=0)
+                if existing_data is not None and not existing_data.empty:
+                    updated_df = pd.concat([existing_data, new_record], ignore_index=True)
+                else:
+                    updated_df = new_record
+                
+                conn.update(data=updated_df)
+                
+                # ৩. ইউজার ফিডব্যাক
+                st.success("✅ আপনার তথ্য সফলভাবে সংরক্ষিত হয়েছে।")
+                st.balloons()
+                
+                # ৪. সব ফিল্ড রিসেট করার জন্য কার্যকর 'del' লজিক
+                # এটি ব্যবহার করলে পেজ রিরান হওয়ার পর ফিল্ডগুলো একদম নতুন দেখাবে
+                fixed_keys = [
+                    "user_name", "user_desig", "workplace_input", 
+                    "geo_div", "geo_dist", "geo_upz", "geo_uni", "bb_coverage",
+                    "total_v", "covered_v", "geo_div_other", "geo_dist_other", 
+                    "geo_upz_other", "geo_uni_other"
+                ]
+                
+                for key in fixed_keys:
+                    if key in st.session_state:
+                        del st.session_state[key]
+                
+                # ডায়নামিক ISP ফিল্ডগুলো মুছে ফেলা
+                current_keys = list(st.session_state.keys())
+                for key in current_keys:
+                    if any(prefix in key for prefix in ["in_", "ic_", "is_", "un_subs_", "is_dis_"]):
+                        del st.session_state[key]
+                
+                # রো সংখ্যা ১-এ নামিয়ে আনা
+                st.session_state.rows = 1
+                
+                # ৫. পেজ রিরান (সব ডেটা ক্লিয়ার করতে)
+                import time
+                time.sleep(1.5) # সাকসেস মেসেজ দেখার জন্য সামান্য সময়
+                st.rerun()
+                
+            except Exception as e:
+                st.error(f"Error during submission: {e}")
                 
     # --- ADMIN PANEL ---
     st.sidebar.markdown("---") # Visual separator
@@ -466,6 +460,7 @@ if __name__ == "__main__":
 
     main()
        
+
 
 
 
