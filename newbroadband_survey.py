@@ -234,7 +234,7 @@ def main():
     st.markdown('<div class="section-head">২. ইউনিয়ন ও গ্রামের তথ্য</div>', unsafe_allow_html=True)
     
     # ব্রডব্যান্ড ড্রপডাউন
-    is_broadband = st.selectbox("ইউনিয়নটি ব্রডব্যান্ড এর আওতাভুক্ত? *", ["-- নির্বাচন করুন --", "হ্যাঁ", "না"], key="bb_coverage")
+    is_broadband = st.selectbox("ইউনিয়নটি কি ব্রডব্যান্ড এর আওতাভুক্ত? *", ["-- নির্বাচন করুন --", "হ্যাঁ", "না"], key="bb_coverage")
     
     st.write("##")
     
@@ -438,6 +438,7 @@ if __name__ == "__main__":
 
     main()
        
+
 
 
 
