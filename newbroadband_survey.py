@@ -203,16 +203,19 @@ def main():
         name = st.text_input("নাম (Name) *")
         designation = st.text_input("পদবী (Designation) *")
     with col2:
-    # 'with' এর নিচের এই লাইনগুলো অবশ্যই ৪টি স্পেস ভেতরে থাকতে হবে
-    st.markdown("""
-        <p style="margin-bottom: -65px;">
-            <span style="font-size: 1rem; font-weight: bold; color: white;">কর্মস্থলের নাম (Workplace Name) *</span><br>
-            <span style="font-size: 0.8rem; color: #00D487; opacity: 0.9;">Example: উপজেলা অফিস, জেলা অফিস</span>
-        </p>
-    """, unsafe_allow_html=True)
-    
-    # এটিও with ব্লকের ভেতরে থাকবে
-    workplace = st.text_input("", key="workplace_input")
+        # ১১ ডিজিটের ফোন নম্বর ফিল্ড (ম্যান্ডেটরি)
+        user_phone = st.text_input("আপনার মোবাইল নম্বর (১১ ডিজিট) *", max_chars=11, help="উদাহরণ: 017XXXXXXXX")
+
+        # এখানে Indentation ঠিক করা হয়েছে (৪টি স্পেস ডানে)
+        st.markdown("""
+            <div style="margin-bottom: -15px;">
+                <span style="font-size: 1rem; font-weight: bold; color: white;">কর্মস্থলের নাম (Workplace Name) *</span><br>
+                <span style="font-size: 0.85rem; color: #00D487; opacity: 1;">Example: উপজেলা অফিস, জেলা অফিস</span>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        # ইনপুট বক্স (লেবেল উপরে কাস্টম দেওয়া হয়েছে তাই এখানে ফাঁকা)
+        workplace = st.text_input("", key="workplace_input", label_visibility="collapsed")
 
     st.write("---")
     g1, g2 = st.columns(2)
@@ -434,6 +437,7 @@ if __name__ == "__main__":
 
     main()
        
+
 
 
 
