@@ -200,8 +200,8 @@ def main():
     st.markdown('<div class="section-head">১. ব্যক্তিগত ও ভৌগোলিক তথ্য</div>', unsafe_allow_html=True)
     col1, col2 = st.columns(2)
     with col1:
-        name = st.text_input("নাম (Name) *")
-        designation = st.text_input("পদবী (Designation) *")
+        name = st.text_input("নাম (Name) *", key="user_name")  # key="user_name" এবং key="user_desig" যোগ করা হয়েছে
+        designation = st.text_input("পদবী (Designation) *", key="user_desig")
     with col2:
         
         # কর্মস্থলের নাম ও উদাহরণের লেবেল (সঠিক স্পেসিং সহ)
@@ -327,14 +327,38 @@ def main():
                 st.success("✅ আপনার তথ্য সফলভাবে সংরক্ষিত হয়েছে।")
                 st.balloons()
                 
-                # --- ফরম রিসেট করার লজিক ---
+                # ==========================================
+                # 🔥 ফরম রিসেট করার নতুন লজিক (New Logic)
+                # ==========================================
+                
+                # ১. ফিক্সড ফিল্ডগুলোর Key এর তালিকা
+                keys_to_clear = [
+                    "user_name", "user_desig", "workplace_input", 
+                    "geo_div", "geo_dist", "geo_upz", "geo_uni", 
+                    "bb_coverage", "total_v", "covered_v",
+                    "geo_div_other", "geo_dist_other", "geo_upz_other", "geo_uni_other"
+                ]
+
+                # ২. সেশন স্টেট থেকে এই Key গুলো মুছে ফেলা
+                for key in keys_to_clear:
+                    if key in st.session_state:
+                        del st.session_state[key]
+
+                # ৩. ডায়নামিক ISP ফিল্ডগুলো (in_0, ic_0, etc.) মুছে ফেলা
+                # আমরা সেশন স্টেটের সব key চেক করছি
+                all_keys = list(st.session_state.keys())
+                for key in all_keys:
+                    if key.startswith("in_") or key.startswith("ic_") or key.startswith("is_") or key.startswith("un_subs_"):
+                        del st.session_state[key]
+
+                # ৪. রো (Rows) রিসেট করা
                 st.session_state.rows = 1
                 
-                # ২ সেকেন্ড অপেক্ষা করে অটোমেটিক পেজ রিফ্রেশ হবে
+                # ৫. পেজ রিফ্রেশ
                 import time
-                time.sleep(2) 
+                time.sleep(1) 
                 st.rerun() 
-                
+
             except Exception as e:
                 st.error(f"Error: {e}")
                 
@@ -438,6 +462,7 @@ if __name__ == "__main__":
 
     main()
        
+
 
 
 
