@@ -203,9 +203,7 @@ def main():
         name = st.text_input("নাম (Name) *")
         designation = st.text_input("পদবী (Designation) *")
     with col2:
-        # ১১ ডিজিটের ফোন নম্বর ফিল্ড (ম্যান্ডেটরি)
-        user_phone = st.text_input("আপনার মোবাইল নম্বর (১১ ডিজিট) *", max_chars=11, help="উদাহরণ: 017XXXXXXXX")
-
+        
         # এখানে Indentation ঠিক করা হয়েছে (৪টি স্পেস ডানে)
         st.markdown("""
             <div style="margin-bottom: -15px;">
@@ -251,7 +249,7 @@ def main():
         ic1, ic2, ic3 = st.columns([3, 2, 2])
         with ic1: iname = st.text_input("ISP নাম", key=f"in_{i}")
         with ic2: 
-                icontact = st.text_input("যোগাযোগের নম্বর", key=f"ic_{i}", help="১১ ডিজিটের মোবাইল নম্বর দিন")
+                icontact = st.text_input("যোগাযোগের নম্বর", key=f"ic_{i}")
                 # মোবাইল নম্বর ভ্যালিডেশন চেক
                 if icontact:
                     if not icontact.isdigit():
@@ -437,6 +435,7 @@ if __name__ == "__main__":
 
     main()
        
+
 
 
 
