@@ -206,9 +206,10 @@ def main():
         
         # কর্মস্থলের নাম ও উদাহরণের লেবেল (সঠিক স্পেসিং সহ)
         st.markdown("""
-            <div style="margin-bottom: 5px;"> <div style="font-size: 0.85rem; font-weight: bold; color: white; margin-bottom: 2px;">
+            <div style="margin-bottom: -10px;">
+                <label style="font-size: 14px; font-weight: 500; color: white; font-family: 'Hind Siliguri', sans-serif;">
                     কর্মস্থলের নাম (Workplace Name) *
-                </div>
+                </label>
                 <div style="font-size: 0.85rem; color: #00D487; font-weight: 500;">
                     Example: উপজেলা অফিস, জেলা অফিস
                 </div>
@@ -460,6 +461,7 @@ if __name__ == "__main__":
 
     main()
        
+
 
 
 
