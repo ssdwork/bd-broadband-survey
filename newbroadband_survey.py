@@ -98,29 +98,44 @@ st.markdown("""
         color: #FFFFFF !important;
     }
 
-    /* 4. Input Fields & Dropdowns - লাইট ও ডার্ক মোড ফিক্স */
+    /* 4. Input Fields & Dropdowns - High Visibility Fix */
+    
+    /* ইনপুট বক্সের ব্যাকগ্রাউন্ড - একটু গাঢ় ধূসর করা হয়েছে */
     div[data-baseweb="input"], div[data-baseweb="select"] { 
-        background-color: #E8ECEF !important; /* হালকা সিলভার ব্যাকগ্রাউন্ড যা ডার্ক মোডেও স্পষ্ট থাকবে */
+        background-color: #31333F !important; /* ডার্ক মোড ফ্রেন্ডলি ব্যাকগ্রাউন্ড */
         border: 2px solid #00D487 !important; 
         border-radius: 8px !important; 
     }
 
-    /* ইনপুট বক্সের টেক্সট কালার সবসময় কালো থাকবে */
-    div[data-baseweb="input"] input, div[data-baseweb="select"] div {
-        color: #000000 !important; 
-        -webkit-text-fill-color: #000000 !important; /* ব্রাউজার ফোর্সড কালার ওভাররাইড */
-        font-weight: 600 !important;
+    /* ইনপুট বক্সের টেক্সট কালার - এখন সাদা (#FFFFFF) */
+    div[data-baseweb="input"] input, 
+    div[data-baseweb="select"] div,
+    div[data-baseweb="select"] span {
+        color: #FFFFFF !important; 
+        -webkit-text-fill-color: #FFFFFF !important; /* ব্রাউজারের ডার্ক মোড টেক্সট কালার ওভাররাইড */
+        font-weight: 500 !important;
     }
 
-    /* ড্রপডাউন ওপেন হওয়ার পর অপশনগুলোর কালার */
+    /* ড্রপডাউন মেনুর অপশনগুলো */
+    ul[data-baseweb="menu"] {
+        background-color: #31333F !important;
+    }
+    
     ul[data-baseweb="menu"] li {
-        color: #000000 !important;
-        background-color: #FFFFFF !important;
+        color: #FFFFFF !important;
+        background-color: transparent !important;
     }
 
-    /* ড্রপডাউনের ভিতরের টেক্সট ডার্ক মোডেও যেন স্পষ্ট থাকে */
-    div[data-baseweb="select"] span, div[data-baseweb="select"] div {
+    /* হোভার করলে অপশন হাইলাইট */
+    ul[data-baseweb="menu"] li:hover {
+        background-color: #00D487 !important;
         color: #000000 !important;
+    }
+
+    /* পাসওয়ার্ড ইনপুট আইকন (চোখ) সাদা করা */
+    div[data-baseweb="input"] button svg {
+        fill: white !important;
+        color: white !important;
     }
 
     /* 5. Sidebar - Dark Grey */
@@ -421,6 +436,7 @@ if __name__ == "__main__":
 
     main()
        
+
 
 
 
