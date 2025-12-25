@@ -203,13 +203,15 @@ def main():
         name = st.text_input("নাম (Name) *")
         designation = st.text_input("পদবী (Designation) *")
     with col2:
-    # লেবেল খালি রেখে নিচে কাস্টম টেক্সট ব্যবহার করা হয়েছে
+    # 'with' এর নিচের এই লাইনগুলো অবশ্যই ৪টি স্পেস ভেতরে থাকতে হবে
     st.markdown("""
         <p style="margin-bottom: -65px;">
             <span style="font-size: 1rem; font-weight: bold; color: white;">কর্মস্থলের নাম (Workplace Name) *</span><br>
             <span style="font-size: 0.8rem; color: #00D487; opacity: 0.9;">Example: উপজেলা অফিস, জেলা অফিস</span>
         </p>
     """, unsafe_allow_html=True)
+    
+    # এটিও with ব্লকের ভেতরে থাকবে
     workplace = st.text_input("", key="workplace_input")
 
     st.write("---")
@@ -432,6 +434,7 @@ if __name__ == "__main__":
 
     main()
        
+
 
 
 
