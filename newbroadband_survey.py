@@ -98,34 +98,61 @@ st.markdown("""
         color: #FFFFFF !important;
     }
 
-    /* 4. Input Fields & Dropdowns - লাইট ও ডার্ক মোড ভিউ ফিক্স */
+    /* 4. Input Fields & Dropdowns - High Visibility Fix */
+    
+    /* ইনপুট বক্সের ব্যাকগ্রাউন্ড - একটু গাঢ় ধূসর করা হয়েছে */
     div[data-baseweb="input"], div[data-baseweb="select"] { 
-        background-color: #2D2E35 !important; /* নিউট্রাল ডার্ক ব্যাকগ্রাউন্ড (সব মোডের জন্য) */
+        background-color: #31333F !important; /* ডার্ক মোড ফ্রেন্ডলি ব্যাকগ্রাউন্ড */
         border: 2px solid #00D487 !important; 
         border-radius: 8px !important; 
     }
 
-    /* ইনপুট বক্সের টেক্সট - লাইট মোডেও যেন সাদা থাকে তা নিশ্চিত করা */
+    /* ইনপুট বক্সের টেক্সট কালার - এখন সাদা (#FFFFFF) */
     div[data-baseweb="input"] input, 
     div[data-baseweb="select"] div,
     div[data-baseweb="select"] span {
         color: #FFFFFF !important; 
-        -webkit-text-fill-color: #FFFFFF !important; /* ব্রাউজারের অটো-কালার পরিবর্তন বন্ধ করবে */
+        -webkit-text-fill-color: #FFFFFF !important; /* ব্রাউজারের ডার্ক মোড টেক্সট কালার ওভাররাইড */
         font-weight: 500 !important;
     }
 
-    /* ৫. Sidebar - লাইট মোডে টেক্সট পড়ার জন্য কালার ফিক্স */
-    [data-testid="stSidebar"] label, [data-testid="stSidebar"] p {
-        color: #111111 !important; /* সাইডবার সাদা হলে টেক্সট গাঢ় কালো থাকবে */
+    /* ড্রপডাউন মেনুর অপশনগুলো */
+    ul[data-baseweb="menu"] {
+        background-color: #31333F !important;
     }
     
-    /* ড্রপডাউন মেনু অপশন ফিক্স */
-    ul[data-baseweb="menu"] {
-        background-color: #2D2E35 !important;
-    }
     ul[data-baseweb="menu"] li {
         color: #FFFFFF !important;
+        background-color: transparent !important;
     }
+
+    /* হোভার করলে অপশন হাইলাইট */
+    ul[data-baseweb="menu"] li:hover {
+        background-color: #00D487 !important;
+        color: #000000 !important;
+    }
+
+    /* পাসওয়ার্ড ইনপুট আইকন (চোখ) সাদা করা */
+    div[data-baseweb="input"] button svg {
+        fill: white !important;
+        color: white !important;
+    }
+
+    /* 5. Sidebar - Dark Grey */
+    [data-testid="stSidebar"] { 
+        background-color: rgba(38, 39, 48, 0.95) !important; 
+        border-right: 1px solid #333;
+    }
+
+    /* ডাটা টেবিলের (Dataframe) ভেতরের লেখা ডার্ক মোডেও কালো রাখার জন্য */
+    [data-testid="stDataFrame"] {
+        background-color: #FFFFFF !important;
+    }
+    
+    [data-testid="stDataFrame"] div[role="gridcell"] {
+        color: #000000 !important;
+    }
+
     /* 6. Buttons */
     div.stButton > button { 
         color: #00D487 !important; 
@@ -409,8 +436,6 @@ if __name__ == "__main__":
 
     main()
        
-
-
 
 
 
