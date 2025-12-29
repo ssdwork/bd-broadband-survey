@@ -11,17 +11,28 @@ import urllib.request
 @st.cache_data
 def get_master_data():
     try:
-        # বাংলাদেশের সব উপজেলার নাম লোড করা
         upz_url = "https://raw.githubusercontent.com/nuhil/bangladesh-geocode/master/upazilas/upazilas.json"
-        # বাংলাদেশের সব ইউনিয়নের নাম লোড করা
         uni_url = "https://raw.githubusercontent.com/nuhil/bangladesh-geocode/master/unions/unions.json"
         
         def fetch_names(url):
-            
             with urllib.request.urlopen(url, timeout=15) as r:
                 data = json.loads(r.read().decode('utf-8'))
-                raw_list = data['data'] if isinstance(data, dict) and 'data' in data else data
-                return sorted([str(i.get('bn_name') or i.get('name')).strip() for i in raw_list if isinstance(i, dict) and (i.get('bn_name') or i.get('name'))])
+                
+                # আপনার JSON ফাইলের গঠন অনুযায়ী 'data' কী (key) থেকে লিস্টটি নিতে হবে
+                if isinstance(data, dict) and 'data' in data:
+                    items = data['data']
+                else:
+                    items = data if isinstance(data, list) else []
+
+                # নামগুলো এক্সট্রাক্ট করা (বাংলা না থাকলে ইংরেজি নাম নিবে)
+                names = []
+                for i in items:
+                    if isinstance(i, dict):
+                        val = i.get('bn_name') or i.get('name')
+                        if val:
+                            names.append(str(val).strip())
+                
+                return sorted(list(set(names))) # ডুপ্লিকেট বাদ দিয়ে সর্ট করা
 
         return fetch_names(upz_url), fetch_names(uni_url)
     except Exception as e:
@@ -36,8 +47,11 @@ ALL_UPAZILAS, ALL_UNIONS = get_master_data()
 # -----------------------------------------------------------------------------
 @st.dialog("বাকি থাকা তথ্যের তালিকা (Pending List)")
 def show_pending_modal(type, submitted_list):
-    # জমা হওয়া নামের তালিকা ক্লিন করা এবং 'None' ভ্যালু বাদ দেওয়া
-    submitted_set = set([str(name).strip() for name in submitted_list if name and str(name).lower() != 'none'])
+    # অপ্রাসঙ্গিক শব্দগুলো ফিল্টার আউট করার লিস্ট
+    garbage_words = {'none', 'bd_geo_code', 'upazilas', 'data', 'nan'}
+    
+    submitted_set = set([str(name).strip() for name in submitted_list 
+                         if name and str(name).lower() not in garbage_words])
     
     if type == "upazila":
         st.subheader("📍 বাকি থাকা উপজেলাসমূহ")
