@@ -13,19 +13,19 @@ def get_master_data():
     try:
         # বাংলাদেশের সব উপজেলার নাম লোড করা
         upz_url = "https://raw.githubusercontent.com/nuhil/bangladesh-geocode/master/upazilas/upazilas.json"
-        # বাংলাদেশের সব ইউনিয়নের নাম লোড করা
+        # বাংলাদেশের সব ইউনিয়নের নাম লোড করা
         uni_url = "https://raw.githubusercontent.com/nuhil/bangladesh-geocode/master/unions/unions.json"
         
         def fetch_names(url):
-    with urllib.request.urlopen(url, timeout=15) as r:
-        data = json.loads(r.read().decode('utf-8'))
-        # পপ-আপে নামের সমস্যা সমাধানের জন্য i.get('bn_name') নিশ্চিত করা হয়েছে
-        raw_list = data['data'] if isinstance(data, dict) and 'data' in data else data
-        return sorted([str(i.get('bn_name') or i.get('name')).strip() for i in raw_list if isinstance(i, dict) and (i.get('bn_name') or i.get('name'))])
+            
+            with urllib.request.urlopen(url, timeout=15) as r:
+                data = json.loads(r.read().decode('utf-8'))
+                raw_list = data['data'] if isinstance(data, dict) and 'data' in data else data
+                return sorted([str(i.get('bn_name') or i.get('name')).strip() for i in raw_list if isinstance(i, dict) and (i.get('bn_name') or i.get('name'))])
 
         return fetch_names(upz_url), fetch_names(uni_url)
     except Exception as e:
-        st.error(f"মাস্টার ডেটা লোড করতে সমস্যা হয়েছে: {e}")
+        st.error(f"মাস্টার ডেটা লোড করতে সমস্যা হয়েছে: {e}")
         return [], []
 
 # মাস্টার লিস্ট সংগ্রহ
@@ -36,12 +36,11 @@ ALL_UPAZILAS, ALL_UNIONS = get_master_data()
 # -----------------------------------------------------------------------------
 @st.dialog("বাকি থাকা তথ্যের তালিকা (Pending List)")
 def show_pending_modal(type, submitted_list):
-    # জমা হওয়া নামের তালিকা ক্লিন করা এবং 'None' ভ্যালু বাদ দেওয়া
+    # জমা হওয়া নামের তালিকা ক্লিন করা এবং 'None' ভ্যালু বাদ দেওয়া
     submitted_set = set([str(name).strip() for name in submitted_list if name and str(name).lower() != 'none'])
     
     if type == "upazila":
         st.subheader("📍 বাকি থাকা উপজেলাসমূহ")
-        # মাস্টার লিস্ট (৪৯৫টি) থেকে জমা হওয়াগুলো বাদ দেওয়া
         master_set = set(ALL_UPAZILAS)
         remaining = sorted(list(master_set - submitted_set))
         
@@ -49,7 +48,7 @@ def show_pending_modal(type, submitted_list):
         if remaining:
             st.dataframe(pd.DataFrame(remaining, columns=["উপজেলার নাম"]), use_container_width=True, hide_index=True)
         else:
-            st.success("অভিনন্দন! সব উপজেলার তথ্য জমা হয়েছে।")
+            st.success("অভিনন্দন! সব উপজেলার তথ্য জমা হয়েছে।")
 
     elif type == "union":
         st.subheader("🏛️ বাকি থাকা ইউনিয়নসমূহ")
@@ -58,7 +57,9 @@ def show_pending_modal(type, submitted_list):
         
         st.info(f"মোট ইউনিয়ন বাকি: {len(remaining)} টি")
         if remaining:
-            st.dataframe(pd.DataFrame(remaining, columns=["ইউনিয়নের নাম"]), use_container_width=True, hide_index=True)
+            st.dataframe(pd.DataFrame(remaining, columns=["ইউনিয়নের নাম"]), use_container_width=True, hide_index=True)
+        else:
+            st.success("অভিনন্দন! সব ইউনিয়নের তথ্য জমা হয়েছে।")
 
 # -----------------------------------------------------------------------------
 # ৩. ড্যাশবোর্ড লজিক
