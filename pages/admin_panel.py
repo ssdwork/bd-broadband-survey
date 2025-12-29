@@ -2,46 +2,45 @@ import streamlit as st
 import pandas as pd
 from streamlit_gsheets import GSheetsConnection
 import plotly.express as px
-from datetime import datetime
 import json
 import urllib.request
 
 # -----------------------------------------------------------------------------
-# 1. DATA LOADER FUNCTIONS (মাস্টার ডেটা লোড করার উন্নত পদ্ধতি)
+# ১. মাস্টার ডেটা লোডার (মাস্টার লিস্ট নিশ্চিত করার জন্য)
 # -----------------------------------------------------------------------------
-NUHIL_RAW = {
-    "upazilas": "https://raw.githubusercontent.com/nuhil/bangladesh-geocode/master/upazilas/upazilas.json",
-    "unions": "https://raw.githubusercontent.com/nuhil/bangladesh-geocode/master/unions/unions.json",
-}
-
 @st.cache_data
-def get_all_locations():
+def get_master_data():
     try:
-        def fetch_and_clean(url):
-            with urllib.request.urlopen(url, timeout=30) as r:
-                raw_data = json.loads(r.read().decode('utf-8'))
-                items = raw_data.get('data', []) if isinstance(raw_data, dict) else raw_data
-                # নামগুলো নিয়ে দুই পাশের স্পেস ক্লিন করা হচ্ছে
-                return sorted(list(set([str(i.get('bn_name') or i.get('name')).strip() for i in items if i])))
+        # বাংলাদেশের সব উপজেলার নাম লোড করা
+        upz_url = "https://raw.githubusercontent.com/nuhil/bangladesh-geocode/master/upazilas/upazilas.json"
+        # বাংলাদেশের সব ইউনিয়নের নাম লোড করা
+        uni_url = "https://raw.githubusercontent.com/nuhil/bangladesh-geocode/master/unions/unions.json"
+        
+        def fetch_names(url):
+            with urllib.request.urlopen(url, timeout=15) as r:
+                data = json.loads(r.read().decode('utf-8'))
+                # 'data' কি-এর ভেতরে লিস্ট আছে কি না চেক করা
+                raw_list = data['data'] if isinstance(data, dict) and 'data' in data else data
+                return sorted([str(item.get('bn_name') or item.get('name')).strip() for item in raw_list])
 
-        return fetch_and_clean(NUHIL_RAW['upazilas']), fetch_and_clean(NUHIL_RAW['unions'])
+        return fetch_names(upz_url), fetch_names(uni_url)
     except Exception as e:
-        st.error(f"Error loading master list: {e}")
+        st.error(f"মাস্টার ডেটা লোড করতে সমস্যা হয়েছে: {e}")
         return [], []
 
-# মাস্টার লিস্ট লোড করা
-ALL_UPAZILAS, ALL_UNIONS = get_all_locations()
+# মাস্টার লিস্ট সংগ্রহ
+ALL_UPAZILAS, ALL_UNIONS = get_master_data()
 
 # -----------------------------------------------------------------------------
-# 2. POP-UP DIALOG FUNCTION (নিখুঁত তালিকা দেখানোর জন্য)
+# ২. পপ-আপ ডায়ালগ ফাংশন (বাকি তালিকা দেখানোর জন্য)
 # -----------------------------------------------------------------------------
 @st.dialog("বাকি থাকা তথ্যের তালিকা (Pending List)")
-def show_pending_list(type, submitted_list):
-    # জমা হওয়া লিস্ট ক্লিন করা
-    submitted_set = set([str(s).strip() for s in submitted_list if s])
+def show_pending_modal(type, submitted_list):
+    # জমা হওয়া নামের তালিকা ক্লিন করা
+    submitted_set = set([str(name).strip() for name in submitted_list])
     
     if type == "upazila":
-        st.write("### 📍 যেসব উপজেলার তথ্য এখনো আসেনি:")
+        st.subheader("📍 বাকি থাকা উপজেলাসমূহ")
         master_set = set(ALL_UPAZILAS)
         remaining = sorted(list(master_set - submitted_set))
         
@@ -49,101 +48,92 @@ def show_pending_list(type, submitted_list):
         if remaining:
             st.dataframe(pd.DataFrame(remaining, columns=["উপজেলার নাম"]), use_container_width=True, hide_index=True)
         else:
-            st.success("সব উপজেলার তথ্য সংগ্রহ সম্পন্ন হয়েছে!")
+            st.success("অভিনন্দন! সব উপজেলার তথ্য জমা হয়েছে।")
 
     elif type == "union":
-        st.write("### 🏛️ যেসব ইউনিয়নের তথ্য এখনো আসেনি:")
+        st.subheader("🏛️ বাকি থাকা ইউনিয়নসমূহ")
         master_set = set(ALL_UNIONS)
         remaining = sorted(list(master_set - submitted_set))
         
-        st.info(f"মোট ইউনিয়ন বাকি: {len(remaining)} টি")
+        st.info(f"মোট ইউনিয়ন বাকি: {len(remaining)} টি")
         if remaining:
-            st.dataframe(pd.DataFrame(remaining, columns=["ইউনিয়নের নাম"]), use_container_width=True, hide_index=True)
+            st.dataframe(pd.DataFrame(remaining, columns=["ইউনিয়নের নাম"]), use_container_width=True, hide_index=True)
         else:
-            st.success("সব ইউনিয়নের তথ্য সংগ্রহ সম্পন্ন হয়েছে!")
+            st.success("অভিনন্দন! সব ইউনিয়নের তথ্য জমা হয়েছে।")
 
 # -----------------------------------------------------------------------------
-# 3. MAIN APP LOGIC
+# ৩. ড্যাশবোর্ড লজিক
 # -----------------------------------------------------------------------------
-st.set_page_config(page_title="Admin Dashboard - Broadband Survey", layout="wide")
+st.set_page_config(page_title="Admin Panel - Broadband Survey", layout="wide")
 conn = st.connection("gsheets", type=GSheetsConnection)
 
+# হেডার
 c1, c2 = st.columns([5, 1])
 with c1: st.title("🔐 Admin Dashboard")
-with c2:
-    if st.button("🏠 Back to Form"):
-        st.switch_page("newbroadband_survey.py")
+with c2: 
+    if st.button("🏠 Back to Form"): st.switch_page("newbroadband_survey.py")
 
 pwd = st.sidebar.text_input('Password', type='password')
 
 if pwd == 'Bccadmin2025':
-    st.sidebar.success('Authenticated')
     try:
         df_admin = conn.read(ttl="0")
         
-        if df_admin is None or df_admin.empty:
-            st.info("জরিপের কোনো তথ্য এখনো জমা পড়েনি।")
-        else:
-            # ১. ফিল্টারিং ও ক্লিনিং
-            st.header("🔍 Data Search & Analytics")
-            filtered_df = df_admin.copy()
-            filtered_df['মোট গ্রাম'] = pd.to_numeric(filtered_df['মোট গ্রাম'], errors='coerce').fillna(0)
-            
-            div_list = ["All"] + sorted(df_admin['বিভাগ'].unique().astype(str).tolist())
-            div_search = st.selectbox("বিভাগ ফিল্টার", div_list)
-            if div_search != "All": 
-                filtered_df = filtered_df[filtered_df['বিভাগ'] == div_search]
+        if df_admin is not None and not df_admin.empty:
+            # ইউনিক সাবমিশন তালিকা
+            submitted_upz_names = df_admin['উপজেলা'].unique().tolist()
+            submitted_uni_names = df_admin['ইউনিয়ন'].unique().tolist()
 
-            # ২. স্ট্যাটিস্টিকস ক্যালকুলেশন (ফিক্সড কাউন্ট নিশ্চিত করা)
-            st.markdown("---")
+            # ফিক্সড টোটাল (৪৯৫ ও ৪৫৫৪)
+            TOTAL_UPZ = 495
+            TOTAL_UNI = 4554
+
+            # ক্যালকুলেশন
+            upz_count = len(submitted_upz_names)
+            uni_count = len(submitted_uni_names)
+            upz_rem = max(0, TOTAL_UPZ - upz_count)
+            uni_rem = max(0, TOTAL_UNI - uni_count)
+
             st.markdown("### 📊 সামগ্রিক পরিসংখ্যান (National Progress)")
-            
-            # মাস্টার ডেটা অনুযায়ী টোটাল কাউন্ট (মাস্টার ডেটা না পেলে ডিফল্ট ৪৯৫/৪৫৫৪)
-            TOTAL_UPZ = len(ALL_UPAZILAS) if len(ALL_UPAZILAS) > 0 else 495
-            TOTAL_UNI = len(ALL_UNIONS) if len(ALL_UNIONS) > 0 else 4554
-            
-            # ইউনিক সাবমিশন লিস্ট
-            sub_upz_list = df_admin['উপজেলা'].unique().tolist()
-            sub_uni_list = df_admin['ইউনিয়ন'].unique().tolist()
-            
-            sub_upz_count = len(sub_upz_list)
-            sub_uni_count = len(sub_uni_list)
-            
-            rem_upz_count = max(0, TOTAL_UPZ - sub_upz_count)
-            rem_uni_count = max(0, TOTAL_UNI - sub_uni_count)
-
             m1, m2, m3, m4 = st.columns(4)
+            
             m1.metric("মোট সাবমিশন", len(df_admin))
             
             with m2:
-                st.metric("উপজেলা কভারেজ", f"{sub_upz_count}/{TOTAL_UPZ}", f"{rem_upz_count} বাকি")
-                if st.button("🔍 তালিকা দেখুন", key="btn_upz"):
-                    show_pending_list("upazila", sub_upz_list)
+                st.metric("উপজেলা কভারেজ", f"{upz_count}/{TOTAL_UPZ}", f"{upz_rem} বাকি", delta_color="inverse")
+                if st.button("🔍 তালিকা দেখুন", key="view_upz"):
+                    show_pending_modal("upazila", submitted_upz_names)
 
             with m3:
-                st.metric("ইউনিয়ন কভারেজ", f"{sub_uni_count}/{TOTAL_UNI}", f"{rem_uni_count} বাকি")
-                if st.button("🔍 তালিকা দেখুন", key="btn_uni"):
-                    show_pending_list("union", sub_uni_list)
+                st.metric("ইউনিয়ন কভারেজ", f"{uni_count}/{TOTAL_UNI}", f"{uni_rem} বাকি", delta_color="inverse")
+                if st.button("🔍 তালিকা দেখুন", key="view_uni"):
+                    show_pending_modal("union", submitted_uni_names)
 
-            m4.metric("গ্রাম (ফিল্টার্ড)", int(filtered_df['মোট গ্রাম'].sum()))
+            m4.metric("গ্রাম (তথ্যমতে)", int(pd.to_numeric(df_admin['মোট গ্রাম'], errors='coerce').sum()))
 
-            # ৩. প্রগ্রেস চার্ট (ডোনাট চার্ট)
-            g_progress1, g_progress2 = st.columns(2)
-            with g_progress1:
-                fig_upz = px.pie(names=["জমা হয়েছে", "বাকি"], values=[sub_upz_count, rem_upz_count], 
-                               hole=0.6, title="উপজেলা প্রগ্রেস", color_discrete_sequence=["#00D487", "#222222"])
+            # ৪. প্রগ্রেস চার্ট (ডোনাট চার্ট)
+            st.markdown("---")
+            g1, g2 = st.columns(2)
+            with g1:
+                st.write("**উপজেলা সাবমিশন প্রগ্রেস**")
+                fig_upz = px.pie(names=["জমা হয়েছে", "বাকি"], values=[upz_count, upz_rem], hole=0.6,
+                               color_discrete_sequence=["#00D487", "#222222"])
+                fig_upz.add_annotation(text=f"{int((upz_count/TOTAL_UPZ)*100)}%", showarrow=False, font_size=25)
                 st.plotly_chart(fig_upz, use_container_width=True)
-            with g_progress2:
-                fig_uni = px.pie(names=["জমা হয়েছে", "বাকি"], values=[sub_uni_count, rem_uni_count], 
-                               hole=0.6, title="ইউনিয়ন প্রগ্রেস", color_discrete_sequence=["#006A4E", "#222222"])
+            
+            with g2:
+                st.write("**ইউনিয়ন সাবমিশন প্রগ্রেস**")
+                fig_uni = px.pie(names=["জমা হয়েছে", "বাকি"], values=[uni_count, uni_rem], hole=0.6,
+                               color_discrete_sequence=["#006A4E", "#222222"])
+                fig_uni.add_annotation(text=f"{int((uni_count/TOTAL_UNI)*100)}%", showarrow=False, font_size=25)
                 st.plotly_chart(fig_uni, use_container_width=True)
 
-            # ৪. টেবিল প্রদর্শন
-            st.subheader("📋 Data Records")
-            st.dataframe(filtered_df, use_container_width=True)
+            # ডাটা টেবিল
+            st.subheader("📋 জমা হওয়া ডাটা রেকর্ড")
+            st.dataframe(df_admin, use_container_width=True)
 
     except Exception as e:
-        st.error(f"Error: {e}")
+        st.error(f"ডাটা লোড করতে সমস্যা হয়েছে: {e}")
 
 elif pwd != "":
     st.sidebar.error('Incorrect Password')
