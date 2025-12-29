@@ -244,7 +244,7 @@ def main():
     with gv1:
         total_villages = st.number_input("ইউনিয়নে মোট গ্রামের সংখ্যা", min_value=0, step=1, key="total_v")
     with gv2:
-        covered_villages = st.number_input("ইন্টারনেটের আওতাভুক্ত গ্রামের সংখ্যা", min_value=0, max_value=total_villages, step=1, key="covered_v")
+        covered_villages = st.number_input("ব্রডব্যান্ড ইন্টারনেটের আওতাভুক্ত গ্রামের সংখ্যা", min_value=0, max_value=total_villages, step=1, key="covered_v")
 
     st.markdown('<div class="section-head">৩. উপজেলাতে সেবা প্রদানকৃত ISP এর তথ্য</div>', unsafe_allow_html=True)
     isp_records = []
@@ -460,6 +460,7 @@ if __name__ == "__main__":
 
     main()
        
+
 
 
 
