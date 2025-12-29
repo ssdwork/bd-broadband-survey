@@ -73,7 +73,7 @@ def smart_geo_input(label, options_list, key):
 # -----------------------------------------------------------------------------
 # 3. PAGE SETUP & DESIGN
 # -----------------------------------------------------------------------------
-st.set_page_config(page_title="ব্রডব্যান্ড কভারেজ জরিপ", page_icon="🌐", layout="centered")
+st.set_page_config(page_title="ব্রডব্যান্ড কভারেজ জরিপ", page_icon="🌐", layout="centered" initial_sidebar_state="collapsed")
 
 st.markdown("""
     <style>
@@ -182,11 +182,26 @@ st.markdown("""
     /* Hide Default Streamlit Elements */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
-    header {visibility: hidden;}
-    .viewerBadge_container__1QSob {display: none !important;}
-    /* অটোমেটিক সাইডবার নেভিগেশন লুকানোর জন্য */
+    
+    /* হেডার পুরোপুরি হাইড না করে সেটিকে ট্রান্সপারেন্ট করা */
+    header[data-testid="stHeader"] {
+        background-color: rgba(0,0,0,0) !important;
+        height: 3rem !important; /* বাটনের জন্য জায়গা রাখা */
+    }
+
+    /* Chevron বাটনটি সবসময় দৃশ্যমান এবং ক্লিকযোগ্য রাখা */
+    button[data-testid="stSidebarCollapseButton"] {
+        visibility: visible !important;
+        display: inline-flex !important;
+        background-color: rgba(0, 212, 135, 0.1) !important; /* হালকা সবুজ ব্যাকগ্রাউন্ড */
+        border: 1px solid #00D487 !important;
+        border-radius: 50% !important;
+        color: #00D487 !important;
+        z-index: 999999 !important;
+    }
+
+    /* অটোমেটিক নেভিগেশন লিস্ট লুকানো */
     [data-testid="stSidebarNav"] {display: none !important;}
-    </style>
 """, unsafe_allow_html=True)
 
 def main():
@@ -431,6 +446,7 @@ if __name__ == "__main__":
 
     main()
        
+
 
 
 
