@@ -73,7 +73,7 @@ def smart_geo_input(label, options_list, key):
 # -----------------------------------------------------------------------------
 # 3. PAGE SETUP & DESIGN
 # -----------------------------------------------------------------------------
-st.set_page_config(page_title="ব্রডব্যান্ড কভারেজ জরিপ", page_icon="🌐", layout="centered" initial_sidebar_state="collapsed")
+st.set_page_config(page_title="ব্রডব্যান্ড কভারেজ জরিপ", page_icon="🌐", layout="centered", initial_sidebar_state="collapsed")
 
 st.markdown("""
     <style>
@@ -446,6 +446,7 @@ if __name__ == "__main__":
 
     main()
        
+
 
 
 
