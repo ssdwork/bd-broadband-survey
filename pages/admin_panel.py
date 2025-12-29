@@ -16,7 +16,7 @@ with c1:
     st.title("🔐 Admin Dashboard")
 with c2:
     if st.button("🏠 Back to Form"):
-        st.switch_page("newbroadband_survey.py") # নিশ্চিত করুন আপনার মেইন ফাইলের নাম সঠিক আছে
+        st.switch_page("newbroadband_survey.py") 
 
 # পাসওয়ার্ড চেক
 pwd = st.sidebar.text_input('Password', type='password')
@@ -31,7 +31,7 @@ if pwd == 'Bccadmin2025':
         if df_admin is None or df_admin.empty:
             st.info("জরিপের কোনো তথ্য এখনো জমা পড়েনি।")
         else:
-            # ১. ফিল্টারিং লজিক (আগের মতোই থাকবে)
+            # ১. ফিল্টারিং লজিক 
             st.header("🔍 Data Search & Analytics")
             filtered_df = df_admin.copy()
             filtered_df['মোট গ্রাম'] = pd.to_numeric(filtered_df['মোট গ্রাম'], errors='coerce').fillna(0)
@@ -45,12 +45,12 @@ if pwd == 'Bccadmin2025':
             if div_search != "All": 
                 filtered_df = filtered_df[filtered_df['বিভাগ'] == div_search]
 
-            # ২. অ্যাডভান্সড ম্যাট্রিক্স ক্যালকুলেশন (নতুন যুক্ত হয়েছে)
+            # ২. অ্যাডভান্সড ম্যাট্রিক্স ক্যালকুলেশন
             st.markdown("---")
             st.markdown("### 📊 সামগ্রিক পরিসংখ্যান (National Progress)")
             
             TOTAL_UPAZILAS = 495
-            TOTAL_UNIONS = 4578
+            TOTAL_UNIONS = 4554
             
             submitted_upazilas = df_admin['উপজেলা'].nunique()
             remaining_upazilas = max(0, TOTAL_UPAZILAS - submitted_upazilas)
@@ -64,7 +64,7 @@ if pwd == 'Bccadmin2025':
             m3.metric("ইউনিয়ন কভারেজ", f"{submitted_unions}/{TOTAL_UNIONS}", f"{remaining_unions} বাকি")
             m4.metric("গ্রাম (ফিল্টার্ড)", int(filtered_df['মোট গ্রাম'].sum()))
 
-            # ৩. প্রগ্রেস চার্ট সেকশন (নতুন যুক্ত হয়েছে)
+            # ৩. প্রগ্রেস চার্ট সেকশন 
             g_progress1, g_progress2 = st.columns(2)
             
             with g_progress1:
@@ -85,7 +85,7 @@ if pwd == 'Bccadmin2025':
                 fig_uni.add_annotation(text=f"{int((submitted_unions/TOTAL_UNIONS)*100)}%", showarrow=False, font_size=20)
                 st.plotly_chart(fig_uni, use_container_width=True)
 
-            # ৪. আপনার আগের চার্টগুলো (এখনও এখানে আছে)
+            # ৪. চার্টগুলো 
             st.markdown("---")
             g1, g2 = st.columns(2)
             
@@ -108,11 +108,11 @@ if pwd == 'Bccadmin2025':
                 st.plotly_chart(px.bar(div_counts, x='Division', y='Count', text_auto=True, 
                                      color_discrete_sequence=['#00D487']), use_container_width=True)
 
-            # ৫. টেবিল প্রদর্শন (আগের মতোই)
+            # ৫. টেবিল প্রদর্শন 
             st.subheader("📋 Data Records")
             st.dataframe(filtered_df, use_container_width=True)
 
-            # ৬. ডিলিট লজিক (আগের মতোই)
+            # ৬. ডিলিট লজিক 
             st.markdown("---")
             with st.expander("🗑️ Delete Data Entry"):
                 delete_index = st.number_input("Enter Row Index to delete:", min_value=0, max_value=max(0, len(df_admin)-1), step=1)
