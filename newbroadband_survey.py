@@ -381,7 +381,7 @@ def main():
                 
                 # ১০ সেকেন্ড ধরে মেসেজটি দেখানো
                 import time
-                time.sleep(10)
+                time.sleep(5)
                 
                 # ১০ সেকেন্ড পর মেসেজটি মুছে ফেলা
                 placeholder.empty()
@@ -519,6 +519,7 @@ if __name__ == "__main__":
 
     main()
        
+
 
 
 
