@@ -79,23 +79,19 @@ if pwd == 'Bccadmin2025':
         df_admin = conn.read(ttl="0")
         
         if df_admin is not None and not df_admin.empty:
-            # --- পরিবর্তন শুরু: ডাটা ক্লিনিং এবং সঠিক নাম ফিল্টারিং ---
-            # 'None' বা খালি ঘর বাদ দিয়ে ইউনিক তালিকা তৈরি
+            # ইউনিক সাবমিশন তালিকা ক্লিনিং
             submitted_upz_names = [str(name).strip() for name in df_admin['উপজেলা'].unique() if name and str(name).lower() != 'none']
             submitted_uni_names = [str(name).strip() for name in df_admin['ইউনিয়ন'].unique() if name and str(name).lower() != 'none']
 
-            # ফিক্সড টোটাল
+            # ফিক্সড টোটাল (৪৯৫ ও ৪৫৫৪)
             TOTAL_UPZ = 495
             TOTAL_UNI = 4554
 
-            # সঠিক কাউন্ট ক্যালকুলেশন
+            # ক্যালকুলেশন
             upz_count = len(submitted_upz_names)
             uni_count = len(submitted_uni_names)
-            
-            # সাবমিশন টোটালের চেয়ে বেশি হয়ে গেলে তা হ্যান্ডেল করা
             upz_rem = max(0, TOTAL_UPZ - upz_count)
             uni_rem = max(0, TOTAL_UNI - uni_count)
-            # --- পরিবর্তন শেষ ---
 
             st.markdown("### 📊 সামগ্রিক পরিসংখ্যান (National Progress)")
             m1, m2, m3, m4 = st.columns(4)
@@ -103,7 +99,6 @@ if pwd == 'Bccadmin2025':
             m1.metric("মোট সাবমিশন", len(df_admin))
             
             with m2:
-                # এখানে এখন ১টি এন্ট্রি থাকলে ১/৪৯৫ এবং ৪৯৪ বাকি দেখাবে
                 st.metric("উপজেলা কভারেজ", f"{upz_count}/{TOTAL_UPZ}", f"{upz_rem} বাকি", delta_color="inverse")
                 if st.button("🔍 তালিকা দেখুন", key="view_upz"):
                     show_pending_modal("upazila", submitted_upz_names)
@@ -113,7 +108,6 @@ if pwd == 'Bccadmin2025':
                 if st.button("🔍 তালিকা দেখুন", key="view_uni"):
                     show_pending_modal("union", submitted_uni_names)
 
-            # গ্রাম গণনায় এরর হ্যান্ডেলিং
             total_villages = pd.to_numeric(df_admin['মোট গ্রাম'], errors='coerce').fillna(0).sum()
             m4.metric("গ্রাম (তথ্যমতে)", int(total_villages))
 
@@ -121,7 +115,6 @@ if pwd == 'Bccadmin2025':
             st.markdown("---")
             g1, g2 = st.columns(2)
             
-            # প্রগ্রেস পার্সেন্টেজ ক্যালকুলেশন (০ দিয়ে ভাগ হওয়া রোধ করতে)
             upz_pct = int((upz_count / TOTAL_UPZ) * 100) if TOTAL_UPZ > 0 else 0
             uni_pct = int((uni_count / TOTAL_UNI) * 100) if TOTAL_UNI > 0 else 0
 
@@ -140,11 +133,11 @@ if pwd == 'Bccadmin2025':
                 st.plotly_chart(fig_uni, use_container_width=True)
 
             # ডাটা টেবিল
-            st.subheader("📋 জমা হওয়া ডাটা রেকর্ড")
+            st.subheader("📋 জমা হওয়া ডাটা রেকর্ড")
             st.dataframe(df_admin, use_container_width=True)
 
     except Exception as e:
-        st.error(f"ডাটা লোড করতে সমস্যা হয়েছে: {e}")
+        st.error(f"ডাটা লোড করতে সমস্যা হয়েছে: {e}")
 
 elif pwd != "":
     st.sidebar.error('Incorrect Password')
