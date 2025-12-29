@@ -352,14 +352,48 @@ def main():
                 
                 conn.update(data=updated_df)
                 
+                বুঝতে পেরেছি। আমরা st.balloons() এর অ্যানিমেশনটি আগের মতোই রাখব, শুধু সাকসেস মেসেজটিকে বড় এবং ১০ সেকেন্ডের জন্য সেট করব।
+
+নিচের কোডটুকু আপনার সাবমিশন লজিকের (Submit Data বাটন ক্লিকের ভেতর) সাকসেস মেসেজ অংশে বসিয়ে দিন:
+
+Python
+
                 # ৩. ইউজার ফিডব্যাক
-                st.success("✅ আপনার তথ্য সফলভাবে সংরক্ষিত হয়েছে।")
-                st.balloons()
+                st.balloons() # বেলুন অ্যানিমেশন আগের মতোই থাকছে
+                
+                # বড় এবং কাস্টম সাকসেস মেসেজ তৈরি
+                success_message = """
+                    <div style="
+                        background-color: rgba(0, 212, 135, 0.15);
+                        padding: 40px;
+                        border-radius: 20px;
+                        border: 3px solid #00D487;
+                        text-align: center;
+                        margin: 25px 0;
+                    ">
+                        <h1 style="color: #00D487; font-family: 'Hind Siliguri', sans-serif; font-size: 45px; margin: 0; font-weight: 700;">
+                            ✅ সফলভাবে সংরক্ষিত হয়েছে!
+                        </h1>
+                        <p style="color: white; font-size: 22px; margin-top: 15px; font-weight: 500;">
+                            আপনার তথ্য ডাটাবেজে জমা হয়েছে। পরবর্তী এন্ট্রির জন্য ১০ সেকেন্ড অপেক্ষা করুন।
+                        </p>
+                    </div>
+                """
+                
+                # মেসেজটি দেখানোর জন্য একটি Placeholder ব্যবহার করা
+                placeholder = st.empty()
+                placeholder.markdown(success_message, unsafe_allow_html=True)
+                
+                # ১০ সেকেন্ড ধরে মেসেজটি দেখানো
+                import time
+                time.sleep(10)
+                
+                # ১০ সেকেন্ড পর মেসেজটি মুছে ফেলা
+                placeholder.empty()
                 
                # ৪. সব ফিল্ড রিসেট করার লজিক
                 fixed_keys = [
-                    "user_name", "workplace_input", # user_desig এখান থেকে বাদ যাবে
-                    "desig_select", "desig_other_input", # নতুন দুটি key যোগ করা হলো
+                    "user_name", "workplace_input", "desig_select", "desig_other_input",
                     "geo_div", "geo_dist", "geo_upz", "geo_uni", "bb_coverage",
                     "total_v", "covered_v", "geo_div_other", "geo_dist_other", 
                     "geo_upz_other", "geo_uni_other"
@@ -367,27 +401,28 @@ def main():
                 
                 for key in fixed_keys:
                     if key in st.session_state:
-                        del st.session_state[key]
+                        # ড্রপডাউনগুলোর জন্য ডিফল্ট মান সেট করা
+                        if key in ["desig_select", "geo_div", "geo_dist", "geo_upz", "geo_uni", "bb_coverage"]:
+                            st.session_state[key] = "-- নির্বাচন করুন --"
+                        # নাম্বার ইনপুটগুলোর জন্য ০ সেট করা
+                        elif key in ["total_v", "covered_v"]:
+                            st.session_state[key] = 0
+                        # টেক্সট ইনপুটগুলোর জন্য খালি স্ট্রিং সেট করা
+                        else:
+                            st.session_state[key] = ""
                 
-                # ডায়নামিক ISP ফিল্ডগুলো মুছে ফেলা
+                # ৫. ডায়নামিক ISP ফিল্ডগুলো (৩ নম্বর সেকশন) পুরোপুরি মুছে ফেলা
                 current_keys = list(st.session_state.keys())
                 for key in current_keys:
                     if any(prefix in key for prefix in ["in_", "ic_", "is_", "un_subs_", "is_dis_"]):
                         del st.session_state[key]
-                #------------------------
-                for key in fixed_keys:
-                    if key in st.session_state:
-                         # Selectbox গুলো ডিফল্ট পজিশনে রিসেট করা
-                        if key == "desig_select":
-                            st.session_state[key] = "-- নির্বাচন করুন --"
-                        else:
-                            del st.session_state[key]
+
                 # রো সংখ্যা ১-এ নামিয়ে আনা
                 st.session_state.rows = 1
                 
-                # ৫. পেজ রিরান (সব ডেটা ক্লিয়ার করতে)
+                # ৬. পেজ রিরান (সব ডেটা ক্লিয়ার করতে)
                 import time
-                time.sleep(1.5) # সাকসেস মেসেজ দেখার জন্য সামান্য সময়
+                time.sleep(1.5) 
                 st.rerun()
                 
             except Exception as e:
@@ -493,6 +528,7 @@ if __name__ == "__main__":
 
     main()
        
+
 
 
 
