@@ -386,21 +386,18 @@ def main():
                 # ১০ সেকেন্ড পর মেসেজটি মুছে ফেলা
                 placeholder.empty()
                 
-               # ৪. সব ফিল্ড রিসেট করার লজিক (Error-Free Method)
-                fixed_keys = [
-                    "user_name", "workplace_input", "desig_select", "desig_other_input",
-                    "geo_div", "geo_dist", "geo_upz", "geo_uni", "bb_coverage",
-                    "total_v", "covered_v", "geo_div_other", "geo_dist_other", 
-                    "geo_upz_other", "geo_uni_other"
-                ]
+               # --- ৪. ২ নম্বর ও ৩ নম্বর সেকশন রিসেট করার চূড়ান্ত লজিক ---
                 
-                for key in fixed_keys:
-                    if key in st.session_state:
-                        # সরাসরি মান সেট না করে কী-টি মুছে ফেলা হচ্ছে
-                        # এতে পরবর্তী রিরান-এ উইজেটগুলো একদম নতুন/খালি হয়ে আসবে
-                        del st.session_state[key]
+                # ২ নম্বর সেকশন: ইউনিয়ন ও গ্রামের তথ্য ক্লিয়ার করা
+                if "bb_coverage" in st.session_state:
+                    st.session_state["bb_coverage"] = "-- নির্বাচন করুন --"
                 
-                # ৫. ডায়নামিক ISP ফিল্ডগুলো (৩ নম্বর সেকশন) পুরোপুরি মুছে ফেলা
+                # গুরুত্বপূর্ণ: আগে total_v এবং covered_v কে সরাসরি ০ করে দিতে হবে
+                st.session_state["total_v"] = 0
+                st.session_state["covered_v"] = 0
+
+                # ৩ নম্বর সেকশন: ISP তথ্য পুরোপুরি মুছে ফেলা
+                # আমরা সেশন স্টেট থেকে সব ISP ডাইনামিক কি (Key) মুছে ফেলব
                 current_keys = list(st.session_state.keys())
                 for key in current_keys:
                     if any(prefix in key for prefix in ["in_", "ic_", "is_", "un_subs_", "is_dis_"]):
@@ -410,8 +407,7 @@ def main():
                 st.session_state.rows = 1
                 
                 # ৬. পেজ রিরান (ডাটা ক্লিয়ার করার জন্য এটি আবশ্যিক)
-                # নোট: ১০ সেকেন্ডের ওয়েট অলরেডি আপনার সাকসেস মেসেজ অংশে করা হয়েছে, 
-                # তাই এখানে অতিরিক্ত time.sleep দরকার নেই।
+                
                 st.rerun()
                 
             except Exception as e:
@@ -517,6 +513,7 @@ if __name__ == "__main__":
 
     main()
        
+
 
 
 
