@@ -370,7 +370,7 @@ def main():
                             ✅ সফলভাবে সংরক্ষিত হয়েছে!
                         </h1>
                         <p style="color: white; font-size: 22px; margin-top: 15px; font-weight: 500;">
-                            আপনার তথ্য ডাটাবেজে জমা হয়েছে। পরবর্তী এন্ট্রির জন্য ১০ সেকেন্ড অপেক্ষা করুন।
+                            আপনার তথ্য ডাটাবেজে জমা হয়েছে। 
                         </p>
                     </div>
                 """
@@ -386,7 +386,7 @@ def main():
                 # ১০ সেকেন্ড পর মেসেজটি মুছে ফেলা
                 placeholder.empty()
                 
-               # ৪. সব ফিল্ড রিসেট করার লজিক
+               # ৪. সব ফিল্ড রিসেট করার লজিক (Error-Free Method)
                 fixed_keys = [
                     "user_name", "workplace_input", "desig_select", "desig_other_input",
                     "geo_div", "geo_dist", "geo_upz", "geo_uni", "bb_coverage",
@@ -396,15 +396,9 @@ def main():
                 
                 for key in fixed_keys:
                     if key in st.session_state:
-                        # ড্রপডাউনগুলোর জন্য ডিফল্ট মান সেট করা
-                        if key in ["desig_select", "geo_div", "geo_dist", "geo_upz", "geo_uni", "bb_coverage"]:
-                            st.session_state[key] = "-- নির্বাচন করুন --"
-                        # নাম্বার ইনপুটগুলোর জন্য ০ সেট করা
-                        elif key in ["total_v", "covered_v"]:
-                            st.session_state[key] = 0
-                        # টেক্সট ইনপুটগুলোর জন্য খালি স্ট্রিং সেট করা
-                        else:
-                            st.session_state[key] = ""
+                        # সরাসরি মান সেট না করে কী-টি মুছে ফেলা হচ্ছে
+                        # এতে পরবর্তী রিরান-এ উইজেটগুলো একদম নতুন/খালি হয়ে আসবে
+                        del st.session_state[key]
                 
                 # ৫. ডায়নামিক ISP ফিল্ডগুলো (৩ নম্বর সেকশন) পুরোপুরি মুছে ফেলা
                 current_keys = list(st.session_state.keys())
@@ -415,9 +409,9 @@ def main():
                 # রো সংখ্যা ১-এ নামিয়ে আনা
                 st.session_state.rows = 1
                 
-                # ৬. পেজ রিরান (সব ডেটা ক্লিয়ার করতে)
-                import time
-                time.sleep(1.5) 
+                # ৬. পেজ রিরান (ডাটা ক্লিয়ার করার জন্য এটি আবশ্যিক)
+                # নোট: ১০ সেকেন্ডের ওয়েট অলরেডি আপনার সাকসেস মেসেজ অংশে করা হয়েছে, 
+                # তাই এখানে অতিরিক্ত time.sleep দরকার নেই।
                 st.rerun()
                 
             except Exception as e:
@@ -523,6 +517,7 @@ if __name__ == "__main__":
 
     main()
        
+
 
 
 
