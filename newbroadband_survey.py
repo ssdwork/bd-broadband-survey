@@ -356,10 +356,10 @@ def main():
                 st.success("✅ আপনার তথ্য সফলভাবে সংরক্ষিত হয়েছে।")
                 st.balloons()
                 
-                # ৪. সব ফিল্ড রিসেট করার জন্য কার্যকর 'del' লজিক
-                # এটি ব্যবহার করলে পেজ রিরান হওয়ার পর ফিল্ডগুলো একদম নতুন দেখাবে
+               # ৪. সব ফিল্ড রিসেট করার লজিক
                 fixed_keys = [
-                    "user_name", "user_desig", "workplace_input", 
+                    "user_name", "workplace_input", # user_desig এখান থেকে বাদ যাবে
+                    "desig_select", "desig_other_input", # নতুন দুটি key যোগ করা হলো
                     "geo_div", "geo_dist", "geo_upz", "geo_uni", "bb_coverage",
                     "total_v", "covered_v", "geo_div_other", "geo_dist_other", 
                     "geo_upz_other", "geo_uni_other"
@@ -374,7 +374,14 @@ def main():
                 for key in current_keys:
                     if any(prefix in key for prefix in ["in_", "ic_", "is_", "un_subs_", "is_dis_"]):
                         del st.session_state[key]
-                
+                #------------------------
+                for key in fixed_keys:
+                    if key in st.session_state:
+                         # Selectbox গুলো ডিফল্ট পজিশনে রিসেট করা
+                        if key == "desig_select":
+                            st.session_state[key] = "-- নির্বাচন করুন --"
+                        else:
+                            del st.session_state[key]
                 # রো সংখ্যা ১-এ নামিয়ে আনা
                 st.session_state.rows = 1
                 
@@ -486,6 +493,7 @@ if __name__ == "__main__":
 
     main()
        
+
 
 
 
