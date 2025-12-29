@@ -17,11 +17,11 @@ def get_master_data():
         uni_url = "https://raw.githubusercontent.com/nuhil/bangladesh-geocode/master/unions/unions.json"
         
         def fetch_names(url):
-            with urllib.request.urlopen(url, timeout=15) as r:
-                data = json.loads(r.read().decode('utf-8'))
-                # 'data' কি-এর ভেতরে লিস্ট আছে কি না চেক করা
-                raw_list = data['data'] if isinstance(data, dict) and 'data' in data else data
-                return sorted([str(item.get('bn_name') or item.get('name')).strip() for item in raw_list])
+    with urllib.request.urlopen(url, timeout=15) as r:
+        data = json.loads(r.read().decode('utf-8'))
+        # পপ-আপে নামের সমস্যা সমাধানের জন্য i.get('bn_name') নিশ্চিত করা হয়েছে
+        raw_list = data['data'] if isinstance(data, dict) and 'data' in data else data
+        return sorted([str(i.get('bn_name') or i.get('name')).strip() for i in raw_list if isinstance(i, dict) and (i.get('bn_name') or i.get('name'))])
 
         return fetch_names(upz_url), fetch_names(uni_url)
     except Exception as e:
@@ -36,11 +36,12 @@ ALL_UPAZILAS, ALL_UNIONS = get_master_data()
 # -----------------------------------------------------------------------------
 @st.dialog("বাকি থাকা তথ্যের তালিকা (Pending List)")
 def show_pending_modal(type, submitted_list):
-    # জমা হওয়া নামের তালিকা ক্লিন করা
-    submitted_set = set([str(name).strip() for name in submitted_list])
+    # জমা হওয়া নামের তালিকা ক্লিন করা এবং 'None' ভ্যালু বাদ দেওয়া
+    submitted_set = set([str(name).strip() for name in submitted_list if name and str(name).lower() != 'none'])
     
     if type == "upazila":
         st.subheader("📍 বাকি থাকা উপজেলাসমূহ")
+        # মাস্টার লিস্ট (৪৯৫টি) থেকে জমা হওয়াগুলো বাদ দেওয়া
         master_set = set(ALL_UPAZILAS)
         remaining = sorted(list(master_set - submitted_set))
         
@@ -51,15 +52,13 @@ def show_pending_modal(type, submitted_list):
             st.success("অভিনন্দন! সব উপজেলার তথ্য জমা হয়েছে।")
 
     elif type == "union":
-        st.subheader("🏛️ বাকি থাকা ইউনিয়নসমূহ")
+        st.subheader("🏛️ বাকি থাকা ইউনিয়নসমূহ")
         master_set = set(ALL_UNIONS)
         remaining = sorted(list(master_set - submitted_set))
         
-        st.info(f"মোট ইউনিয়ন বাকি: {len(remaining)} টি")
+        st.info(f"মোট ইউনিয়ন বাকি: {len(remaining)} টি")
         if remaining:
             st.dataframe(pd.DataFrame(remaining, columns=["ইউনিয়নের নাম"]), use_container_width=True, hide_index=True)
-        else:
-            st.success("অভিনন্দন! সব ইউনিয়নের তথ্য জমা হয়েছে।")
 
 # -----------------------------------------------------------------------------
 # ৩. ড্যাশবোর্ড লজিক
@@ -80,19 +79,23 @@ if pwd == 'Bccadmin2025':
         df_admin = conn.read(ttl="0")
         
         if df_admin is not None and not df_admin.empty:
-            # ইউনিক সাবমিশন তালিকা
-            submitted_upz_names = df_admin['উপজেলা'].unique().tolist()
-            submitted_uni_names = df_admin['ইউনিয়ন'].unique().tolist()
+            # --- পরিবর্তন শুরু: ডাটা ক্লিনিং এবং সঠিক নাম ফিল্টারিং ---
+            # 'None' বা খালি ঘর বাদ দিয়ে ইউনিক তালিকা তৈরি
+            submitted_upz_names = [str(name).strip() for name in df_admin['উপজেলা'].unique() if name and str(name).lower() != 'none']
+            submitted_uni_names = [str(name).strip() for name in df_admin['ইউনিয়ন'].unique() if name and str(name).lower() != 'none']
 
-            # ফিক্সড টোটাল (৪৯৫ ও ৪৫৫৪)
+            # ফিক্সড টোটাল
             TOTAL_UPZ = 495
             TOTAL_UNI = 4554
 
-            # ক্যালকুলেশন
+            # সঠিক কাউন্ট ক্যালকুলেশন
             upz_count = len(submitted_upz_names)
             uni_count = len(submitted_uni_names)
+            
+            # সাবমিশন টোটালের চেয়ে বেশি হয়ে গেলে তা হ্যান্ডেল করা
             upz_rem = max(0, TOTAL_UPZ - upz_count)
             uni_rem = max(0, TOTAL_UNI - uni_count)
+            # --- পরিবর্তন শেষ ---
 
             st.markdown("### 📊 সামগ্রিক পরিসংখ্যান (National Progress)")
             m1, m2, m3, m4 = st.columns(4)
@@ -100,6 +103,7 @@ if pwd == 'Bccadmin2025':
             m1.metric("মোট সাবমিশন", len(df_admin))
             
             with m2:
+                # এখানে এখন ১টি এন্ট্রি থাকলে ১/৪৯৫ এবং ৪৯৪ বাকি দেখাবে
                 st.metric("উপজেলা কভারেজ", f"{upz_count}/{TOTAL_UPZ}", f"{upz_rem} বাকি", delta_color="inverse")
                 if st.button("🔍 তালিকা দেখুন", key="view_upz"):
                     show_pending_modal("upazila", submitted_upz_names)
@@ -109,23 +113,30 @@ if pwd == 'Bccadmin2025':
                 if st.button("🔍 তালিকা দেখুন", key="view_uni"):
                     show_pending_modal("union", submitted_uni_names)
 
-            m4.metric("গ্রাম (তথ্যমতে)", int(pd.to_numeric(df_admin['মোট গ্রাম'], errors='coerce').sum()))
+            # গ্রাম গণনায় এরর হ্যান্ডেলিং
+            total_villages = pd.to_numeric(df_admin['মোট গ্রাম'], errors='coerce').fillna(0).sum()
+            m4.metric("গ্রাম (তথ্যমতে)", int(total_villages))
 
             # ৪. প্রগ্রেস চার্ট (ডোনাট চার্ট)
             st.markdown("---")
             g1, g2 = st.columns(2)
+            
+            # প্রগ্রেস পার্সেন্টেজ ক্যালকুলেশন (০ দিয়ে ভাগ হওয়া রোধ করতে)
+            upz_pct = int((upz_count / TOTAL_UPZ) * 100) if TOTAL_UPZ > 0 else 0
+            uni_pct = int((uni_count / TOTAL_UNI) * 100) if TOTAL_UNI > 0 else 0
+
             with g1:
                 st.write("**উপজেলা সাবমিশন প্রগ্রেস**")
-                fig_upz = px.pie(names=["জমা হয়েছে", "বাকি"], values=[upz_count, upz_rem], hole=0.6,
+                fig_upz = px.pie(names=["জমা হয়েছে", "বাকি"], values=[upz_count, upz_rem], hole=0.6,
                                color_discrete_sequence=["#00D487", "#222222"])
-                fig_upz.add_annotation(text=f"{int((upz_count/TOTAL_UPZ)*100)}%", showarrow=False, font_size=25)
+                fig_upz.add_annotation(text=f"{upz_pct}%", showarrow=False, font_size=25)
                 st.plotly_chart(fig_upz, use_container_width=True)
             
             with g2:
-                st.write("**ইউনিয়ন সাবমিশন প্রগ্রেস**")
-                fig_uni = px.pie(names=["জমা হয়েছে", "বাকি"], values=[uni_count, uni_rem], hole=0.6,
+                st.write("**ইউনিয়ন সাবমিশন প্রগ্রেস**")
+                fig_uni = px.pie(names=["জমা হয়েছে", "বাকি"], values=[uni_count, uni_rem], hole=0.6,
                                color_discrete_sequence=["#006A4E", "#222222"])
-                fig_uni.add_annotation(text=f"{int((uni_count/TOTAL_UNI)*100)}%", showarrow=False, font_size=25)
+                fig_uni.add_annotation(text=f"{uni_pct}%", showarrow=False, font_size=25)
                 st.plotly_chart(fig_uni, use_container_width=True)
 
             # ডাটা টেবিল
