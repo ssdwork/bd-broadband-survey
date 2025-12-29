@@ -2,157 +2,129 @@ import streamlit as st
 import pandas as pd
 from streamlit_gsheets import GSheetsConnection
 import plotly.express as px
-import json
-import urllib.request
+from datetime import datetime
 
-# -----------------------------------------------------------------------------
-# ১. মাস্টার ডেটা লোডার (মাস্টার লিস্ট নিশ্চিত করার জন্য)
-# -----------------------------------------------------------------------------
-@st.cache_data
-def get_master_data():
-    try:
-        upz_url = "https://raw.githubusercontent.com/nuhil/bangladesh-geocode/master/upazilas/upazilas.json"
-        uni_url = "https://raw.githubusercontent.com/nuhil/bangladesh-geocode/master/unions/unions.json"
-        
-        def fetch_names(url):
-            with urllib.request.urlopen(url, timeout=15) as r:
-                data = json.loads(r.read().decode('utf-8'))
-                
-                # আপনার JSON ফাইলের গঠন অনুযায়ী 'data' কী (key) থেকে লিস্টটি নিতে হবে
-                if isinstance(data, dict) and 'data' in data:
-                    items = data['data']
-                else:
-                    items = data if isinstance(data, list) else []
-
-                # নামগুলো এক্সট্রাক্ট করা (বাংলা না থাকলে ইংরেজি নাম নিবে)
-                names = []
-                for i in items:
-                    if isinstance(i, dict):
-                        val = i.get('bn_name') or i.get('name')
-                        if val:
-                            names.append(str(val).strip())
-                
-                return sorted(list(set(names))) # ডুপ্লিকেট বাদ দিয়ে সর্ট করা
-
-        return fetch_names(upz_url), fetch_names(uni_url)
-    except Exception as e:
-        st.error(f"মাস্টার ডেটা লোড করতে সমস্যা হয়েছে: {e}")
-        return [], []
-
-# মাস্টার লিস্ট সংগ্রহ
-ALL_UPAZILAS, ALL_UNIONS = get_master_data()
-
-# -----------------------------------------------------------------------------
-# ২. পপ-আপ ডায়ালগ ফাংশন (বাকি তালিকা দেখানোর জন্য)
-# -----------------------------------------------------------------------------
-@st.dialog("বাকি থাকা তথ্যের তালিকা (Pending List)")
-def show_pending_modal(type, submitted_list):
-    # অপ্রাসঙ্গিক শব্দগুলো ফিল্টার আউট করার লিস্ট
-    garbage_words = {'none', 'bd_geo_code', 'upazilas', 'data', 'nan'}
-    
-    submitted_set = set([str(name).strip() for name in submitted_list 
-                         if name and str(name).lower() not in garbage_words])
-    
-    if type == "upazila":
-        st.subheader("📍 বাকি থাকা উপজেলাসমূহ")
-        master_set = set(ALL_UPAZILAS)
-        remaining = sorted(list(master_set - submitted_set))
-        
-        st.info(f"মোট উপজেলা বাকি: {len(remaining)} টি")
-        if remaining:
-            st.dataframe(pd.DataFrame(remaining, columns=["উপজেলার নাম"]), use_container_width=True, hide_index=True)
-        else:
-            st.success("অভিনন্দন! সব উপজেলার তথ্য জমা হয়েছে।")
-
-    elif type == "union":
-        st.subheader("🏛️ বাকি থাকা ইউনিয়নসমূহ")
-        master_set = set(ALL_UNIONS)
-        remaining = sorted(list(master_set - submitted_set))
-        
-        st.info(f"মোট ইউনিয়ন বাকি: {len(remaining)} টি")
-        if remaining:
-            st.dataframe(pd.DataFrame(remaining, columns=["ইউনিয়নের নাম"]), use_container_width=True, hide_index=True)
-        else:
-            st.success("অভিনন্দন! সব ইউনিয়নের তথ্য জমা হয়েছে।")
-
-# -----------------------------------------------------------------------------
-# ৩. ড্যাশবোর্ড লজিক
-# -----------------------------------------------------------------------------
+# পেজ সেটআপ
 st.set_page_config(page_title="Admin Panel - Broadband Survey", layout="wide")
+
+# গুগল শিট কানেকশন
 conn = st.connection("gsheets", type=GSheetsConnection)
 
-# হেডার
+# হেডার ও হোমে ফেরার বাটন
 c1, c2 = st.columns([5, 1])
-with c1: st.title("🔐 Admin Dashboard")
-with c2: 
-    if st.button("🏠 Back to Form"): st.switch_page("newbroadband_survey.py")
+with c1:
+    st.title("🔐 Admin Dashboard")
+with c2:
+    if st.button("🏠 Back to Form"):
+        st.switch_page("newbroadband_survey.py") 
 
+# পাসওয়ার্ড চেক
 pwd = st.sidebar.text_input('Password', type='password')
 
 if pwd == 'Bccadmin2025':
+    st.sidebar.success('Authenticated')
+    
     try:
+        # ডাটা রিড করা
         df_admin = conn.read(ttl="0")
         
-        if df_admin is not None and not df_admin.empty:
-            # ইউনিক সাবমিশন তালিকা ক্লিনিং
-            submitted_upz_names = [str(name).strip() for name in df_admin['উপজেলা'].unique() if name and str(name).lower() != 'none']
-            submitted_uni_names = [str(name).strip() for name in df_admin['ইউনিয়ন'].unique() if name and str(name).lower() != 'none']
+        if df_admin is None or df_admin.empty:
+            st.info("জরিপের কোনো তথ্য এখনো জমা পড়েনি।")
+        else:
+            # ১. ফিল্টারিং লজিক 
+            st.header("🔍 Data Search & Analytics")
+            filtered_df = df_admin.copy()
+            filtered_df['মোট গ্রাম'] = pd.to_numeric(filtered_df['মোট গ্রাম'], errors='coerce').fillna(0)
+            filtered_df['আওতাভুক্ত গ্রাম'] = pd.to_numeric(filtered_df['আওতাভুক্ত গ্রাম'], errors='coerce').fillna(0)
 
-            # ফিক্সড টোটাল (৪৯৫ ও ৪৫৫৪)
-            TOTAL_UPZ = 495
-            TOTAL_UNI = 4554
+            f1, f2 = st.columns(2)
+            with f1: 
+                div_list = ["All"] + sorted(df_admin['বিভাগ'].unique().astype(str).tolist())
+                div_search = st.selectbox("বিভাগ ফিল্টার", div_list)
+            
+            if div_search != "All": 
+                filtered_df = filtered_df[filtered_df['বিভাগ'] == div_search]
 
-            # ক্যালকুলেশন
-            upz_count = len(submitted_upz_names)
-            uni_count = len(submitted_uni_names)
-            upz_rem = max(0, TOTAL_UPZ - upz_count)
-            uni_rem = max(0, TOTAL_UNI - uni_count)
-
+            # ২. অ্যাডভান্সড ম্যাট্রিক্স ক্যালকুলেশন
+            st.markdown("---")
             st.markdown("### 📊 সামগ্রিক পরিসংখ্যান (National Progress)")
+            
+            TOTAL_UPAZILAS = 495
+            TOTAL_UNIONS = 4554
+            
+            submitted_upazilas = df_admin['উপজেলা'].nunique()
+            remaining_upazilas = max(0, TOTAL_UPAZILAS - submitted_upazilas)
+            
+            submitted_unions = df_admin['ইউনিয়ন'].nunique()
+            remaining_unions = max(0, TOTAL_UNIONS - submitted_unions)
+            
             m1, m2, m3, m4 = st.columns(4)
-            
             m1.metric("মোট সাবমিশন", len(df_admin))
+            m2.metric("উপজেলা কভারেজ", f"{submitted_upazilas}/{TOTAL_UPAZILAS}", f"{remaining_upazilas} বাকি")
+            m3.metric("ইউনিয়ন কভারেজ", f"{submitted_unions}/{TOTAL_UNIONS}", f"{remaining_unions} বাকি")
+            m4.metric("গ্রাম (ফিল্টার্ড)", int(filtered_df['মোট গ্রাম'].sum()))
+
+            # ৩. প্রগ্রেস চার্ট সেকশন 
+            g_progress1, g_progress2 = st.columns(2)
             
-            with m2:
-                st.metric("উপজেলা কভারেজ", f"{upz_count}/{TOTAL_UPZ}", f"{upz_rem} বাকি", delta_color="inverse")
-                if st.button("🔍 তালিকা দেখুন", key="view_upz"):
-                    show_pending_modal("upazila", submitted_upz_names)
+            with g_progress1:
+                st.write("**উপজেলা কভারেজ প্রগ্রেস (%)**")
+                fig_upz = px.pie(names=["জমা হয়েছে", "বাকি আছে"], 
+                                values=[submitted_upazilas, remaining_upazilas],
+                                hole=0.6, color_discrete_sequence=["#00D487", "#222222"])
+                fig_upz.update_layout(showlegend=False, height=250, margin=dict(t=0, b=0, l=0, r=0))
+                fig_upz.add_annotation(text=f"{int((submitted_upazilas/TOTAL_UPAZILAS)*100)}%", showarrow=False, font_size=20)
+                st.plotly_chart(fig_upz, use_container_width=True)
 
-            with m3:
-                st.metric("ইউনিয়ন কভারেজ", f"{uni_count}/{TOTAL_UNI}", f"{uni_rem} বাকি", delta_color="inverse")
-                if st.button("🔍 তালিকা দেখুন", key="view_uni"):
-                    show_pending_modal("union", submitted_uni_names)
+            with g_progress2:
+                st.write("**ইউনিয়ন কভারেজ প্রগ্রেস (%)**")
+                fig_uni = px.pie(names=["জমা হয়েছে", "বাকি আছে"], 
+                                values=[submitted_unions, remaining_unions],
+                                hole=0.6, color_discrete_sequence=["#006A4E", "#222222"])
+                fig_uni.update_layout(showlegend=False, height=250, margin=dict(t=0, b=0, l=0, r=0))
+                fig_uni.add_annotation(text=f"{int((submitted_unions/TOTAL_UNIONS)*100)}%", showarrow=False, font_size=20)
+                st.plotly_chart(fig_uni, use_container_width=True)
 
-            total_villages = pd.to_numeric(df_admin['মোট গ্রাম'], errors='coerce').fillna(0).sum()
-            m4.metric("গ্রাম (তথ্যমতে)", int(total_villages))
-
-            # ৪. প্রগ্রেস চার্ট (ডোনাট চার্ট)
+            # ৪. চার্টগুলো 
             st.markdown("---")
             g1, g2 = st.columns(2)
             
-            upz_pct = int((upz_count / TOTAL_UPZ) * 100) if TOTAL_UPZ > 0 else 0
-            uni_pct = int((uni_count / TOTAL_UNI) * 100) if TOTAL_UNI > 0 else 0
-
             with g1:
-                st.write("**উপজেলা সাবমিশন প্রগ্রেস**")
-                fig_upz = px.pie(names=["জমা হয়েছে", "বাকি"], values=[upz_count, upz_rem], hole=0.6,
-                               color_discrete_sequence=["#00D487", "#222222"])
-                fig_upz.add_annotation(text=f"{upz_pct}%", showarrow=False, font_size=25)
-                st.plotly_chart(fig_upz, use_container_width=True)
+                st.write("**ইন্টারনেট কভারেজ অনুপাত (ফিল্টার অনুযায়ী)**")
+                total_v = filtered_df['মোট গ্রাম'].sum()
+                covered_v = filtered_df['আওতাভুক্ত গ্রাম'].sum()
+                uncovered_v = max(0, total_v - covered_v)
+                
+                if total_v > 0:
+                    pie_data = pd.DataFrame({"Category": ["আওতাভুক্ত", "বাকি"], "Count": [covered_v, uncovered_v]})
+                    fig_pie = px.pie(pie_data, values='Count', names='Category', hole=0.4,
+                                   color_discrete_map={"আওতাভুক্ত": "#006A4E", "বাকি": "#F42A41"})
+                    st.plotly_chart(fig_pie, use_container_width=True)
             
             with g2:
-                st.write("**ইউনিয়ন সাবমিশন প্রগ্রেস**")
-                fig_uni = px.pie(names=["জমা হয়েছে", "বাকি"], values=[uni_count, uni_rem], hole=0.6,
-                               color_discrete_sequence=["#006A4E", "#222222"])
-                fig_uni.add_annotation(text=f"{uni_pct}%", showarrow=False, font_size=25)
-                st.plotly_chart(fig_uni, use_container_width=True)
+                st.write("**বিভাগ ভিত্তিক সাবমিশন সংখ্যা**")
+                div_counts = filtered_df['বিভাগ'].value_counts().reset_index()
+                div_counts.columns = ['Division', 'Count']
+                st.plotly_chart(px.bar(div_counts, x='Division', y='Count', text_auto=True, 
+                                     color_discrete_sequence=['#00D487']), use_container_width=True)
 
-            # ডাটা টেবিল
-            st.subheader("📋 জমা হওয়া ডাটা রেকর্ড")
-            st.dataframe(df_admin, use_container_width=True)
+            # ৫. টেবিল প্রদর্শন 
+            st.subheader("📋 Data Records")
+            st.dataframe(filtered_df, use_container_width=True)
+
+            # ৬. ডিলিট লজিক 
+            st.markdown("---")
+            with st.expander("🗑️ Delete Data Entry"):
+                delete_index = st.number_input("Enter Row Index to delete:", min_value=0, max_value=max(0, len(df_admin)-1), step=1)
+                if st.button("Confirm Delete", type="primary"):
+                    df_admin = df_admin.drop(df_admin.index[delete_index])
+                    conn.update(data=df_admin)
+                    st.cache_data.clear()
+                    st.success(f"Row {delete_index} deleted successfully!")
+                    st.rerun()
 
     except Exception as e:
-        st.error(f"ডাটা লোড করতে সমস্যা হয়েছে: {e}")
+        st.error(f"Error loading admin data: {e}")
 
 elif pwd != "":
     st.sidebar.error('Incorrect Password')
