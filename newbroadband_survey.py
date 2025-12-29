@@ -107,13 +107,13 @@ st.markdown("""
         color: #FFFFFF !important; 
         -webkit-text-fill-color: #FFFFFF !important;
         
-        /* আপনার চাহিদা অনুযায়ী টেক্সটের চারপাশ কালো বর্ডার (Stroke) দিয়ে ঘেরা */
+        /*  টেক্সটের চারপাশ কালো বর্ডার (Stroke) দিয়ে ঘেরা */
         text-shadow: 
             -1px -1px 0 #000,  
              1px -1px 0 #000,
             -1px  1px 0 #000,
              1px  1px 0 #000,
-             2px  2px 2px rgba(0,0,0,0.8); /* একটু শ্যাডো যাতে আরও ফুটে ওঠে */
+             2px  2px 2px rgba(0,0,0,0.8); /*  শ্যাডো যাতে আরও ফুটে ওঠে */
              
         font-weight: 700 !important;
     }
@@ -184,6 +184,8 @@ st.markdown("""
     footer {visibility: hidden;}
     header {visibility: hidden;}
     .viewerBadge_container__1QSob {display: none !important;}
+    /* অটোমেটিক সাইডবার নেভিগেশন লুকানোর জন্য */
+    [data-testid="stSidebarNav"] {display: none !important;}
     </style>
 """, unsafe_allow_html=True)
 
@@ -420,105 +422,16 @@ def main():
                 st.error(f"Error during submission: {e}")
                 
     # --- ADMIN PANEL ---
-    st.sidebar.markdown("---") # Visual separator
-    
-    # This checkbox controls the visibility
-    if st.sidebar.checkbox("🔐 Admin Login", value=False):
-        
-        st.sidebar.header('🔐 Admin Panel')
-        pwd = st.sidebar.text_input('Password', type='password')
-        
-        if pwd == 'Bccadmin2025':
-            st.sidebar.success('Authenticated')
-            try:
-                df_admin = conn.read(ttl="5m")
-                if df_admin.empty:
-                    st.sidebar.info("জরিপের কোনো তথ্য এখনো জমা পড়েনি।")
-                else:
-                    show_stats = st.sidebar.checkbox("📊 View Dashboard & Search", value=False)
-                    if show_stats:
-                        st.markdown("---")
-                        st.header("🔍 Data Search & Analytics")
-                        
-                        # Ensure numeric data for calculations
-                        filtered_df = df_admin.copy()
-                        filtered_df['মোট গ্রাম'] = pd.to_numeric(filtered_df['মোট গ্রাম'], errors='coerce').fillna(0)
-                        filtered_df['আওতাভুক্ত গ্রাম'] = pd.to_numeric(filtered_df['আওতাভুক্ত গ্রাম'], errors='coerce').fillna(0)
-    
-                        # 1. Filtering Logic
-                        f1, f2 = st.columns(2)
-                        with f1: 
-                            div_search = st.selectbox("বিভাগ ফিল্টার", ["All"] + sorted(df_admin['বিভাগ'].unique().tolist()))
-                        if div_search != "All": 
-                            filtered_df = filtered_df[filtered_df['বিভাগ'] == div_search]
-    
-                        # 2. Metrics Calculations
-                        m1, m2, m3 = st.columns(3)
-                        total_vills = int(filtered_df['মোট গ্রাম'].sum())
-                        covered_vills = int(filtered_df['আওতাভুক্ত গ্রাম'].sum())
-                        uncovered_vills = max(0, total_vills - covered_vills)
-                        
-                        m1.metric("Submissions", len(filtered_df))
-                        m2.metric("Total Villages", total_vills)
-                        m3.metric("Covered Villages", covered_vills)
-    
-                        # 3. Pie Chart
-                        st.write("**ইন্টারনেট কভারেজ অনুপাত (Coverage Ratio)**")
-                        if total_vills > 0:
-                            pie_data = pd.DataFrame({
-                                "Category": ["আওতাভুক্ত (Covered)", "বাকি (Uncovered)"],
-                                "Count": [covered_vills, uncovered_vills]
-                            })
-                            fig_pie = px.pie(pie_data, values='Count', names='Category', hole=0.4,
-                                             color_discrete_map={"আওতাভুক্ত (Covered)": "#006A4E", "বাকি (Uncovered)": "#F42A41"})
-                            st.plotly_chart(fig_pie, use_container_width=True)
-
-                        # 4. Bar Chart
-                        st.write("**Submissions by Division**")
-                        div_counts = filtered_df['বিভাগ'].value_counts().reset_index()
-                        div_counts.columns = ['Division', 'Count']
-                        st.plotly_chart(px.bar(div_counts, x='Division', y='Count', text_auto=True, color_discrete_sequence=['#006A4E']), use_container_width=True)
-    
-                        # 5. Search Results Table
-                        st.subheader("📋 Search Results")
-                        st.dataframe(filtered_df, use_container_width=True)
-    
-                        # 6. Delete Logic
-                        with st.expander("🗑️ Delete Data Entry"):
-                            delete_index = st.number_input("Enter Row Index:", min_value=0, max_value=max(0, len(df_admin)-1), step=1)
-                            if st.button("Confirm Delete"):
-                                # ১. লোকাল ডাটাফ্রেম থেকে ড্রপ করা
-                                df_admin = df_admin.drop(df_admin.index[delete_index])
-                                
-                                # ২. গুগল শিটে আপডেট পাঠানো
-                                conn.update(data=df_admin)
-                                
-                                # ৩. গুরুত্বপূর্ণ: ক্যাশ মেমরি পরিষ্কার করা যাতে পরবর্তী রিড লাইভ হয়
-                                st.cache_data.clear()
-                                
-                                st.success("Deleted!")
-                                
-                                # ৪. গুগল শিট সিঙ্ক হওয়ার জন্য ১ সেকেন্ড বিরতি দেওয়া
-                                import time
-                                time.sleep(1)
-                                
-                                # ৫. পেজ রিরান করে নতুন ডাটা দেখানো
-                                st.rerun()
-    
-            except Exception as e:
-                st.sidebar.error(f"Error: {e}")
-                
-        elif pwd:
-            st.sidebar.error('ভুল পাসওয়ার্ড')
-
-
-
+    st.sidebar.markdown("---")
+if st.sidebar.button("🔐 Admin Login"):
+    st.switch_page("pages/admin_panel.py")
 
 if __name__ == "__main__":
 
 
     main()
        
+
 
 
 
