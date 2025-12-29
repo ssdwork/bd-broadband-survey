@@ -16,9 +16,9 @@ with c1:
     st.title("🔐 Admin Dashboard")
 with c2:
     if st.button("🏠 Back to Form"):
-        st.switch_page("newbroadband_survey.py") # আপনার মূল ফাইলের নাম চেক করে দিন
+        st.switch_page("newbroadband_survey.py") # নিশ্চিত করুন আপনার মেইন ফাইলের নাম সঠিক আছে
 
-# পাসওয়ার্ড চেক
+# পাসওয়ার্ড চেক
 pwd = st.sidebar.text_input('Password', type='password')
 
 if pwd == 'Bccadmin2025':
@@ -26,19 +26,17 @@ if pwd == 'Bccadmin2025':
     
     try:
         # ডাটা রিড করা
-        df_admin = conn.read(ttl="0") # লাইভ ডাটার জন্য ০ দেওয়া ভালো
+        df_admin = conn.read(ttl="0")
         
         if df_admin is None or df_admin.empty:
             st.info("জরিপের কোনো তথ্য এখনো জমা পড়েনি।")
         else:
+            # ১. ফিল্টারিং লজিক (আগের মতোই থাকবে)
             st.header("🔍 Data Search & Analytics")
-            
-            # ডাটা ক্লিনআপ
             filtered_df = df_admin.copy()
             filtered_df['মোট গ্রাম'] = pd.to_numeric(filtered_df['মোট গ্রাম'], errors='coerce').fillna(0)
             filtered_df['আওতাভুক্ত গ্রাম'] = pd.to_numeric(filtered_df['আওতাভুক্ত গ্রাম'], errors='coerce').fillna(0)
 
-            # ১. ফিল্টারিং লজিক
             f1, f2 = st.columns(2)
             with f1: 
                 div_list = ["All"] + sorted(df_admin['বিভাগ'].unique().astype(str).tolist())
@@ -47,43 +45,74 @@ if pwd == 'Bccadmin2025':
             if div_search != "All": 
                 filtered_df = filtered_df[filtered_df['বিভাগ'] == div_search]
 
-            # ২. ম্যাট্রিক্স ক্যালকুলেশন
-            m1, m2, m3 = st.columns(3)
-            total_vills = int(filtered_df['মোট গ্রাম'].sum())
-            covered_vills = int(filtered_df['আওতাভুক্ত গ্রাম'].sum())
-            uncovered_vills = max(0, total_vills - covered_vills)
+            # ২. অ্যাডভান্সড ম্যাট্রিক্স ক্যালকুলেশন (নতুন যুক্ত হয়েছে)
+            st.markdown("---")
+            st.markdown("### 📊 সামগ্রিক পরিসংখ্যান (National Progress)")
             
-            m1.metric("Submissions", len(filtered_df))
-            m2.metric("Total Villages", total_vills)
-            m3.metric("Covered Villages", covered_vills)
+            TOTAL_UPAZILAS = 495
+            TOTAL_UNIONS = 4578
+            
+            submitted_upazilas = df_admin['উপজেলা'].nunique()
+            remaining_upazilas = max(0, TOTAL_UPAZILAS - submitted_upazilas)
+            
+            submitted_unions = df_admin['ইউনিয়ন'].nunique()
+            remaining_unions = max(0, TOTAL_UNIONS - submitted_unions)
+            
+            m1, m2, m3, m4 = st.columns(4)
+            m1.metric("মোট সাবমিশন", len(df_admin))
+            m2.metric("উপজেলা কভারেজ", f"{submitted_upazilas}/{TOTAL_UPAZILAS}", f"{remaining_upazilas} বাকি")
+            m3.metric("ইউনিয়ন কভারেজ", f"{submitted_unions}/{TOTAL_UNIONS}", f"{remaining_unions} বাকি")
+            m4.metric("গ্রাম (ফিল্টার্ড)", int(filtered_df['মোট গ্রাম'].sum()))
 
-            # ৩. চার্ট সেকশন
+            # ৩. প্রগ্রেস চার্ট সেকশন (নতুন যুক্ত হয়েছে)
+            g_progress1, g_progress2 = st.columns(2)
+            
+            with g_progress1:
+                st.write("**উপজেলা কভারেজ প্রগ্রেস (%)**")
+                fig_upz = px.pie(names=["জমা হয়েছে", "বাকি আছে"], 
+                                values=[submitted_upazilas, remaining_upazilas],
+                                hole=0.6, color_discrete_sequence=["#00D487", "#222222"])
+                fig_upz.update_layout(showlegend=False, height=250, margin=dict(t=0, b=0, l=0, r=0))
+                fig_upz.add_annotation(text=f"{int((submitted_upazilas/TOTAL_UPAZILAS)*100)}%", showarrow=False, font_size=20)
+                st.plotly_chart(fig_upz, use_container_width=True)
+
+            with g_progress2:
+                st.write("**ইউনিয়ন কভারেজ প্রগ্রেস (%)**")
+                fig_uni = px.pie(names=["জমা হয়েছে", "বাকি আছে"], 
+                                values=[submitted_unions, remaining_unions],
+                                hole=0.6, color_discrete_sequence=["#006A4E", "#222222"])
+                fig_uni.update_layout(showlegend=False, height=250, margin=dict(t=0, b=0, l=0, r=0))
+                fig_uni.add_annotation(text=f"{int((submitted_unions/TOTAL_UNIONS)*100)}%", showarrow=False, font_size=20)
+                st.plotly_chart(fig_uni, use_container_width=True)
+
+            # ৪. আপনার আগের চার্টগুলো (এখনও এখানে আছে)
             st.markdown("---")
             g1, g2 = st.columns(2)
             
             with g1:
-                st.write("**ইন্টারনেট কভারেজ অনুপাত (Coverage Ratio)**")
-                if total_vills > 0:
-                    pie_data = pd.DataFrame({
-                        "Category": ["আওতাভুক্ত (Covered)", "বাকি (Uncovered)"],
-                        "Count": [covered_vills, uncovered_vills]
-                    })
+                st.write("**ইন্টারনেট কভারেজ অনুপাত (ফিল্টার অনুযায়ী)**")
+                total_v = filtered_df['মোট গ্রাম'].sum()
+                covered_v = filtered_df['আওতাভুক্ত গ্রাম'].sum()
+                uncovered_v = max(0, total_v - covered_v)
+                
+                if total_v > 0:
+                    pie_data = pd.DataFrame({"Category": ["আওতাভুক্ত", "বাকি"], "Count": [covered_v, uncovered_v]})
                     fig_pie = px.pie(pie_data, values='Count', names='Category', hole=0.4,
-                                   color_discrete_map={"আওতাভুক্ত (Covered)": "#006A4E", "বাকি (Uncovered)": "#F42A41"})
+                                   color_discrete_map={"আওতাভুক্ত": "#006A4E", "বাকি": "#F42A41"})
                     st.plotly_chart(fig_pie, use_container_width=True)
             
             with g2:
-                st.write("**Submissions by Division**")
+                st.write("**বিভাগ ভিত্তিক সাবমিশন সংখ্যা**")
                 div_counts = filtered_df['বিভাগ'].value_counts().reset_index()
                 div_counts.columns = ['Division', 'Count']
                 st.plotly_chart(px.bar(div_counts, x='Division', y='Count', text_auto=True, 
-                                     color_discrete_sequence=['#006A4E']), use_container_width=True)
+                                     color_discrete_sequence=['#00D487']), use_container_width=True)
 
-            # ৪. টেবিল প্রদর্শন
+            # ৫. টেবিল প্রদর্শন (আগের মতোই)
             st.subheader("📋 Data Records")
             st.dataframe(filtered_df, use_container_width=True)
 
-            # ৫. ডিলিট লজিক
+            # ৬. ডিলিট লজিক (আগের মতোই)
             st.markdown("---")
             with st.expander("🗑️ Delete Data Entry"):
                 delete_index = st.number_input("Enter Row Index to delete:", min_value=0, max_value=max(0, len(df_admin)-1), step=1)
@@ -92,8 +121,6 @@ if pwd == 'Bccadmin2025':
                     conn.update(data=df_admin)
                     st.cache_data.clear()
                     st.success(f"Row {delete_index} deleted successfully!")
-                    import time
-                    time.sleep(1)
                     st.rerun()
 
     except Exception as e:
@@ -102,4 +129,4 @@ if pwd == 'Bccadmin2025':
 elif pwd != "":
     st.sidebar.error('Incorrect Password')
 else:
-    st.info("অ্যাডমিন প্যানেল দেখার জন্য বাম পাশের সাইডবারে পাসওয়ার্ড দিন।")
+    st.info("অ্যাডমিন প্যানেল দেখার জন্য বাম পাশের সাইডবারে পাসওয়ার্ড দিন।")
