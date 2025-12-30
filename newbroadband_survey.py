@@ -327,7 +327,7 @@ def main():
         st.rerun()
     
     st.write("##")
-    total_isp_count = st.number_input("ISP মোট সংখ্যা", min_value=0, step=1, key="total_isp_count_input")
+    total_isp_count = st.number_input("উপজেলাতে মোট ISP সংখ্যা", min_value=0, step=1, key="total_isp_count_input")
 
     st.write("---")
     # Replace the Submission logic in your main() function with this:
@@ -448,3 +448,4 @@ if __name__ == "__main__":
 
     main()
        
+
