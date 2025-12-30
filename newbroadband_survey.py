@@ -325,6 +325,9 @@ def main():
     if b2.button("➖ বাদ দিন") and st.session_state.rows > 1:
         st.session_state.rows -= 1
         st.rerun()
+    
+    st.write("##")
+    total_isp_count = st.number_input("ISP মোট সংখ্যা", min_value=0, step=1, key="total_isp_count_input")
 
     st.write("---")
     # Replace the Submission logic in your main() function with this:
@@ -354,6 +357,7 @@ def main():
                     "ব্রডব্যান্ড আওতাভুক্ত": is_broadband,
                     "মোট গ্রাম": total_villages,
                     "আওতাভুক্ত গ্রাম": covered_villages,
+                    "ISP মোট সংখ্যা": total_isp_count,
                     "উপজেলাতে ISP তথ্য": isp_final
                 }])
                 
@@ -415,6 +419,7 @@ def main():
                 # গুরুত্বপূর্ণ: আগে total_v এবং covered_v কে সরাসরি ০ করে দিতে হবে
                 st.session_state["total_v"] = 0
                 st.session_state["covered_v"] = 0
+                st.session_state["total_isp_count_input"] = 0
 
                 # ৩ নম্বর সেকশন: ISP তথ্য পুরোপুরি মুছে ফেলা
                 # আমরা সেশন স্টেট থেকে সব ISP ডাইনামিক কি (Key) মুছে ফেলব
@@ -443,60 +448,3 @@ if __name__ == "__main__":
 
     main()
        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
