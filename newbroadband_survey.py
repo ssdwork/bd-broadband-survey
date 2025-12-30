@@ -291,7 +291,9 @@ def main():
     for i in range(st.session_state.rows):
         st.markdown(f"**ISP নং {i+1}**")
         ic1, ic2, ic3 = st.columns([3, 2, 2])
-        with ic1: iname = st.text_input("ISP নাম", key=f"in_{i}")
+        with ic1: 
+            iname = st.text_input("ISP নাম", key=f"in_{i}")
+            st.markdown("<div style='font-size: 10px; color: #F42A41; line-height: 1.2; margin-top: 5px;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
         with ic2: 
                 icontact = st.text_input("যোগাযোগের নম্বর", key=f"ic_{i}")
                 # মোবাইল নম্বর ভ্যালিডেশন চেক
@@ -327,7 +329,8 @@ def main():
         st.rerun()
     
     st.write("##")
-    total_isp_count = st.number_input("উপজেলাতে মোট ISP সংখ্যা", min_value=0, step=1, key="total_isp_count_input")
+    total_isp_count = st.number_input("ISP মোট সংখ্যা", min_value=0, step=1, key="total_isp_count_input")
+    st.markdown("<div style='font-size: 12px; color: #F42A41; margin-top: 5px;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
 
     st.write("---")
     # Replace the Submission logic in your main() function with this:
@@ -448,4 +451,3 @@ if __name__ == "__main__":
 
     main()
        
-
