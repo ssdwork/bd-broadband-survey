@@ -36,6 +36,7 @@ if pwd == 'Bccadmin2025':
             filtered_df = df_admin.copy()
             filtered_df['মোট গ্রাম'] = pd.to_numeric(filtered_df['মোট গ্রাম'], errors='coerce').fillna(0)
             filtered_df['আওতাভুক্ত গ্রাম'] = pd.to_numeric(filtered_df['আওতাভুক্ত গ্রাম'], errors='coerce').fillna(0)
+            filtered_df['ISP মোট সংখ্যা'] = pd.to_numeric(filtered_df['ISP মোট সংখ্যা'], errors='coerce').fillna(0)
 
             f1, f2 = st.columns(2)
             with f1: 
@@ -107,6 +108,14 @@ if pwd == 'Bccadmin2025':
                 div_counts.columns = ['Division', 'Count']
                 st.plotly_chart(px.bar(div_counts, x='Division', y='Count', text_auto=True, 
                                      color_discrete_sequence=['#00D487']), use_container_width=True)
+            
+            # ISP Visualization Section
+            st.markdown("---")
+            st.write("**বিভাগ অনুযায়ী মোট ISP সংখ্যা (Total ISP Count by Division)**")
+            isp_counts = filtered_df.groupby('বিভাগ')['ISP মোট সংখ্যা'].sum().reset_index()
+            fig_isp = px.bar(isp_counts, x='বিভাগ', y='ISP মোট সংখ্যা', text_auto=True,
+                             color_discrete_sequence=['#00D487'])
+            st.plotly_chart(fig_isp, use_container_width=True)
 
             # ৫. টেবিল প্রদর্শন 
             st.subheader("📋 Data Records")
