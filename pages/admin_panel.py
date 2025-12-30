@@ -111,6 +111,8 @@ if pwd == 'Bccadmin2025':
             
             # ISP Visualization Section
             st.markdown("---")
+            total_isps = int(filtered_df['ISP মোট সংখ্যা'].sum())
+            st.info(f"**সর্বমোট ISP সংখ্যা:** {total_isps}")
             st.write("**বিভাগ অনুযায়ী মোট ISP সংখ্যা (Total ISP Count by Division)**")
             isp_counts = filtered_df.groupby('বিভাগ')['ISP মোট সংখ্যা'].sum().reset_index()
             fig_isp = px.bar(isp_counts, x='বিভাগ', y='ISP মোট সংখ্যা', text_auto=True,
