@@ -256,7 +256,7 @@ def main():
             </div>
         """, unsafe_allow_html=True)
         
-        # ইনপুট বক্স (লেবেল হাইড করা, কারণ উপরে আমরা কাস্টম লেবেল দিয়েছি)
+        # ইনপুট বক্স (লেবেল হাইড করা, কারণ উপরে কাস্টম লেবেল দিয়েছি)
         workplace = st.text_input("", key="workplace_input", label_visibility="collapsed")
 
     st.write("---")
@@ -376,9 +376,9 @@ def main():
                 
                 
                 # ৩. ইউজার ফিডব্যাক
-                st.balloons() # বেলুন অ্যানিমেশন আগের মতোই থাকছে
+                st.balloons() # বেলুন অ্যানিমেশন আগের মতোই 
                 
-                # বড় এবং কাস্টম সাকসেস মেসেজ তৈরি
+                # কাস্টম সাকসেস মেসেজ তৈরি
                 success_message = """
                     <div style="
                         background-color: rgba(0, 212, 135, 0.15);
@@ -408,7 +408,7 @@ def main():
                 # ১০ সেকেন্ড পর মেসেজটি মুছে ফেলা
                 placeholder.empty()
                 
-                # ৪. পেজটি পুরোপুরি রিলোড করা (এটিই আপনার চাওয়া কমান্ড)
+                # ৪. পেজটি পুরোপুরি রিলোড করা 
                 st.components.v1.html(
                     "<script>window.parent.location.reload();</script>",
                     height=0,
@@ -426,7 +426,7 @@ def main():
                 st.session_state["total_isp_count_input"] = 0
 
                 # ৩ নম্বর সেকশন: ISP তথ্য পুরোপুরি মুছে ফেলা
-                # আমরা সেশন স্টেট থেকে সব ISP ডাইনামিক কি (Key) মুছে ফেলব
+                #  সেশন স্টেট থেকে সব ISP ডাইনামিক কি (Key) মুছে ফেলা
                 current_keys = list(st.session_state.keys())
                 for key in current_keys:
                     if any(prefix in key for prefix in ["in_", "ic_", "is_", "un_subs_", "is_dis_"]):
@@ -452,3 +452,4 @@ if __name__ == "__main__":
 
     main()
        
+
