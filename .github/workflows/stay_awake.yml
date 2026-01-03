@@ -3,7 +3,7 @@ name: Streamlit Keep Alive
 on:
   schedule:
     - cron: '0 * * * *' # প্রতি ঘণ্টার শুরুতে রান 
-  workflow_dispatch: #  চাইলে ম্যানুয়ালিও রান 
+  workflow_dispatch: #   ম্যানুয়ালি রান 
 
 jobs:
   build:
