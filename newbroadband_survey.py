@@ -90,7 +90,7 @@ st.markdown("""
         font-family: 'Calibri', 'Nikosh', sans-serif; 
         color: #000000 !important; 
         font-weight: 500 !important; 
-        font-size: 16px !important;
+        font-size: 18px !important;
     }
     
     /* 3. Headers and Metrics */
@@ -110,7 +110,7 @@ st.markdown("""
         caret-color: #000000 !important;
         text-shadow: none !important;
         font-weight: 600 !important;
-        font-size: 16px !important;
+        font-size: 18px !important;
         background-color: transparent !important; /* Inherit from container */
     }
 
@@ -146,7 +146,7 @@ st.markdown("""
     [data-testid="stSidebar"] h2,
     [data-testid="stSidebar"] h3 {
         color: #000000 !important;
-        font-size: 16px !important;
+        font-size: 18px !important;
     }
 
     /* 6. Buttons */
@@ -156,7 +156,7 @@ st.markdown("""
         background-color: #FFFFFF !important; 
         font-weight: 600 !important; 
         border-radius: 6px !important;
-        font-size: 16px !important;
+        font-size: 18px !important;
         transition: all 0.2s ease-in-out !important;
     }
     div.stButton > button:hover {
@@ -170,7 +170,7 @@ st.markdown("""
         border: none !important;
         border-radius: 50px !important;
         box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3) !important;
-        font-size: 17px !important;
+        font-size: 18px !important;
     }
     div.stButton > button[kind="primary"] p {
         color: #FFFFFF !important;
@@ -199,7 +199,7 @@ st.markdown("""
         font-weight: 700; 
         margin: 25px auto 10px auto; 
         border-left: 6px solid #F42A41; 
-        font-size: 16px !important;
+        font-size: 20px !important;
         display: table;
     }
     
@@ -243,7 +243,7 @@ st.markdown("""
         color: #000000 !important;
         text-shadow: none !important;
         font-weight: 700 !important;
-        font-size: 16px !important;
+        font-size: 18px !important;
     }
 """, unsafe_allow_html=True)
 
@@ -304,8 +304,8 @@ def main():
         # কর্মস্থলের নাম ও উদাহরণের লেবেল (সঠিক স্পেসিং সহ)
         st.markdown("""
             <div style="margin-bottom: 2px;"> 
-                <label style="font-size: 16px; font-weight: 500; color: #000000; font-family: 'Calibri', 'Nikosh', sans-serif;">
-                    কর্মস্থলের নাম (Workplace Name) * <span style="font-size: 12px; color: #006400; font-weight: 500;">Example: উপজেলা অফিস, জেলা অফিস</span>
+                <label style="font-size: 18px; font-weight: 500; color: #000000; font-family: 'Calibri', 'Nikosh', sans-serif;">
+                    কর্মস্থলের নাম (Workplace Name) * <span style="font-size: 14px; color: #006400; font-weight: 500;">Example: উপজেলা অফিস, জেলা অফিস</span>
                 </label>
             </div>
         """, unsafe_allow_html=True)
@@ -339,7 +339,7 @@ def main():
         covered_villages = st.number_input("ব্রডব্যান্ড ইন্টারনেটের আওতাভুক্ত গ্রামের সংখ্যা", min_value=0, max_value=total_villages, step=1, key="covered_v")
 
     st.markdown('<div class="section-head">৩. উপজেলাতে সেবা প্রদানকৃত ISP এর তথ্য</div>', unsafe_allow_html=True)
-    st.markdown("<div style='font-size: 14px !important; color: #F42A41; margin-top: 5px; margin-bottom: 15px;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size: 16px !important; color: #F42A41; margin-top: 5px; margin-bottom: 15px;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
     isp_records = []
     for i in range(st.session_state.rows):
         st.markdown(f"**ISP নং {i+1}**")
@@ -386,7 +386,7 @@ def main():
     c_isp_total, _ = st.columns([1, 3])
     with c_isp_total:
         total_isp_count = st.number_input("মোট ISP সংখ্যা", min_value=0, step=1, key="total_isp_count_input")
-    st.markdown("<div style='font-size: 14px !important; color: #F42A41; margin-top: 5px;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size: 16px !important; color: #F42A41; margin-top: 5px;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
 
 
     st.write("---")
