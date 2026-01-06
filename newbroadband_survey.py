@@ -163,6 +163,7 @@ st.markdown("""
         background-color: #00D487 !important; 
         color: black !important; 
         border: 1px solid #00D487 !important;
+        box-shadow: 0 4px 12px rgba(0, 212, 135, 0.4) !important;
     }
 
     /* 7. Custom Classes */
@@ -180,9 +181,10 @@ st.markdown("""
         padding: 10px 15px; 
         border-radius: 8px; 
         font-weight: 700; 
-        margin-top: 25px; 
+        margin: 25px auto 10px auto; 
         border-left: 6px solid #F42A41; 
         font-size: 16px !important;
+        display: table;
     }
     
     /* Hide Default Streamlit Elements */
@@ -267,8 +269,8 @@ def main():
             </div>
         """, unsafe_allow_html=True)
         
-        # ইনপুট বক্স (লেবেল হাইড করা, কারণ উপরে কাস্টম লেবেল দিয়েছি)
-        workplace = st.text_input("", key="workplace_input", label_visibility="collapsed")
+        # ইনপুট বক্স (লেবেল 'Workplace Name' দেওয়া হলো যাতে CSS দিয়ে ধরা যায়, কিন্তু ভিজিবিলিটি collapsed)
+        workplace = st.text_input("Workplace Name", key="workplace_input", label_visibility="collapsed")
 
     st.markdown('<div class="section-head">২. উপজেলা ও ইউনিয়নের তথ্য</div>', unsafe_allow_html=True)
     
@@ -347,14 +349,44 @@ def main():
     st.write("---")
     # Replace the Submission logic in your main() function with this:
 
-    if st.button("জমা দিন (Submit Data)", use_container_width=True, type="primary"):
+    _, c_sub, _ = st.columns([3, 2, 3])
+    with c_sub:
+        submit_btn = st.button("জমা দিন (Submit Data)", use_container_width=True, type="primary")
+
+    if submit_btn:
         # ১. সব নম্বরের দৈর্ঘ্য চেক করা
         all_numbers_valid = all(len(r['phone']) == 11 and r['phone'].isdigit() for r in isp_records)
         
-        if not (name and final_div and final_dist):
-            st.error("দয়া করে নাম এবং ভৌগোলিক তথ্য নিশ্চিত করুন।")
+        # ২. মিসিং ফিল্ড চেক করা
+        missing_fields = []
+        if not name: missing_fields.append("নাম (Name) *")
+        if not designation: missing_fields.append("পদবী (Designation) *")
+        if not workplace: missing_fields.append("Workplace Name")
+        if not final_div: missing_fields.append("বিভাগ (Division)")
+        if not final_dist: missing_fields.append("জেলা (District)")
+        if not final_upz: missing_fields.append("উপজেলা (Upazila)")
+        if not final_uni: missing_fields.append("ইউনিয়ন (Union)")
+        if is_broadband == "-- নির্বাচন করুন --": missing_fields.append("ইউনিয়নটি কি ব্রডব্যান্ড এর আওতাভুক্ত? *")
+        
+        # ৩. যদি কোনো ফিল্ড মিসিং থাকে
+        if missing_fields:
+            st.toast("⚠️ দয়া করে লাল বর্ডার চিহ্নিত ফিল্ডগুলো পূরণ করুন!", icon="⚠️")
+            
+            # ডাইনামিক CSS জেনারেট করে লাল বর্ডার দেওয়া
+            error_style = "<style>"
+            for label in missing_fields:
+                # Text Input এবং Selectbox এর জন্য CSS সিলেক্টর (aria-label দিয়ে টার্গেট করা)
+                error_style += f"""
+                div[data-testid="stTextInput"]:has(input[aria-label="{label}"]) div[data-baseweb="input"],
+                div[data-testid="stSelectbox"]:has(input[aria-label="{label}"]) div[data-baseweb="select"] {{
+                    border: 1px solid #F42A41 !important;
+                }}
+                """
+            error_style += "</style>"
+            st.markdown(error_style, unsafe_allow_html=True)
+            
         elif not all_numbers_valid:
-            st.error("❌ ISP যোগাযোগের নম্বর সঠিক নয় (১১ ডিজিট ও শুধুমাত্র সংখ্যা হতে হবে)।")
+            st.toast("❌ ISP যোগাযোগের নম্বর সঠিক নয় (১১ ডিজিট ও শুধুমাত্র সংখ্যা হতে হবে)।", icon="❌")
         else:
             try:
                 # ১. ডাটা প্রিপেয়ার করা
