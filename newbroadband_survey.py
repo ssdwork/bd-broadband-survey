@@ -78,10 +78,11 @@ st.set_page_config(page_title="ব্রডব্যান্ড কভারে
 st.markdown("""
     <style>
     
-    /* 1. Main Background - White */
+    /* 1. Main Background - White with Watermark */
     .stApp {
-        background-color: #FFFFFF !important;
-        background-image: none !important;
+        background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)),
+            url('https://static.vecteezy.com/system/resources/thumbnails/072/508/275/small/a-highly-detailed-shot-of-a-server-rack-s-back-panel-showing-the-organized-chaos-of-cables-and-ports-free-photo.jpg'); 
+        background-size: cover; background-position: center; background-attachment: fixed;
     }
 
     /* 2. Global Text Color - Black */
@@ -97,23 +98,38 @@ st.markdown("""
         color: #000000 !important;
     }
 
-    /* 4. Input Fields - Clean Look for White Background */
+    /* 4. Input Fields - Force White Theme (Fix for Dark Mode Visibility) */
     
+    /* Text Color & Cursor */
     div[data-baseweb="input"] input, 
     div[data-baseweb="select"] div,
-    div[data-baseweb="select"] span {
+    div[data-baseweb="select"] span,
+    div[data-baseweb="base-input"] {
         color: #000000 !important; 
         -webkit-text-fill-color: #000000 !important;
+        caret-color: #000000 !important;
         text-shadow: none !important;
         font-weight: 600 !important;
         font-size: 16px !important;
+        background-color: transparent !important; /* Inherit from container */
     }
 
-    /* বক্সের ব্যাকগ্রাউন্ড সাদা */
-    div[data-baseweb="input"], div[data-baseweb="select"] { 
+    /* Input Container Background */
+    div[data-baseweb="input"], 
+    div[data-baseweb="base-input"],
+    div[data-baseweb="select"] { 
         background-color: #FFFFFF !important; 
-        border: 1px solid #00D487 !important; 
+        border: 1px solid #006400 !important; 
         border-radius: 8px !important; 
+    }
+    
+    /* Dropdown Menu & Options Fix */
+    ul[data-baseweb="menu"], div[data-baseweb="popover"] {
+        background-color: #FFFFFF !important;
+    }
+    li[data-baseweb="option"] {
+        color: #000000 !important;
+        background-color: #FFFFFF !important;
     }
 
     /* ৫. Sidebar - Light Gray */
@@ -135,8 +151,8 @@ st.markdown("""
 
     /* 6. Buttons */
     div.stButton > button { 
-        color: #00D487 !important; 
-        border: 1px solid #00D487 !important; 
+        color: #006400 !important; 
+        border: 1px solid #006400 !important; 
         background-color: #FFFFFF !important; 
         font-weight: 600 !important; 
         border-radius: 6px !important;
@@ -144,20 +160,20 @@ st.markdown("""
         transition: all 0.2s ease-in-out !important;
     }
     div.stButton > button:hover {
-        background-color: #00D487 !important;
-        color: #000000 !important;
-        box-shadow: 0 2px 8px rgba(0, 212, 135, 0.4) !important;
+        background-color: #006400 !important;
+        color: #FFFFFF !important;
+        box-shadow: 0 2px 8px rgba(0, 100, 0, 0.4) !important;
     }
     div.stButton > button[kind="primary"] { 
-        background-color: #00D487 !important; 
-        color: black !important; 
-        border: 1px solid #00D487 !important;
-        box-shadow: 0 4px 12px rgba(0, 212, 135, 0.4) !important;
+        background-color: #006400 !important; 
+        color: #FFFFFF !important; 
+        border: 1px solid #006400 !important;
+        box-shadow: 0 4px 12px rgba(0, 100, 0, 0.4) !important;
     }
 
     /* 7. Custom Classes */
     .main-title { 
-        color: #00D487 !important; 
+        color: #006400 !important; 
         text-align: center; 
         font-size: 1.8rem !important; 
         font-weight: 700; 
@@ -166,8 +182,8 @@ st.markdown("""
         display: inline-block;
     }
     .section-head { 
-        background: #00D487 !important; 
-        color: #000000 !important; 
+        background: #006400 !important; 
+        color: #FFFFFF !important; 
         padding: 10px 15px; 
         border-radius: 8px; 
         font-weight: 700; 
@@ -191,10 +207,10 @@ st.markdown("""
     button[data-testid="stSidebarCollapseButton"] {
         visibility: visible !important;
         display: inline-flex !important;
-        background-color: rgba(0, 212, 135, 0.1) !important; /* হালকা সবুজ ব্যাকগ্রাউন্ড */
-        border: 1px solid #00D487 !important;
+        background-color: rgba(0, 100, 0, 0.1) !important; /* হালকা সবুজ ব্যাকগ্রাউন্ড */
+        border: 1px solid #006400 !important;
         border-radius: 50% !important;
-        color: #00D487 !important;
+        color: #006400 !important;
         z-index: 999999 !important;
     }
 
@@ -279,7 +295,7 @@ def main():
         st.markdown("""
             <div style="margin-bottom: 2px;"> 
                 <label style="font-size: 16px; font-weight: 500; color: #000000; font-family: 'Calibri', 'Nikosh', sans-serif;">
-                    কর্মস্থলের নাম (Workplace Name) * <span style="font-size: 12px; color: #00D487; font-weight: 500;">Example: উপজেলা অফিস, জেলা অফিস</span>
+                    কর্মস্থলের নাম (Workplace Name) * <span style="font-size: 12px; color: #006400; font-weight: 500;">Example: উপজেলা অফিস, জেলা অফিস</span>
                 </label>
             </div>
         """, unsafe_allow_html=True)
@@ -439,14 +455,14 @@ def main():
                 # কাস্টম সাকসেস মেসেজ তৈরি
                 success_message = """
                     <div style="
-                        background-color: rgba(0, 212, 135, 0.15);
+                        background-color: rgba(0, 100, 0, 0.15);
                         padding: 40px;
                         border-radius: 20px;
-                        border: 3px solid #00D487;
+                        border: 3px solid #006400;
                         text-align: center;
                         margin: 25px 0;
                     ">
-                        <h1 style="color: #00D487; font-family: 'Calibri', 'Nikosh', sans-serif; font-size: 45px; margin: 0; font-weight: 700;">
+                        <h1 style="color: #006400; font-family: 'Calibri', 'Nikosh', sans-serif; font-size: 45px; margin: 0; font-weight: 700;">
                             ✅ সফলভাবে সংরক্ষিত হয়েছে!
                         </h1>
                         <p style="color: #000000; font-size: 22px; margin-top: 15px; font-weight: 500;">
