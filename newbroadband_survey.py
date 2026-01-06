@@ -165,10 +165,17 @@ st.markdown("""
         box-shadow: 0 2px 8px rgba(0, 100, 0, 0.4) !important;
     }
     div.stButton > button[kind="primary"] { 
-        background-color: #006400 !important; 
+        background: linear-gradient(to bottom, #007bff, #0056b3) !important; 
         color: #FFFFFF !important; 
-        border: 1px solid #006400 !important;
-        box-shadow: 0 4px 12px rgba(0, 100, 0, 0.4) !important;
+        border: none !important;
+        border-radius: 50px !important;
+        box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3) !important;
+        font-size: 17px !important;
+    }
+    div.stButton > button[kind="primary"]:hover {
+        background: linear-gradient(to bottom, #0056b3, #004085) !important;
+        box-shadow: 0 6px 15px rgba(0, 123, 255, 0.5) !important;
+        transform: scale(1.02) !important;
     }
 
     /* 7. Custom Classes */
@@ -373,9 +380,9 @@ def main():
             st.session_state.rows -= 1
             st.rerun()
     
-    _, c_isp_total = st.columns([3, 1])
+    c_isp_total, _ = st.columns([1, 3])
     with c_isp_total:
-        total_isp_count = st.number_input("ISP মোট সংখ্যা", min_value=0, step=1, key="total_isp_count_input")
+        total_isp_count = st.number_input("মোট ISP সংখ্যা", min_value=0, step=1, key="total_isp_count_input")
     st.markdown("<div style='font-size: 14px !important; color: #F42A41; margin-top: 5px;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
 
 
