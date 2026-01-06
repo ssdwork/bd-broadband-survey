@@ -109,7 +109,7 @@ st.markdown("""
         -webkit-text-fill-color: #000000 !important;
         caret-color: #000000 !important;
         text-shadow: none !important;
-        font-weight: 700 !important;
+        font-weight: 400 !important;
         font-size: 18px !important;
         background-color: transparent !important; /* Inherit from container */
     }
@@ -340,7 +340,7 @@ def main():
         covered_villages = st.number_input("ব্রডব্যান্ড ইন্টারনেটের আওতাভুক্ত গ্রামের সংখ্যা", min_value=0, max_value=total_villages, step=1, key="covered_v")
 
     st.markdown('<div class="section-head">৩. উপজেলাতে সেবা প্রদানকৃত ISP এর তথ্য</div>', unsafe_allow_html=True)
-    st.markdown("<div style='font-size: 16px !important; color: #F42A41; margin-top: 5px; margin-bottom: 15px; font-weight: 500 !important;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size: 14px !important; color: #F42A41; margin-top: 5px; margin-bottom: 15px; font-weight: 500 !important;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
     isp_records = []
     for i in range(st.session_state.rows):
         st.markdown(f"**ISP নং {i+1}**")
@@ -387,7 +387,7 @@ def main():
     c_isp_total, _ = st.columns([1, 3])
     with c_isp_total:
         total_isp_count = st.number_input("মোট ISP সংখ্যা", min_value=0, step=1, key="total_isp_count_input")
-    st.markdown("<div style='font-size: 16px !important; color: #F42A41; margin-top: 5px; font-weight: 500 !important;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size: 14px !important; color: #F42A41; margin-top: 5px; font-weight: 500 !important;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
 
 
     st.write("---")
