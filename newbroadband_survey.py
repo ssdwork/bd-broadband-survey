@@ -174,6 +174,7 @@ st.markdown("""
         font-weight: 700; 
         border-bottom: 3px solid #F42A41; 
         padding-bottom: 5px; 
+        display: inline-block;
     }
     .section-head { 
         background: #00D487 !important; 
@@ -216,14 +217,40 @@ st.markdown("""
         padding-top: 1rem !important;
         padding-bottom: 1rem !important;
     }
+    
+    /* Toast Message Styling - High Visibility (Same as Inputs) */
+    div[data-testid="stToast"] {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        border: 2px solid #F42A41 !important;
+        border-radius: 8px !important;
+        backdrop-filter: blur(5px);
+    }
+    div[data-testid="stToast"] div, div[data-testid="stToast"] p {
+        color: #FFFFFF !important;
+        text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 2px 2px 2px rgba(0,0,0,0.8) !important;
+        font-weight: 700 !important;
+        font-size: 16px !important;
+    }
 """, unsafe_allow_html=True)
 
 def main():
     # Google Sheets Connection
     conn = st.connection("gsheets", type=GSheetsConnection)
 
-    st.markdown('<div class="main-title">🌐 সমগ্র বাংলাদেশে ব্রডব্যান্ড কভারেজ জরিপ</div>', unsafe_allow_html=True)
-    st.markdown("<div style='text-align: center; margin-bottom: 15px; margin-top: 2px;'><p style='font-size: 1rem !important; color:#FFFFFF; background: rgba(255,255,255,0.1); border: 1px solid #555; display: inline-block; padding: 2px 15px; border-radius: 20px;'>Bangladesh Computer Council (BCC)</p></div>", unsafe_allow_html=True)
+    # Header with Logos (ICT Division Left, BCC Right)
+    st.markdown("""
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <div style="flex: 0 0 90px; text-align: left;">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Government_of_Bangladesh_Logo.svg/120px-Government_of_Bangladesh_Logo.svg.png" style="height: 70px; width: auto;" title="ICT Division">
+            </div>
+            <div style="flex: 1; text-align: center;">
+                <div class="main-title">🌐 সমগ্র বাংলাদেশে ব্রডব্যান্ড কভারেজ জরিপ</div>
+            </div>
+            <div style="flex: 0 0 90px; text-align: right;">
+                <img src="https://upload.wikimedia.org/wikipedia/en/thumb/3/35/BCC_LOGO.png/120px-BCC_LOGO.png" style="height: 70px; width: auto;" title="Bangladesh Computer Council">
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
 
     if 'rows' not in st.session_state:
         st.session_state.rows = 1
