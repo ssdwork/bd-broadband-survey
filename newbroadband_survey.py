@@ -77,7 +77,6 @@ st.set_page_config(page_title="ব্রডব্যান্ড কভারে
 
 st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap');
     
     /* 1. Main Background - Dark Overlay */
     .stApp {
@@ -88,7 +87,7 @@ st.markdown("""
 
     /* 2. Global Text Color - White (ব্যাকগ্রাউন্ড ডার্ক তাই টেক্সট সবসময় সাদা থাকবে) */
     html, body, [class*="css"], .stMarkdown, p, label, .stTextInput > label, .stNumberInput > label { 
-        font-family: 'Hind Siliguri', sans-serif; 
+        font-family: 'Calibri', 'Nikosh', sans-serif; 
         color: #FFFFFF !important; 
         font-weight: 500 !important; 
         font-size: 16px !important;
@@ -168,10 +167,10 @@ st.markdown("""
     .main-title { 
         color: #00D487 !important; 
         text-align: center; 
-        font-size: 2.2rem !important; 
+        font-size: 1.8rem !important; 
         font-weight: 700; 
-        border-bottom: 4px solid #F42A41; 
-        padding-bottom: 10px; 
+        border-bottom: 3px solid #F42A41; 
+        padding-bottom: 5px; 
     }
     .section-head { 
         background: #00D487 !important; 
@@ -207,6 +206,12 @@ st.markdown("""
 
     /* অটোমেটিক নেভিগেশন লিস্ট লুকানো */
     [data-testid="stSidebarNav"] {display: none !important;}
+    
+    /* Reduce top padding of the main container to save space */
+    .block-container {
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
+    }
 """, unsafe_allow_html=True)
 
 def main():
@@ -214,7 +219,7 @@ def main():
     conn = st.connection("gsheets", type=GSheetsConnection)
 
     st.markdown('<div class="main-title">🌐 সমগ্র বাংলাদেশে ব্রডব্যান্ড কভারেজ জরিপ</div>', unsafe_allow_html=True)
-    st.markdown("<div style='text-align: center; margin-bottom: 30px; margin-top: 5px;'><p style='font-size: 1.2rem !important; color:#FFFFFF; background: rgba(255,255,255,0.1); border: 1px solid #555; display: inline-block; padding: 2px 15px; border-radius: 20px;'>Bangladesh Computer Council (BCC)</p></div>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align: center; margin-bottom: 15px; margin-top: 2px;'><p style='font-size: 1rem !important; color:#FFFFFF; background: rgba(255,255,255,0.1); border: 1px solid #555; display: inline-block; padding: 2px 15px; border-radius: 20px;'>Bangladesh Computer Council (BCC)</p></div>", unsafe_allow_html=True)
 
     if 'rows' not in st.session_state:
         st.session_state.rows = 1
@@ -254,12 +259,9 @@ def main():
         # কর্মস্থলের নাম ও উদাহরণের লেবেল (সঠিক স্পেসিং সহ)
         st.markdown("""
             <div style="margin-top: 10px; margin-bottom: 15px;"> 
-                <label style="font-size: 16px; font-weight: 500; color: white; font-family: 'Hind Siliguri', sans-serif;">
-                    কর্মস্থলের নাম (Workplace Name) *
+                <label style="font-size: 16px; font-weight: 500; color: white; font-family: 'Calibri', 'Nikosh', sans-serif;">
+                    কর্মস্থলের নাম (Workplace Name) * <span style="font-size: 12px; color: #00D487; font-weight: 500;">Example: উপজেলা অফিস, জেলা অফিস</span>
                 </label>
-                <div style="font-size: 16px; color: #00D487; font-weight: 500;">
-                    Example: উপজেলা অফিস, জেলা অফিস
-                </div>
             </div>
         """, unsafe_allow_html=True)
         
@@ -292,7 +294,6 @@ def main():
         covered_villages = st.number_input("ব্রডব্যান্ড ইন্টারনেটের আওতাভুক্ত গ্রামের সংখ্যা", min_value=0, max_value=total_villages, step=1, key="covered_v")
 
     st.markdown('<div class="section-head">৩. উপজেলাতে সেবা প্রদানকৃত ISP এর তথ্য</div>', unsafe_allow_html=True)
-    st.markdown("<div style='font-size: 12px !important; color: #F42A41; margin-top: 5px; margin-bottom: 15px;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
     st.markdown("<div style='font-size: 14px !important; color: #F42A41; margin-top: 5px; margin-bottom: 15px;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
     isp_records = []
     for i in range(st.session_state.rows):
@@ -326,22 +327,18 @@ def main():
         if iname:
             isp_records.append({"name": iname, "phone": icontact, "subs": isubs})
 
-    # ISP Controls Row: Unknown Checkbox, Add Button, Remove Button
-    ic1, ic2, ic3 = st.columns([1, 1, 1])
+    # ISP Controls Row: Add Button, Remove Button
+    ic1, ic2 = st.columns(2)
     with ic1:
-        st.checkbox("জানা নেই", key="isp_unknown_global")
-    with ic2:
         if st.button("➕ আরও ISP যোগ করুন", use_container_width=True):
             st.session_state.rows += 1
             st.rerun()
-    with ic3:
+    with ic2:
         if st.button("➖ বাদ দিন", use_container_width=True) and st.session_state.rows > 1:
             st.session_state.rows -= 1
             st.rerun()
     
-    st.write("##")
     total_isp_count = st.number_input("ISP মোট সংখ্যা", min_value=0, step=1, key="total_isp_count_input")
-    st.markdown("<div style='font-size: 12px !important; color: #F42A41; margin-top: 5px;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
     st.markdown("<div style='font-size: 14px !important; color: #F42A41; margin-top: 5px;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
 
 
@@ -400,7 +397,7 @@ def main():
                         text-align: center;
                         margin: 25px 0;
                     ">
-                        <h1 style="color: #00D487; font-family: 'Hind Siliguri', sans-serif; font-size: 45px; margin: 0; font-weight: 700;">
+                        <h1 style="color: #00D487; font-family: 'Calibri', 'Nikosh', sans-serif; font-size: 45px; margin: 0; font-weight: 700;">
                             ✅ সফলভাবে সংরক্ষিত হয়েছে!
                         </h1>
                         <p style="color: white; font-size: 22px; margin-top: 15px; font-weight: 500;">
