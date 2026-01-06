@@ -73,7 +73,7 @@ def smart_geo_input(label, options_list, key):
 # -----------------------------------------------------------------------------
 # 3. PAGE SETUP & DESIGN
 # -----------------------------------------------------------------------------
-st.set_page_config(page_title="ব্রডব্যান্ড কভারেজ জরিপ", page_icon="🌐", layout="centered", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="ব্রডব্যান্ড কভারেজ জরিপ", page_icon="🌐", layout="wide", initial_sidebar_state="collapsed")
 
 st.markdown("""
     <style>
@@ -220,8 +220,8 @@ def main():
         st.session_state.rows = 1
 
     st.markdown('<div class="section-head">১. কর্মকর্তার তথ্য</div>', unsafe_allow_html=True)
-    col1, col2 = st.columns(2)
-    with col1:
+    c1, c2, c3 = st.columns(3)
+    with c1:
         name = st.text_input("নাম (Name) *", key="user_name") 
         
         # পদবীর তালিকা
@@ -232,7 +232,8 @@ def main():
             "ওয়েবসাইট এ্যাডমিনিস্ট্রেটর", "ডাটা এন্ট্রি/কন্ট্রোল সুপারভাইজার", "কম্পিউটার অপারেটর", 
             "ডাটা এন্ট্রি/কন্ট্রোল অপারেটর", "অফিস সহকারী কাম কম্পিউটার অপারেটর"
         ]
-        
+    
+    with c2:
         # ড্রপডাউন তৈরি
         selected_desig = st.selectbox(
             "পদবী (Designation) *", 
@@ -247,7 +248,8 @@ def main():
             designation = "" # কিছুই সিলেক্ট না করলে খালি থাকবে
         else:
             designation = selected_desig
-    with col2:
+            
+    with c3:
         
         # কর্মস্থলের নাম ও উদাহরণের লেবেল (সঠিক স্পেসিং সহ)
         st.markdown("""
@@ -265,33 +267,33 @@ def main():
         workplace = st.text_input("", key="workplace_input", label_visibility="collapsed")
 
     st.markdown('<div class="section-head">২. উপজেলা ও ইউনিয়নের তথ্য</div>', unsafe_allow_html=True)
-
-    g1, g2 = st.columns(2)
+    
+    g1, g2, g3, g4 = st.columns(4)
     with g1:
         div_list = list(BD_DATA.keys())
         final_div = smart_geo_input('বিভাগ (Division)', div_list, 'geo_div')
+    with g2:
         dist_opts = list(BD_DATA[final_div].keys()) if final_div in BD_DATA else []
         final_dist = smart_geo_input('জেলা (District)', dist_opts, 'geo_dist')
-    with g2:
+    with g3:
         upz_opts = list(BD_DATA[final_div][final_dist].keys()) if (final_div in BD_DATA and final_dist in BD_DATA[final_div]) else []
         final_upz = smart_geo_input('উপজেলা (Upazila)', upz_opts, 'geo_upz')
+    with g4:
         uni_opts = BD_DATA[final_div][final_dist][final_upz] if (final_div in BD_DATA and final_dist in BD_DATA[final_div] and final_upz in BD_DATA[final_div][final_dist]) else []
         final_uni = smart_geo_input('ইউনিয়ন (Union)', uni_opts, 'geo_uni')
 
-    # ব্রডব্যান্ড ড্রপডাউন
-    is_broadband = st.selectbox("ইউনিয়নটি কি ব্রডব্যান্ড এর আওতাভুক্ত? *", ["-- নির্বাচন করুন --", "হ্যাঁ", "না"], key="bb_coverage")
-    
-    st.write("##")
-    
-    # গ্রামের সংখ্যা ইনপুট (সম্পূর্ণ স্পেস দিয়ে ইনডেন্ট করা)
-    gv1, gv2 = st.columns(2)
+    # ব্রডব্যান্ড ও গ্রামের তথ্য এক লাইনে
+    gv1, gv2, gv3 = st.columns(3)
     with gv1:
-        total_villages = st.number_input("ইউনিয়নে মোট গ্রামের সংখ্যা", min_value=0, step=1, key="total_v")
+        is_broadband = st.selectbox("ইউনিয়নটি কি ব্রডব্যান্ড এর আওতাভুক্ত? *", ["-- নির্বাচন করুন --", "হ্যাঁ", "না"], key="bb_coverage")
     with gv2:
+        total_villages = st.number_input("ইউনিয়নে মোট গ্রামের সংখ্যা", min_value=0, step=1, key="total_v")
+    with gv3:
         covered_villages = st.number_input("ব্রডব্যান্ড ইন্টারনেটের আওতাভুক্ত গ্রামের সংখ্যা", min_value=0, max_value=total_villages, step=1, key="covered_v")
 
     st.markdown('<div class="section-head">৩. উপজেলাতে সেবা প্রদানকৃত ISP এর তথ্য</div>', unsafe_allow_html=True)
     st.markdown("<div style='font-size: 12px !important; color: #F42A41; margin-top: 5px; margin-bottom: 15px;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size: 14px !important; color: #F42A41; margin-top: 5px; margin-bottom: 15px;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
     isp_records = []
     for i in range(st.session_state.rows):
         st.markdown(f"**ISP নং {i+1}**")
@@ -324,17 +326,23 @@ def main():
         if iname:
             isp_records.append({"name": iname, "phone": icontact, "subs": isubs})
 
-    b1, b2, _ = st.columns([1.5, 1, 4])
-    if b1.button("➕ আরও ISP যোগ করুন"):
-        st.session_state.rows += 1
-        st.rerun()
-    if b2.button("➖ বাদ দিন") and st.session_state.rows > 1:
-        st.session_state.rows -= 1
-        st.rerun()
+    # ISP Controls Row: Unknown Checkbox, Add Button, Remove Button
+    ic1, ic2, ic3 = st.columns([1, 1, 1])
+    with ic1:
+        st.checkbox("জানা নেই", key="isp_unknown_global")
+    with ic2:
+        if st.button("➕ আরও ISP যোগ করুন", use_container_width=True):
+            st.session_state.rows += 1
+            st.rerun()
+    with ic3:
+        if st.button("➖ বাদ দিন", use_container_width=True) and st.session_state.rows > 1:
+            st.session_state.rows -= 1
+            st.rerun()
     
     st.write("##")
     total_isp_count = st.number_input("ISP মোট সংখ্যা", min_value=0, step=1, key="total_isp_count_input")
     st.markdown("<div style='font-size: 12px !important; color: #F42A41; margin-top: 5px;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size: 14px !important; color: #F42A41; margin-top: 5px;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
 
 
     st.write("---")
