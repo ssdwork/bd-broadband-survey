@@ -147,20 +147,22 @@ st.markdown("""
     /* 6. Buttons */
     div.stButton > button { 
         color: #00D487 !important; 
-        border: 2px solid #00D487 !important; 
+        border: 1px solid #00D487 !important; 
         background-color: rgba(0, 0, 0, 0.5) !important; 
-        font-weight: 700 !important; 
-        border-radius: 8px !important;
+        font-weight: 600 !important; 
+        border-radius: 6px !important;
         font-size: 16px !important;
+        transition: all 0.2s ease-in-out !important;
     }
     div.stButton > button:hover {
         background-color: #00D487 !important;
         color: #000000 !important;
+        box-shadow: 0 2px 8px rgba(0, 212, 135, 0.4) !important;
     }
     div.stButton > button[kind="primary"] { 
         background-color: #00D487 !important; 
         color: black !important; 
-        border: none !important;
+        border: 1px solid #00D487 !important;
     }
 
     /* 7. Custom Classes */
@@ -258,7 +260,7 @@ def main():
         
         # কর্মস্থলের নাম ও উদাহরণের লেবেল (সঠিক স্পেসিং সহ)
         st.markdown("""
-            <div style="margin-top: 10px; margin-bottom: 15px;"> 
+            <div style="margin-bottom: 2px;"> 
                 <label style="font-size: 16px; font-weight: 500; color: white; font-family: 'Calibri', 'Nikosh', sans-serif;">
                     কর্মস্থলের নাম (Workplace Name) * <span style="font-size: 12px; color: #00D487; font-weight: 500;">Example: উপজেলা অফিস, জেলা অফিস</span>
                 </label>
@@ -328,12 +330,12 @@ def main():
             isp_records.append({"name": iname, "phone": icontact, "subs": isubs})
 
     # ISP Controls Row: Add Button, Remove Button
-    ic1, ic2 = st.columns(2)
-    with ic1:
+    _, ic_add, ic_remove = st.columns([5, 1.5, 1])
+    with ic_add:
         if st.button("➕ আরও ISP যোগ করুন", use_container_width=True):
             st.session_state.rows += 1
             st.rerun()
-    with ic2:
+    with ic_remove:
         if st.button("➖ বাদ দিন", use_container_width=True) and st.session_state.rows > 1:
             st.session_state.rows -= 1
             st.rerun()
