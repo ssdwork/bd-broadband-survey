@@ -91,6 +91,7 @@ st.markdown("""
         font-family: 'Hind Siliguri', sans-serif; 
         color: #FFFFFF !important; 
         font-weight: 500 !important; 
+        font-size: 16px !important;
     }
     
     /* 3. Headers and Metrics */
@@ -116,6 +117,7 @@ st.markdown("""
              2px  2px 2px rgba(0,0,0,0.8); /*  শ্যাডো যাতে আরও ফুটে ওঠে */
              
         font-weight: 700 !important;
+        font-size: 16px !important;
     }
 
     /* বক্সের ব্যাকগ্রাউন্ড লাইট মোডেও স্পষ্ট রাখার জন্য সামান্য ধূসর */
@@ -140,6 +142,7 @@ st.markdown("""
     [data-testid="stSidebar"] h2,
     [data-testid="stSidebar"] h3 {
         color: #FFFFFF !important;
+        font-size: 16px !important;
     }
 
     /* 6. Buttons */
@@ -149,6 +152,7 @@ st.markdown("""
         background-color: rgba(0, 0, 0, 0.5) !important; 
         font-weight: 700 !important; 
         border-radius: 8px !important;
+        font-size: 16px !important;
     }
     div.stButton > button:hover {
         background-color: #00D487 !important;
@@ -164,7 +168,7 @@ st.markdown("""
     .main-title { 
         color: #00D487 !important; 
         text-align: center; 
-        font-size: 2.2rem; 
+        font-size: 2.2rem !important; 
         font-weight: 700; 
         border-bottom: 4px solid #F42A41; 
         padding-bottom: 10px; 
@@ -177,6 +181,7 @@ st.markdown("""
         font-weight: 700; 
         margin-top: 25px; 
         border-left: 6px solid #F42A41; 
+        font-size: 16px !important;
     }
     
     /* Hide Default Streamlit Elements */
@@ -209,12 +214,12 @@ def main():
     conn = st.connection("gsheets", type=GSheetsConnection)
 
     st.markdown('<div class="main-title">🌐 সমগ্র বাংলাদেশে ব্রডব্যান্ড কভারেজ জরিপ</div>', unsafe_allow_html=True)
-    st.markdown("<div style='text-align: center; margin-bottom: 30px; margin-top: 5px;'><p style='font-size: 1.2rem; color:#FFFFFF; background: rgba(255,255,255,0.1); border: 1px solid #555; display: inline-block; padding: 2px 15px; border-radius: 20px;'>Bangladesh Computer Council (BCC)</p></div>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align: center; margin-bottom: 30px; margin-top: 5px;'><p style='font-size: 1.2rem !important; color:#FFFFFF; background: rgba(255,255,255,0.1); border: 1px solid #555; display: inline-block; padding: 2px 15px; border-radius: 20px;'>Bangladesh Computer Council (BCC)</p></div>", unsafe_allow_html=True)
 
     if 'rows' not in st.session_state:
         st.session_state.rows = 1
 
-    st.markdown('<div class="section-head">১. ব্যক্তিগত ও ভৌগোলিক তথ্য</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-head">১. কর্মকর্তার তথ্য</div>', unsafe_allow_html=True)
     col1, col2 = st.columns(2)
     with col1:
         name = st.text_input("নাম (Name) *", key="user_name") 
@@ -247,10 +252,10 @@ def main():
         # কর্মস্থলের নাম ও উদাহরণের লেবেল (সঠিক স্পেসিং সহ)
         st.markdown("""
             <div style="margin-top: 10px; margin-bottom: 15px;"> 
-                <label style="font-size: 14px; font-weight: 500; color: white; font-family: 'Hind Siliguri', sans-serif;">
+                <label style="font-size: 16px; font-weight: 500; color: white; font-family: 'Hind Siliguri', sans-serif;">
                     কর্মস্থলের নাম (Workplace Name) *
                 </label>
-                <div style="font-size: 0.85rem; color: #00D487; font-weight: 500;">
+                <div style="font-size: 16px; color: #00D487; font-weight: 500;">
                     Example: উপজেলা অফিস, জেলা অফিস
                 </div>
             </div>
@@ -259,7 +264,8 @@ def main():
         # ইনপুট বক্স (লেবেল হাইড করা, কারণ উপরে কাস্টম লেবেল দিয়েছি)
         workplace = st.text_input("", key="workplace_input", label_visibility="collapsed")
 
-    st.write("---")
+    st.markdown('<div class="section-head">২. উপজেলা ও ইউনিয়নের তথ্য</div>', unsafe_allow_html=True)
+
     g1, g2 = st.columns(2)
     with g1:
         div_list = list(BD_DATA.keys())
@@ -272,8 +278,6 @@ def main():
         uni_opts = BD_DATA[final_div][final_dist][final_upz] if (final_div in BD_DATA and final_dist in BD_DATA[final_div] and final_upz in BD_DATA[final_div][final_dist]) else []
         final_uni = smart_geo_input('ইউনিয়ন (Union)', uni_opts, 'geo_uni')
 
-    st.markdown('<div class="section-head">২. ইউনিয়ন ও গ্রামের তথ্য</div>', unsafe_allow_html=True)
-    
     # ব্রডব্যান্ড ড্রপডাউন
     is_broadband = st.selectbox("ইউনিয়নটি কি ব্রডব্যান্ড এর আওতাভুক্ত? *", ["-- নির্বাচন করুন --", "হ্যাঁ", "না"], key="bb_coverage")
     
@@ -287,7 +291,7 @@ def main():
         covered_villages = st.number_input("ব্রডব্যান্ড ইন্টারনেটের আওতাভুক্ত গ্রামের সংখ্যা", min_value=0, max_value=total_villages, step=1, key="covered_v")
 
     st.markdown('<div class="section-head">৩. উপজেলাতে সেবা প্রদানকৃত ISP এর তথ্য</div>', unsafe_allow_html=True)
-    st.markdown("<div style='font-size: 12px; color: #F42A41; margin-top: 5px; margin-bottom: 15px;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size: 12px !important; color: #F42A41; margin-top: 5px; margin-bottom: 15px;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
     isp_records = []
     for i in range(st.session_state.rows):
         st.markdown(f"**ISP নং {i+1}**")
@@ -330,7 +334,7 @@ def main():
     
     st.write("##")
     total_isp_count = st.number_input("ISP মোট সংখ্যা", min_value=0, step=1, key="total_isp_count_input")
-    st.markdown("<div style='font-size: 12px; color: #F42A41; margin-top: 5px;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size: 12px !important; color: #F42A41; margin-top: 5px;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
 
 
     st.write("---")
@@ -452,4 +456,3 @@ if __name__ == "__main__":
 
     main()
        
-
