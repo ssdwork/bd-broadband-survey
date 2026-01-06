@@ -468,19 +468,34 @@ def main():
                 # কাস্টম সাকসেস মেসেজ তৈরি
                 success_message = """
                     <div style="
-                        background-color: rgba(0, 100, 0, 0.15);
-                        padding: 40px;
-                        border-radius: 20px;
-                        border: 3px solid #006400;
-                        text-align: center;
-                        margin: 25px 0;
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background-color: rgba(0, 0, 0, 0.6);
+                        z-index: 999999;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
                     ">
-                        <h1 style="color: #006400; font-family: 'Calibri', 'Nikosh', sans-serif; font-size: 45px; margin: 0; font-weight: 700;">
-                            ✅ সফলভাবে সংরক্ষিত হয়েছে!
-                        </h1>
-                        <p style="color: #000000; font-size: 22px; margin-top: 15px; font-weight: 500;">
-                            আপনার তথ্য ডাটাবেজে জমা হয়েছে। 
-                        </p>
+                        <div style="
+                            background-color: #FFFFFF;
+                            padding: 40px;
+                            border-radius: 20px;
+                            border: 3px solid #006400;
+                            text-align: center;
+                            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                            max-width: 500px;
+                            width: 90%;
+                        ">
+                            <h1 style="color: #006400; font-family: 'Calibri', 'Nikosh', sans-serif; font-size: 40px; margin: 0; font-weight: 700;">
+                                ✅ সফলভাবে সংরক্ষিত হয়েছে!
+                            </h1>
+                            <p style="color: #000000; font-size: 20px; margin-top: 15px; font-weight: 500;">
+                                আপনার তথ্য ডাটাবেজে জমা হয়েছে। 
+                            </p>
+                        </div>
                     </div>
                 """
                 
