@@ -172,6 +172,9 @@ st.markdown("""
         box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3) !important;
         font-size: 17px !important;
     }
+    div.stButton > button[kind="primary"] p {
+        color: #FFFFFF !important;
+    }
     div.stButton > button[kind="primary"]:hover {
         background: linear-gradient(to bottom, #0056b3, #004085) !important;
         box-shadow: 0 6px 15px rgba(0, 123, 255, 0.5) !important;
@@ -252,10 +255,10 @@ def main():
     st.markdown("""
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
             <div style="flex: 0 0 90px; text-align: left;">
-                <img src="https://raw.githubusercontent.com/ssdwork/bd-broadband-survey/main/ict-division.jpg" style="height: 70px; width: auto;" title="ICT Division">
+                <img src="https://raw.githubusercontent.com/ssdwork/bd-broadband-survey/main/Ict Division Logo Vector.svg" style="height: 70px; width: auto;" title="ICT Division">
             </div>
             <div style="flex: 1; text-align: center;">
-                <div class="main-title">🌐 সমগ্র বাংলাদেশে ব্রডব্যান্ড কভারেজ জরিপ</div>
+                <div class="main-title">🌐 সমগ্র বাংলাদেশের ব্রডব্যান্ড কভারেজ জরিপ</div>
             </div>
             <div style="flex: 0 0 90px; text-align: right;">
                 <img src="https://raw.githubusercontent.com/ssdwork/bd-broadband-survey/main/Bangladesh_Computer_Council_Logo.svg" style="height: 70px; width: auto;" title="Bangladesh Computer Council">
