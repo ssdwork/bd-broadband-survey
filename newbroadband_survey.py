@@ -245,13 +245,13 @@ def main():
     st.markdown("""
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
             <div style="flex: 0 0 90px; text-align: left;">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Government_of_Bangladesh_Logo.svg/120px-Government_of_Bangladesh_Logo.svg.png" style="height: 70px; width: auto;" title="ICT Division">
+                <img src="https://raw.githubusercontent.com/ssdwork/bd-broadband-survey/main/ict-division.jpg" style="height: 70px; width: auto;" title="ICT Division">
             </div>
             <div style="flex: 1; text-align: center;">
                 <div class="main-title">🌐 সমগ্র বাংলাদেশে ব্রডব্যান্ড কভারেজ জরিপ</div>
             </div>
             <div style="flex: 0 0 90px; text-align: right;">
-                <img src="https://upload.wikimedia.org/wikipedia/en/thumb/3/35/BCC_LOGO.png/120px-BCC_LOGO.png" style="height: 70px; width: auto;" title="Bangladesh Computer Council">
+                <img src="https://raw.githubusercontent.com/ssdwork/bd-broadband-survey/main/Bangladesh_Computer_Council_Logo.svg" style="height: 70px; width: auto;" title="Bangladesh Computer Council">
             </div>
         </div>
     """, unsafe_allow_html=True)
@@ -373,7 +373,9 @@ def main():
             st.session_state.rows -= 1
             st.rerun()
     
-    total_isp_count = st.number_input("ISP মোট সংখ্যা", min_value=0, step=1, key="total_isp_count_input")
+    _, c_isp_total = st.columns([3, 1])
+    with c_isp_total:
+        total_isp_count = st.number_input("ISP মোট সংখ্যা", min_value=0, step=1, key="total_isp_count_input")
     st.markdown("<div style='font-size: 14px !important; color: #F42A41; margin-top: 5px;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
 
 
