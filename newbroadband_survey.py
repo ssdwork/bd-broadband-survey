@@ -78,69 +78,58 @@ st.set_page_config(page_title="ব্রডব্যান্ড কভারে
 st.markdown("""
     <style>
     
-    /* 1. Main Background - Dark Overlay */
+    /* 1. Main Background - White */
     .stApp {
-        background: linear-gradient(rgba(15, 17, 22, 0.9), rgba(15, 17, 22, 0.9)),
-            url('https://static.vecteezy.com/system/resources/thumbnails/072/508/275/small/a-highly-detailed-shot-of-a-server-rack-s-back-panel-showing-the-organized-chaos-of-cables-and-ports-free-photo.jpg'); 
-        background-size: cover; background-position: center; background-attachment: fixed;
+        background-color: #FFFFFF !important;
+        background-image: none !important;
     }
 
-    /* 2. Global Text Color - White (ব্যাকগ্রাউন্ড ডার্ক তাই টেক্সট সবসময় সাদা থাকবে) */
+    /* 2. Global Text Color - Black */
     html, body, [class*="css"], .stMarkdown, p, label, .stTextInput > label, .stNumberInput > label { 
         font-family: 'Calibri', 'Nikosh', sans-serif; 
-        color: #FFFFFF !important; 
+        color: #000000 !important; 
         font-weight: 500 !important; 
         font-size: 16px !important;
     }
     
     /* 3. Headers and Metrics */
     h1, h2, h3, [data-testid="stMetricLabel"], [data-testid="stMetricValue"] {
-        color: #FFFFFF !important;
+        color: #000000 !important;
     }
 
-    /* 4. Input Fields & Text Stroke - High Visibility Fix */
+    /* 4. Input Fields - Clean Look for White Background */
     
     div[data-baseweb="input"] input, 
     div[data-baseweb="select"] div,
     div[data-baseweb="select"] span {
-        /* টেক্সট কালার সাদা থাকবে */
-        color: #FFFFFF !important; 
-        -webkit-text-fill-color: #FFFFFF !important;
-        
-        /*  টেক্সটের চারপাশ কালো বর্ডার (Stroke) দিয়ে ঘেরা */
-        text-shadow: 
-            -1px -1px 0 #000,  
-             1px -1px 0 #000,
-            -1px  1px 0 #000,
-             1px  1px 0 #000,
-             2px  2px 2px rgba(0,0,0,0.8); /*  শ্যাডো যাতে আরও ফুটে ওঠে */
-             
-        font-weight: 700 !important;
+        color: #000000 !important; 
+        -webkit-text-fill-color: #000000 !important;
+        text-shadow: none !important;
+        font-weight: 600 !important;
         font-size: 16px !important;
     }
 
-    /* বক্সের ব্যাকগ্রাউন্ড লাইট মোডেও স্পষ্ট রাখার জন্য সামান্য ধূসর */
+    /* বক্সের ব্যাকগ্রাউন্ড সাদা */
     div[data-baseweb="input"], div[data-baseweb="select"] { 
-        background-color: rgba(255, 255, 255, 0.2) !important; /* হালকা স্বচ্ছ ব্যাকগ্রাউন্ড */
-        border: 2px solid #00D487 !important; 
+        background-color: #FFFFFF !important; 
+        border: 1px solid #00D487 !important; 
         border-radius: 8px !important; 
-        backdrop-filter: blur(5px); /* ব্যাকগ্রাউন্ড ব্লার ইফেক্ট */
     }
 
-    /* ৫. Sidebar - সাইডবার যেন সবসময় পড়া যায় */
+    /* ৫. Sidebar - Light Gray */
     [data-testid="stSidebar"] { 
-        background-color: #1E1E1E !important; /* ফিক্সড ডার্ক ব্যাকগ্রাউন্ড */
-        border-right: 1px solid #333;
+        background-color: #F8F9FA !important; 
+        border-right: 1px solid #E6E6E6;
     }
 
-    /* সাইডবারের ভেতরের সব লেখা সাদা */
+    /* সাইডবারের ভেতরের সব লেখা কালো */
     [data-testid="stSidebar"] p, 
     [data-testid="stSidebar"] label, 
     [data-testid="stSidebar"] span,
     [data-testid="stSidebar"] h1,
     [data-testid="stSidebar"] h2,
     [data-testid="stSidebar"] h3 {
-        color: #FFFFFF !important;
+        color: #000000 !important;
         font-size: 16px !important;
     }
 
@@ -148,7 +137,7 @@ st.markdown("""
     div.stButton > button { 
         color: #00D487 !important; 
         border: 1px solid #00D487 !important; 
-        background-color: rgba(0, 0, 0, 0.5) !important; 
+        background-color: #FFFFFF !important; 
         font-weight: 600 !important; 
         border-radius: 6px !important;
         font-size: 16px !important;
@@ -218,16 +207,15 @@ st.markdown("""
         padding-bottom: 1rem !important;
     }
     
-    /* Toast Message Styling - High Visibility (Same as Inputs) */
+    /* Toast Message Styling - Clean White */
     div[data-testid="stToast"] {
-        background-color: rgba(255, 255, 255, 0.2) !important;
+        background-color: #FFFFFF !important;
         border: 2px solid #F42A41 !important;
         border-radius: 8px !important;
-        backdrop-filter: blur(5px);
     }
     div[data-testid="stToast"] div, div[data-testid="stToast"] p {
-        color: #FFFFFF !important;
-        text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 2px 2px 2px rgba(0,0,0,0.8) !important;
+        color: #000000 !important;
+        text-shadow: none !important;
         font-weight: 700 !important;
         font-size: 16px !important;
     }
@@ -290,7 +278,7 @@ def main():
         # কর্মস্থলের নাম ও উদাহরণের লেবেল (সঠিক স্পেসিং সহ)
         st.markdown("""
             <div style="margin-bottom: 2px;"> 
-                <label style="font-size: 16px; font-weight: 500; color: white; font-family: 'Calibri', 'Nikosh', sans-serif;">
+                <label style="font-size: 16px; font-weight: 500; color: #000000; font-family: 'Calibri', 'Nikosh', sans-serif;">
                     কর্মস্থলের নাম (Workplace Name) * <span style="font-size: 12px; color: #00D487; font-weight: 500;">Example: উপজেলা অফিস, জেলা অফিস</span>
                 </label>
             </div>
@@ -461,7 +449,7 @@ def main():
                         <h1 style="color: #00D487; font-family: 'Calibri', 'Nikosh', sans-serif; font-size: 45px; margin: 0; font-weight: 700;">
                             ✅ সফলভাবে সংরক্ষিত হয়েছে!
                         </h1>
-                        <p style="color: white; font-size: 22px; margin-top: 15px; font-weight: 500;">
+                        <p style="color: #000000; font-size: 22px; margin-top: 15px; font-weight: 500;">
                             আপনার তথ্য ডাটাবেজে জমা হয়েছে। 
                         </p>
                     </div>
