@@ -264,7 +264,7 @@ def main():
     st.markdown("""
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
             <div style="flex: 0 0 100px; text-align: left;">
-                <img src="https://raw.githubusercontent.com/ssdwork/bd-broadband-survey/main/Ict Division Logo Vector.svg" style="height: 50px; width: auto;" title="ICT Division">
+                <img src="https://raw.githubusercontent.com/ssdwork/bd-broadband-survey/main/Ict Division Logo Vector.svg" style="height: 70px; width: auto;" title="ICT Division">
             </div>
             <div style="flex: 1; text-align: center;">
                 <div class="main-title"> সমগ্র বাংলাদেশের ব্রডব্যান্ড কভারেজ জরিপ</div>
@@ -394,7 +394,6 @@ def main():
     c_isp_total, _ = st.columns([1, 3])
     with c_isp_total:
         total_isp_count = st.number_input("মোট ISP সংখ্যা", min_value=0, step=1, key="total_isp_count_input")
-    st.markdown("<div style='font-size: 13px !important; color: #F42A41; margin-top: 5px; font-weight: 400 !important;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
 
 
     # Replace the Submission logic in your main() function with this:
