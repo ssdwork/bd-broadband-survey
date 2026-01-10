@@ -193,15 +193,12 @@ st.markdown("""
         display: inline-block;
     }
     .section-head { 
-        background: #006400 !important; 
-        color: #FFFFFF !important; 
-        padding: 10px 15px; 
-        border-radius: 8px; 
+        color: #006400 !important; 
         font-weight: 700; 
-        margin: 25px auto 10px auto; 
-        border-left: 6px solid #F42A41; 
+        margin: 15px 0 5px 0; 
+        border-bottom: 2px solid #006400; 
         font-size: 20px !important;
-        display: table;
+        padding-bottom: 5px;
     }
     
     /* Hide Default Streamlit Elements */
@@ -259,7 +256,7 @@ def main():
                 <img src="https://raw.githubusercontent.com/ssdwork/bd-broadband-survey/main/Ict Division Logo Vector.svg" style="height: 85px; width: auto;" title="ICT Division">
             </div>
             <div style="flex: 1; text-align: center;">
-                <div class="main-title">🌐 সমগ্র বাংলাদেশের ব্রডব্যান্ড কভারেজ জরিপ</div>
+                <div class="main-title"> সমগ্র বাংলাদেশের ব্রডব্যান্ড কভারেজ জরিপ</div>
             </div>
             <div style="flex: 0 0 100px; text-align: right;">
                 <img src="https://raw.githubusercontent.com/ssdwork/bd-broadband-survey/main/Bangladesh_Computer_Council_Logo.svg" style="height: 70px; width: auto;" title="Bangladesh Computer Council">
@@ -270,10 +267,9 @@ def main():
     if 'rows' not in st.session_state:
         st.session_state.rows = 1
 
-    st.markdown('<div class="section-head">১. কর্মকর্তার তথ্য</div>', unsafe_allow_html=True)
     c1, c2, c3 = st.columns(3)
     with c1:
-        name = st.text_input("নাম (Name) *", key="user_name") 
+        name = st.text_input("তথ্য প্রদানকারী কর্মকর্তার নাম (Name) *", key="user_name") 
         
         # পদবীর তালিকা
         desig_list = [
@@ -314,7 +310,7 @@ def main():
         # ইনপুট বক্স (লেবেল 'Workplace Name' দেওয়া হলো যাতে CSS দিয়ে ধরা যায়, কিন্তু ভিজিবিলিটি collapsed)
         workplace = st.text_input("Workplace Name", key="workplace_input", label_visibility="collapsed")
 
-    st.markdown('<div class="section-head">২. উপজেলা ও ইউনিয়নের তথ্য</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-head">উপজেলা ও ইউনিয়নের তথ্য</div>', unsafe_allow_html=True)
     
     g1, g2, g3, g4 = st.columns(4)
     with g1:
@@ -339,7 +335,7 @@ def main():
     with gv3:
         covered_villages = st.number_input("ব্রডব্যান্ড ইন্টারনেটের আওতাভুক্ত গ্রামের সংখ্যা", min_value=0, max_value=total_villages, step=1, key="covered_v")
 
-    st.markdown('<div class="section-head">৩. উপজেলাতে সেবা প্রদানকৃত ISP এর তথ্য</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-head">উপজেলাতে সেবা প্রদানকৃত ISP এর তথ্য</div>', unsafe_allow_html=True)
     st.markdown("<div style='font-size: 13px !important; color: #F42A41; margin-top: 5px; margin-bottom: 15px; font-weight: 400 !important;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
     isp_records = []
     for i in range(st.session_state.rows):
@@ -403,7 +399,7 @@ def main():
         
         # ২. মিসিং ফিল্ড চেক করা
         missing_fields = []
-        if not name: missing_fields.append("নাম (Name) *")
+        if not name: missing_fields.append("তথ্য প্রদানকারী কর্মকর্তার নাম (Name) *")
         if not designation: missing_fields.append("পদবী (Designation) *")
         if not workplace: missing_fields.append("Workplace Name")
         if not final_div: missing_fields.append("বিভাগ (Division)")
@@ -554,4 +550,3 @@ if __name__ == "__main__":
 
     main()
        
-
