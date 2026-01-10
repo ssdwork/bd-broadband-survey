@@ -306,18 +306,7 @@ def main():
             designation = selected_desig
             
     with c3:
-        
-        # কর্মস্থলের নাম ও উদাহরণের লেবেল (সঠিক স্পেসিং সহ)
-        st.markdown("""
-            <div style="margin-bottom: 0px;"> 
-                <label style="font-size: 14px; font-weight: 500; color: #000000; font-family: 'Calibri', 'Nikosh', sans-serif;">
-                    কর্মস্থলের নাম (Workplace Name) *
-                </label>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        # ইনপুট বক্স (লেবেল 'Workplace Name' দেওয়া হলো যাতে CSS দিয়ে ধরা যায়, কিন্তু ভিজিবিলিটি collapsed)
-        workplace = st.text_input("Workplace Name", key="workplace_input", label_visibility="collapsed")
+        workplace = st.text_input("কর্মস্থলের নাম (Workplace Name) *", key="workplace_input")
 
     st.markdown('<div class="section-head">উপজেলা ও ইউনিয়নের তথ্য</div>', unsafe_allow_html=True)
     
@@ -408,7 +397,7 @@ def main():
         missing_fields = []
         if not name: missing_fields.append("তথ্য প্রদানকারী কর্মকর্তার নাম (Name) *")
         if not designation: missing_fields.append("পদবী (Designation) *")
-        if not workplace: missing_fields.append("Workplace Name")
+        if not workplace: missing_fields.append("কর্মস্থলের নাম (Workplace Name) *")
         if not final_div: missing_fields.append("বিভাগ (Division)")
         if not final_dist: missing_fields.append("জেলা (District)")
         if not final_upz: missing_fields.append("উপজেলা (Upazila)")
