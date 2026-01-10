@@ -232,7 +232,7 @@ st.markdown("""
     
     /* Reduce top padding of the main container to save space */
     .block-container {
-        padding-top: 0.5rem !important;
+        padding-top: 0rem !important;
         padding-bottom: 0.5rem !important;
         max-width: 99% !important;
     }
