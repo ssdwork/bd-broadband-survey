@@ -117,13 +117,11 @@ st.markdown("""
 
     /* Input Container Background */
     div[data-baseweb="input"], 
-    div[data-baseweb="base-input"],
     div[data-baseweb="select"] { 
         background-color: #FFFFFF !important; 
         border: 1px solid #006400 !important; 
         border-radius: 8px !important; 
         min-height: 30px !important;
-        height: 30px !important;
     }
     
     /* Dropdown Menu & Options Fix */
