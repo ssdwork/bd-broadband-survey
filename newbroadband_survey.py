@@ -90,7 +90,7 @@ st.markdown("""
         font-family: 'Calibri', 'Nikosh', sans-serif; 
         color: #000000 !important; 
         font-weight: 700 !important; 
-        font-size: 18px !important;
+        font-size: 14px !important;
     }
     
     /* 3. Headers and Metrics */
@@ -110,7 +110,8 @@ st.markdown("""
         caret-color: #000000 !important;
         text-shadow: none !important;
         font-weight: 400 !important;
-        font-size: 18px !important;
+        font-size: 14px !important;
+        padding: 0px 5px !important;
         background-color: transparent !important; /* Inherit from container */
     }
 
@@ -121,6 +122,8 @@ st.markdown("""
         background-color: #FFFFFF !important; 
         border: 1px solid #006400 !important; 
         border-radius: 8px !important; 
+        min-height: 30px !important;
+        height: 30px !important;
     }
     
     /* Dropdown Menu & Options Fix */
@@ -146,7 +149,7 @@ st.markdown("""
     [data-testid="stSidebar"] h2,
     [data-testid="stSidebar"] h3 {
         color: #000000 !important;
-        font-size: 18px !important;
+        font-size: 14px !important;
         font-weight: 700 !important;
     }
 
@@ -157,7 +160,9 @@ st.markdown("""
         background-color: #FFFFFF !important; 
         font-weight: 600 !important; 
         border-radius: 6px !important;
-        font-size: 18px !important;
+        font-size: 14px !important;
+        padding: 0px 10px !important;
+        min-height: 30px !important;
         transition: all 0.2s ease-in-out !important;
     }
     div.stButton > button:hover {
@@ -171,7 +176,7 @@ st.markdown("""
         border: none !important;
         border-radius: 50px !important;
         box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3) !important;
-        font-size: 18px !important;
+        font-size: 14px !important;
     }
     div.stButton > button[kind="primary"] p {
         color: #FFFFFF !important;
@@ -186,7 +191,7 @@ st.markdown("""
     .main-title { 
         color: #006400 !important; 
         text-align: center; 
-        font-size: 1.8rem !important; 
+        font-size: 1.4rem !important; 
         font-weight: 700; 
         border-bottom: 3px solid #F42A41; 
         padding-bottom: 5px; 
@@ -195,9 +200,9 @@ st.markdown("""
     .section-head { 
         color: #006400 !important; 
         font-weight: 700; 
-        margin: 15px 0 5px 0; 
+        margin: 5px 0 2px 0; 
         border-bottom: 2px solid #006400; 
-        font-size: 20px !important;
+        font-size: 16px !important;
         padding-bottom: 5px;
     }
     
@@ -227,8 +232,14 @@ st.markdown("""
     
     /* Reduce top padding of the main container to save space */
     .block-container {
-        padding-top: 1rem !important;
-        padding-bottom: 1rem !important;
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
+        max-width: 99% !important;
+    }
+    
+    /* Reduce gap between vertical elements */
+    div[data-testid="stVerticalBlock"] > div {
+        gap: 0.3rem !important;
     }
     
     /* Toast Message Styling - Clean White */
@@ -241,7 +252,7 @@ st.markdown("""
         color: #000000 !important;
         text-shadow: none !important;
         font-weight: 700 !important;
-        font-size: 18px !important;
+        font-size: 14px !important;
     }
 """, unsafe_allow_html=True)
 
@@ -251,15 +262,15 @@ def main():
 
     # Header with Logos (ICT Division Left, BCC Right)
     st.markdown("""
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
             <div style="flex: 0 0 100px; text-align: left;">
-                <img src="https://raw.githubusercontent.com/ssdwork/bd-broadband-survey/main/Ict Division Logo Vector.svg" style="height: 85px; width: auto;" title="ICT Division">
+                <img src="https://raw.githubusercontent.com/ssdwork/bd-broadband-survey/main/Ict Division Logo Vector.svg" style="height: 50px; width: auto;" title="ICT Division">
             </div>
             <div style="flex: 1; text-align: center;">
                 <div class="main-title"> সমগ্র বাংলাদেশের ব্রডব্যান্ড কভারেজ জরিপ</div>
             </div>
             <div style="flex: 0 0 100px; text-align: right;">
-                <img src="https://raw.githubusercontent.com/ssdwork/bd-broadband-survey/main/Bangladesh_Computer_Council_Logo.svg" style="height: 70px; width: auto;" title="Bangladesh Computer Council">
+                <img src="https://raw.githubusercontent.com/ssdwork/bd-broadband-survey/main/Bangladesh_Computer_Council_Logo.svg" style="height: 45px; width: auto;" title="Bangladesh Computer Council">
             </div>
         </div>
     """, unsafe_allow_html=True)
@@ -300,9 +311,9 @@ def main():
         
         # কর্মস্থলের নাম ও উদাহরণের লেবেল (সঠিক স্পেসিং সহ)
         st.markdown("""
-            <div style="margin-bottom: 2px;"> 
-                <label style="font-size: 18px; font-weight: 500; color: #000000; font-family: 'Calibri', 'Nikosh', sans-serif;">
-                    কর্মস্থলের নাম (Workplace Name) * <span style="font-size: 14px; color: #006400; font-weight: 500;">Example: উপজেলা অফিস, জেলা অফিস</span>
+            <div style="margin-bottom: 0px;"> 
+                <label style="font-size: 14px; font-weight: 500; color: #000000; font-family: 'Calibri', 'Nikosh', sans-serif;">
+                    কর্মস্থলের নাম (Workplace Name) * <span style="font-size: 12px; color: #006400; font-weight: 500;">Example: উপজেলা অফিস, জেলা অফিস</span>
                 </label>
             </div>
         """, unsafe_allow_html=True)
@@ -336,7 +347,7 @@ def main():
         covered_villages = st.number_input("ব্রডব্যান্ড ইন্টারনেটের আওতাভুক্ত গ্রামের সংখ্যা", min_value=0, max_value=total_villages, step=1, key="covered_v")
 
     st.markdown('<div class="section-head">উপজেলাতে সেবা প্রদানকৃত ISP এর তথ্য</div>', unsafe_allow_html=True)
-    st.markdown("<div style='font-size: 13px !important; color: #F42A41; margin-top: 5px; margin-bottom: 15px; font-weight: 400 !important;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size: 13px !important; color: #F42A41; margin-top: 2px; margin-bottom: 5px; font-weight: 400 !important;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
     isp_records = []
     for i in range(st.session_state.rows):
         st.markdown(f"**ISP নং {i+1}**")
@@ -386,7 +397,6 @@ def main():
     st.markdown("<div style='font-size: 13px !important; color: #F42A41; margin-top: 5px; font-weight: 400 !important;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
 
 
-    st.write("---")
     # Replace the Submission logic in your main() function with this:
 
     _, c_sub, _ = st.columns([3, 2, 3])
