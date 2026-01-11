@@ -89,7 +89,7 @@ st.markdown("""
     html, body, [class*="css"], .stMarkdown, p, label, .stTextInput > label, .stNumberInput > label { 
         font-family: 'Calibri', 'Nikosh', sans-serif; 
         color: #000000 !important; 
-        font-weight: 700 !important; 
+        font-weight: 400 !important; 
         font-size: 14px !important;
     }
     
@@ -190,14 +190,14 @@ st.markdown("""
         color: #006400 !important; 
         text-align: center; 
         font-size: 1.4rem !important; 
-        font-weight: 700; 
+        font-weight: 700 !important; 
         border-bottom: 3px solid #F42A41; 
         padding-bottom: 5px; 
         display: inline-block;
     }
     .section-head { 
         color: #006400 !important; 
-        font-weight: 700; 
+        font-weight: 700 !important; 
         margin: 5px 0 2px 0; 
         border-bottom: 2px solid #006400; 
         font-size: 16px !important;
@@ -337,7 +337,7 @@ def main():
     st.markdown("<div style='font-size: 13px !important; color: #F42A41; margin-top: 2px; margin-bottom: 5px; font-weight: 400 !important;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
     isp_records = []
     for i in range(st.session_state.rows):
-        st.markdown(f"**ISP নং {i+1}**")
+        st.markdown(f"ISP নং {i+1}")
         ic1, ic2, ic3 = st.columns([3, 2, 2])
         with ic1: 
             iname = st.text_input("ISP নাম", key=f"in_{i}")
