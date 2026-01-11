@@ -335,6 +335,11 @@ def main():
 
     st.markdown('<div class="section-head">উপজেলাতে সেবা প্রদানকৃত ISP এর তথ্য</div>', unsafe_allow_html=True)
     st.markdown("<div style='font-size: 13px !important; color: #F42A41; margin-top: 2px; margin-bottom: 5px; font-weight: 400 !important;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
+    
+    c_isp_total, _ = st.columns([1, 3])
+    with c_isp_total:
+        total_isp_count = st.number_input("উপজেলাতে মোট ISP সংখ্যা", min_value=0, step=1, key="total_isp_count_input")
+
     isp_records = []
     for i in range(st.session_state.rows):
         st.markdown(f"**ISP নং {i+1}**")
@@ -377,10 +382,6 @@ def main():
         if st.button("➖ বাদ দিন", use_container_width=True) and st.session_state.rows > 1:
             st.session_state.rows -= 1
             st.rerun()
-    
-    c_isp_total, _ = st.columns([1, 3])
-    with c_isp_total:
-        total_isp_count = st.number_input("মোট ISP সংখ্যা", min_value=0, step=1, key="total_isp_count_input")
 
 
     # Replace the Submission logic in your main() function with this:
