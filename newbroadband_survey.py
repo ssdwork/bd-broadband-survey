@@ -197,6 +197,7 @@ st.markdown("""
     }
     .section-head { 
         color: #006400 !important; 
+        font-family: 'Calibri', 'Nikosh', sans-serif;
         font-weight: 700; 
         margin: 5px 0 2px 0; 
         border-bottom: 2px solid #006400; 
