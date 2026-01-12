@@ -334,17 +334,30 @@ def main():
         covered_villages = st.number_input("ব্রডব্যান্ড ইন্টারনেটের আওতাভুক্ত গ্রামের সংখ্যা", min_value=0, max_value=total_villages, step=1, key="covered_v")
 
     # NTTN Section
-    st.markdown('<div class="section-head">উপজেলাতে বিদ্যমান NTTN</div>', unsafe_allow_html=True)
     nttn_opts = ["সামিট", "ফাইবার@হোম", "বিটিসিএল", "বাহন", "অন্যান্য"]
-    nttn_cols = st.columns(5)
-    nttn_vars = {}
-    for i, opt in enumerate(nttn_opts):
-        with nttn_cols[i]:
-            nttn_vars[opt] = st.checkbox(opt, key=f"nttn_chk_{i}")
-    
-    nttn_other_val = ""
-    if nttn_vars["অন্যান্য"]:
-        nttn_other_val = st.text_input("অন্যান্য (লিখুন)", key="nttn_other_input")
+    nttn_c1, nttn_c2 = st.columns(2)
+
+    with nttn_c1:
+        st.markdown('<div class="section-head">উপজেলাতে বিদ্যমান NTTN</div>', unsafe_allow_html=True)
+        nttn_cols = st.columns(5)
+        nttn_vars = {}
+        for i, opt in enumerate(nttn_opts):
+            with nttn_cols[i]:
+                nttn_vars[opt] = st.checkbox(opt, key=f"nttn_chk_{i}")
+        nttn_other_val = ""
+        if nttn_vars["অন্যান্য"]:
+            nttn_other_val = st.text_input("অন্যান্য (লিখুন)", key="nttn_other_input")
+
+    with nttn_c2:
+        st.markdown('<div class="section-head">ইউনিয়নে বিদ্যমান NTTN</div>', unsafe_allow_html=True)
+        uni_nttn_cols = st.columns(5)
+        uni_nttn_vars = {}
+        for i, opt in enumerate(nttn_opts):
+            with uni_nttn_cols[i]:
+                uni_nttn_vars[opt] = st.checkbox(opt, key=f"uni_nttn_chk_{i}")
+        uni_nttn_other_val = ""
+        if uni_nttn_vars["অন্যান্য"]:
+            uni_nttn_other_val = st.text_input("অন্যান্য (লিখুন)", key="uni_nttn_other_input")
 
     st.markdown('<div class="section-head">উপজেলাতে সেবা প্রদানকৃত ISP এর তথ্য</div>', unsafe_allow_html=True)
     st.markdown("<div style='font-size: 13px !important; color: #F42A41; margin-top: 2px; margin-bottom: 5px; font-weight: 400 !important;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
@@ -446,6 +459,11 @@ def main():
                 if nttn_vars["অন্যান্য"]:
                     nttn_list.append(f"অন্যান্য({nttn_other_val})")
                 nttn_final = ", ".join(nttn_list)
+
+                uni_nttn_list = [k for k, v in uni_nttn_vars.items() if v and k != "অন্যান্য"]
+                if uni_nttn_vars["অন্যান্য"]:
+                    uni_nttn_list.append(f"অন্যান্য({uni_nttn_other_val})")
+                uni_nttn_final = ", ".join(uni_nttn_list)
                 
                 new_record = pd.DataFrame([{
                     "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -457,6 +475,7 @@ def main():
                     "উপজেলা": final_upz,
                     "ইউনিয়ন": final_uni,
                     "উপজেলাতে বিদ্যমান NTTN": nttn_final,
+                    "ইউনিয়নে বিদ্যমান NTTN": uni_nttn_final,
                     "ব্রডব্যান্ড আওতাভুক্ত": is_broadband,
                     "মোট গ্রাম": total_villages,
                     "আওতাভুক্ত গ্রাম": covered_villages,
@@ -542,8 +561,11 @@ def main():
                 # NTTN Reset
                 for i in range(len(nttn_opts)):
                     st.session_state[f"nttn_chk_{i}"] = False
+                    st.session_state[f"uni_nttn_chk_{i}"] = False
                 if "nttn_other_input" in st.session_state:
                     del st.session_state["nttn_other_input"]
+                if "uni_nttn_other_input" in st.session_state:
+                    del st.session_state["uni_nttn_other_input"]
 
                 # ৩ নম্বর সেকশন: ISP তথ্য পুরোপুরি মুছে ফেলা
                 #  সেশন স্টেট থেকে সব ISP ডাইনামিক কি (Key) মুছে ফেলা
