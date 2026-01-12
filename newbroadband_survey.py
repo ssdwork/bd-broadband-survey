@@ -324,6 +324,15 @@ def main():
         uni_opts = BD_DATA[final_div][final_dist][final_upz] if (final_div in BD_DATA and final_dist in BD_DATA[final_div] and final_upz in BD_DATA[final_div][final_dist]) else []
         final_uni = smart_geo_input('ইউনিয়ন (Union)', uni_opts, 'geo_uni')
 
+    # ব্রডব্যান্ড ও গ্রামের তথ্য এক লাইনে
+    gv1, gv2, gv3 = st.columns(3)
+    with gv1:
+        is_broadband = st.selectbox("ইউনিয়নটি কি ব্রডব্যান্ড এর আওতাভুক্ত? *", ["-- নির্বাচন করুন --", "হ্যাঁ", "না"], key="bb_coverage")
+    with gv2:
+        total_villages = st.number_input("ইউনিয়নে মোট গ্রামের সংখ্যা", min_value=0, step=1, key="total_v")
+    with gv3:
+        covered_villages = st.number_input("ব্রডব্যান্ড ইন্টারনেটের আওতাভুক্ত গ্রামের সংখ্যা", min_value=0, max_value=total_villages, step=1, key="covered_v")
+
     # NTTN Section
     st.markdown('<div class="section-head">উপজেলাতে বিদ্যমান NTTN</div>', unsafe_allow_html=True)
     nttn_opts = ["সামিট", "ফাইবার@হোম", "বিটিসিএল", "বাহন", "অন্যান্য"]
@@ -336,15 +345,6 @@ def main():
     nttn_other_val = ""
     if nttn_vars["অন্যান্য"]:
         nttn_other_val = st.text_input("অন্যান্য (লিখুন)", key="nttn_other_input")
-
-    # ব্রডব্যান্ড ও গ্রামের তথ্য এক লাইনে
-    gv1, gv2, gv3 = st.columns(3)
-    with gv1:
-        is_broadband = st.selectbox("ইউনিয়নটি কি ব্রডব্যান্ড এর আওতাভুক্ত? *", ["-- নির্বাচন করুন --", "হ্যাঁ", "না"], key="bb_coverage")
-    with gv2:
-        total_villages = st.number_input("ইউনিয়নে মোট গ্রামের সংখ্যা", min_value=0, step=1, key="total_v")
-    with gv3:
-        covered_villages = st.number_input("ব্রডব্যান্ড ইন্টারনেটের আওতাভুক্ত গ্রামের সংখ্যা", min_value=0, max_value=total_villages, step=1, key="covered_v")
 
     st.markdown('<div class="section-head">উপজেলাতে সেবা প্রদানকৃত ISP এর তথ্য</div>', unsafe_allow_html=True)
     st.markdown("<div style='font-size: 13px !important; color: #F42A41; margin-top: 2px; margin-bottom: 5px; font-weight: 400 !important;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
