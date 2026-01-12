@@ -90,7 +90,7 @@ st.markdown("""
         font-family: 'Calibri', 'Nikosh', sans-serif; 
         color: #000000 !important; 
         font-weight: 700 !important; 
-        font-size: 18px !important;
+        font-size: 14px !important;
     }
     
     /* 3. Headers and Metrics */
@@ -324,6 +324,19 @@ def main():
         uni_opts = BD_DATA[final_div][final_dist][final_upz] if (final_div in BD_DATA and final_dist in BD_DATA[final_div] and final_upz in BD_DATA[final_div][final_dist]) else []
         final_uni = smart_geo_input('ইউনিয়ন (Union)', uni_opts, 'geo_uni')
 
+    # NTTN Section
+    st.markdown('<div class="section-head">উপজেলাতে বিদ্যমান NTTN</div>', unsafe_allow_html=True)
+    nttn_opts = ["সামিট", "ফাইবার@হোম", "বিটিসিএল", "বাহন", "অন্যান্য"]
+    nttn_cols = st.columns(5)
+    nttn_vars = {}
+    for i, opt in enumerate(nttn_opts):
+        with nttn_cols[i]:
+            nttn_vars[opt] = st.checkbox(opt, key=f"nttn_chk_{i}")
+    
+    nttn_other_val = ""
+    if nttn_vars["অন্যান্য"]:
+        nttn_other_val = st.text_input("অন্যান্য (লিখুন)", key="nttn_other_input")
+
     # ব্রডব্যান্ড ও গ্রামের তথ্য এক লাইনে
     gv1, gv2, gv3 = st.columns(3)
     with gv1:
@@ -335,11 +348,6 @@ def main():
 
     st.markdown('<div class="section-head">উপজেলাতে সেবা প্রদানকৃত ISP এর তথ্য</div>', unsafe_allow_html=True)
     st.markdown("<div style='font-size: 13px !important; color: #F42A41; margin-top: 2px; margin-bottom: 5px; font-weight: 400 !important;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
-    
-    c_isp_total, _ = st.columns([1, 3])
-    with c_isp_total:
-        total_isp_count = st.number_input("উপজেলাতে মোট ISP সংখ্যা", min_value=0, step=1, key="total_isp_count_input")
-
     isp_records = []
     for i in range(st.session_state.rows):
         st.markdown(f"**ISP নং {i+1}**")
@@ -382,6 +390,10 @@ def main():
         if st.button("➖ বাদ দিন", use_container_width=True) and st.session_state.rows > 1:
             st.session_state.rows -= 1
             st.rerun()
+    
+    c_isp_total, _ = st.columns([1, 3])
+    with c_isp_total:
+        total_isp_count = st.number_input("মোট ISP সংখ্যা", min_value=0, step=1, key="total_isp_count_input")
 
 
     # Replace the Submission logic in your main() function with this:
@@ -429,6 +441,12 @@ def main():
                 # ১. ডাটা প্রিপেয়ার করা
                 isp_final = " | ".join([f"{r['name']}({r['phone']}):{r['subs']}" for r in isp_records])
                 
+                # NTTN Data Prepare
+                nttn_list = [k for k, v in nttn_vars.items() if v and k != "অন্যান্য"]
+                if nttn_vars["অন্যান্য"]:
+                    nttn_list.append(f"অন্যান্য({nttn_other_val})")
+                nttn_final = ", ".join(nttn_list)
+                
                 new_record = pd.DataFrame([{
                     "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     "নাম": name,
@@ -438,6 +456,7 @@ def main():
                     "জেলা": final_dist,
                     "উপজেলা": final_upz,
                     "ইউনিয়ন": final_uni,
+                    "উপজেলাতে বিদ্যমান NTTN": nttn_final,
                     "ব্রডব্যান্ড আওতাভুক্ত": is_broadband,
                     "মোট গ্রাম": total_villages,
                     "আওতাভুক্ত গ্রাম": covered_villages,
@@ -519,6 +538,12 @@ def main():
                 st.session_state["total_v"] = 0
                 st.session_state["covered_v"] = 0
                 st.session_state["total_isp_count_input"] = 0
+
+                # NTTN Reset
+                for i in range(len(nttn_opts)):
+                    st.session_state[f"nttn_chk_{i}"] = False
+                if "nttn_other_input" in st.session_state:
+                    del st.session_state["nttn_other_input"]
 
                 # ৩ নম্বর সেকশন: ISP তথ্য পুরোপুরি মুছে ফেলা
                 #  সেশন স্টেট থেকে সব ISP ডাইনামিক কি (Key) মুছে ফেলা
