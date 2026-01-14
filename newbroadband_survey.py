@@ -326,7 +326,7 @@ def main():
         final_uni = smart_geo_input('ইউনিয়ন (Union)', uni_opts, 'geo_uni')
 
     # ব্রডব্যান্ড ও গ্রামের তথ্য এক লাইনে
-    gv1, gv2, gv3 = st.columns(3)
+    gv1, gv2, gv3 = st.columns([2, 1, 1])
     with gv1:
         is_broadband = st.selectbox("ইউনিয়নটি কি ব্রডব্যান্ড এর আওতাভুক্ত? *", ["-- নির্বাচন করুন --", "হ্যাঁ", "না"], key="bb_coverage")
     with gv2:
@@ -364,7 +364,7 @@ def main():
     st.markdown("<div style='font-size: 13px !important; color: #F42A41; margin-top: 2px; margin-bottom: 5px; font-weight: 400 !important;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
     isp_records = []
     for i in range(st.session_state.rows):
-        ic1, ic2, ic3 = st.columns([3, 2, 2])
+        ic1, ic2, ic3 = st.columns([3, 2, 1])
         with ic1: 
             iname = st.text_input(f"নং {i+1} - ISP নাম", key=f"in_{i}")
         with ic2: 
@@ -394,7 +394,7 @@ def main():
             isp_records.append({"name": iname, "phone": icontact, "subs": isubs})
 
     # ISP Controls Row: Add Button, Remove Button
-    c_isp_total, _, ic_add, ic_remove = st.columns([2, 3, 1.5, 1])
+    c_isp_total, _, ic_add, ic_remove = st.columns([1, 1.5, 1.5, 1], vertical_alignment="bottom")
     with c_isp_total:
         total_isp_count = st.number_input("মোট ISP সংখ্যা", min_value=0, step=1, key="total_isp_count_input")
     with ic_add:
@@ -409,9 +409,9 @@ def main():
 
     # Replace the Submission logic in your main() function with this:
 
-    _, c_sub, _ = st.columns([3, 2, 3])
+    _, c_sub, _ = st.columns([5, 1, 5])
     with c_sub:
-        submit_btn = st.button("জমা দিন (Submit Data)", use_container_width=True, type="primary")
+        submit_btn = st.button("Submit", use_container_width=False, type="primary")
 
     if submit_btn:
         # ১. সব নম্বরের দৈর্ঘ্য চেক করা
