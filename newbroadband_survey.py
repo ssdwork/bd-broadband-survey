@@ -174,7 +174,7 @@ st.markdown("""
         border: none !important;
         border-radius: 50px !important;
         box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3) !important;
-        font-size: 14px !important;
+        font-size: 18px !important;
     }
     div.stButton > button[kind="primary"] p {
         color: #FFFFFF !important;
@@ -409,9 +409,9 @@ def main():
 
     # Replace the Submission logic in your main() function with this:
 
-    _, c_sub, _ = st.columns([5, 1, 5])
+    _, c_sub, _ = st.columns([4, 2, 4])
     with c_sub:
-        submit_btn = st.button("Submit", use_container_width=False, type="primary")
+        submit_btn = st.button("Submit", use_container_width=True, type="primary")
 
     if submit_btn:
         # ১. সব নম্বরের দৈর্ঘ্য চেক করা
