@@ -109,6 +109,7 @@ st.markdown("""
         -webkit-text-fill-color: #000000 !important;
         caret-color: #000000 !important;
         text-shadow: none !important;
+        font-family: 'Calibri', 'Nikosh', sans-serif !important;
         font-weight: 400 !important;
         font-size: 14px !important;
         padding: 0px 5px !important;
@@ -131,6 +132,7 @@ st.markdown("""
     li[data-baseweb="option"] {
         color: #000000 !important;
         background-color: #FFFFFF !important;
+        font-family: 'Calibri', 'Nikosh', sans-serif !important;
     }
 
     /* ৫. Sidebar - Light Gray */
