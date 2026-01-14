@@ -394,7 +394,7 @@ def main():
             isp_records.append({"name": iname, "phone": icontact, "subs": isubs})
 
     # ISP Controls Row: Add Button, Remove Button
-    c_isp_total, _, ic_add, ic_remove = st.columns([1, 1.5, 1.5, 1], vertical_alignment="bottom")
+    c_isp_total, _, ic_add, ic_remove = st.columns([1, 2, 1, 1], vertical_alignment="bottom")
     with c_isp_total:
         total_isp_count = st.number_input("মোট ISP সংখ্যা", min_value=0, step=1, key="total_isp_count_input")
     with ic_add:
