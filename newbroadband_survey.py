@@ -585,14 +585,16 @@ def main():
                 st.error(f"Error during submission: {e}")
                 
     st.markdown("---")
-    st.markdown("""
-        <div style="text-align: center;">
-            <h4 style="color: #006400;">যোগাযোগের নম্বর</h4>
-            <p style="color: #000000; margin: 0;">+8801677891434</p>
-            <p style="color: #000000; margin: 0;">+8801712511005</p>
-            <p style="color: #000000; margin: 0;">+880255006823</p>
-        </div>
-    """, unsafe_allow_html=True)
+    _, c_contact = st.columns([3, 1])
+    with c_contact:
+        st.markdown("""
+            <div style="text-align: right;">
+                <div style="color: #006400; font-size: 16px; font-weight: 700; margin-bottom: 5px;">যোগাযোগের নম্বর</div>
+                <p style="color: #000000; margin: 0;">+8801677891434</p>
+                <p style="color: #000000; margin: 0;">+8801712511005</p>
+                <p style="color: #000000; margin: 0;">+880255006823</p>
+            </div>
+        """, unsafe_allow_html=True)
 
     # --- ADMIN PANEL ---
     st.sidebar.markdown("---")
