@@ -587,7 +587,7 @@ def main():
     st.markdown("---")
     st.markdown("""
         <div style="display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 20px;">
-            <div style="color: #006400; font-size: 16px; font-weight: 700;">যোগাযোগের নম্বর:</div>
+            <div style="color: #006400; font-size: 14px; font-weight: 700;">যোগাযোগের নম্বর:</div>
             <div style="color: #000000;">+8801677891434</div>
             <div style="color: #000000;">+8801712511005</div>
             <div style="color: #000000;">+880255006823</div>
