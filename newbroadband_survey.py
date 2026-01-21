@@ -279,20 +279,28 @@ def main():
     if 'rows' not in st.session_state:
         st.session_state.rows = 1
 
-    c1, c2, c3 = st.columns(3)
+    # পদবীর তালিকা
+    desig_list = [
+        "প্রোগ্রামার", "মেইনটেন্যান্স ইঞ্জিনিয়ার", 
+        "নেটওয়ার্ক ইঞ্জিনিয়ার", "সহকারী পরিচালক", "সহকারী প্রোগ্রামার", 
+        "সহকারী মেইনটেন্যান্স ইঞ্জিনিয়ার", "সহকারী নেটওয়ার্ক ইঞ্জিনিয়ার", 
+        "ওয়েবসাইট এ্যাডমিনিস্ট্রেটর", "ডাটা এন্ট্রি/কন্ট্রোল সুপারভাইজার", "কম্পিউটার অপারেটর", 
+        "ডাটা এন্ট্রি/কন্ট্রোল অপারেটর", "অফিস সহকারী কাম কম্পিউটার অপারেটর"
+    ]
+
+    c1, c2, c3, c4 = st.columns(4)
     with c1:
         name = st.text_input("তথ্য প্রদানকারী কর্মকর্তার নাম (Name) *", key="user_name") 
-        
-        # পদবীর তালিকা
-        desig_list = [
-            "প্রোগ্রামার", "মেইনটেন্যান্স ইঞ্জিনিয়ার", 
-            "নেটওয়ার্ক ইঞ্জিনিয়ার", "সহকারী পরিচালক", "সহকারী প্রোগ্রামার", 
-            "সহকারী মেইনটেন্যান্স ইঞ্জিনিয়ার", "সহকারী নেটওয়ার্ক ইঞ্জিনিয়ার", 
-            "ওয়েবসাইট এ্যাডমিনিস্ট্রেটর", "ডাটা এন্ট্রি/কন্ট্রোল সুপারভাইজার", "কম্পিউটার অপারেটর", 
-            "ডাটা এন্ট্রি/কন্ট্রোল অপারেটর", "অফিস সহকারী কাম কম্পিউটার অপারেটর"
-        ]
-    
+
     with c2:
+        user_contact = st.text_input("কর্মকর্তার যোগাযোগ নম্বর *", key="user_contact_input")
+        if user_contact:
+            if not user_contact.isdigit():
+                st.error("⚠️ শুধুমাত্র সংখ্যা ব্যবহার করুন")
+            elif len(user_contact) != 11:
+                st.warning("⚠️ নম্বরটি অবশ্যই ১১ ডিজিটের হতে হবে")
+
+    with c3:
         # ড্রপডাউন তৈরি
         selected_desig = st.selectbox(
             "পদবী (Designation) *", 
@@ -308,7 +316,7 @@ def main():
         else:
             designation = selected_desig
             
-    with c3:
+    with c4:
         workplace = st.text_input("কর্মস্থলের নাম (Workplace Name) *", key="workplace_input")
 
     st.markdown('<div class="section-head">উপজেলা ও ইউনিয়নের তথ্য</div>', unsafe_allow_html=True)
@@ -405,10 +413,12 @@ def main():
     if submit_btn:
         # ১. সব নম্বরের দৈর্ঘ্য চেক করা
         all_numbers_valid = all(len(r['phone']) == 11 and r['phone'].isdigit() for r in isp_records)
+        officer_contact_valid = user_contact.isdigit() and len(user_contact) == 11 if user_contact else False
         
         # ২. মিসিং ফিল্ড চেক করা
         missing_fields = []
         if not name: missing_fields.append("তথ্য প্রদানকারী কর্মকর্তার নাম (Name) *")
+        if not user_contact: missing_fields.append("কর্মকর্তার যোগাযোগ নম্বর *")
         if not designation: missing_fields.append("পদবী (Designation) *")
         if not workplace: missing_fields.append("কর্মস্থলের নাম (Workplace Name) *")
         if not final_div: missing_fields.append("বিভাগ (Division)")
@@ -436,6 +446,8 @@ def main():
             
         elif not all_numbers_valid:
             st.toast("❌ ISP যোগাযোগের নম্বর সঠিক নয় (১১ ডিজিট ও শুধুমাত্র সংখ্যা হতে হবে)।", icon="❌")
+        elif not officer_contact_valid:
+            st.toast("❌ কর্মকর্তার যোগাযোগ নম্বর সঠিক নয় (১১ ডিজিট ও শুধুমাত্র সংখ্যা হতে হবে)।", icon="❌")
         else:
             try:
                 # ১. ডাটা প্রিপেয়ার করা
@@ -451,6 +463,7 @@ def main():
                 new_record = pd.DataFrame([{
                     "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     "নাম": name,
+                    "কর্মকর্তার যোগাযোগ নম্বর": user_contact,
                     "পদবী": designation,
                     "কর্মস্থল": workplace,
                     "বিভাগ": final_div,
@@ -473,6 +486,18 @@ def main():
                 else:
                     updated_df = new_record
                 
+                # কলামের অর্ডার ঠিক রাখা (যাতে নতুন কলাম সঠিক জায়গায় বসে)
+                expected_order = [
+                    "Timestamp", "নাম", "কর্মকর্তার যোগাযোগ নম্বর", "পদবী", "কর্মস্থল", 
+                    "বিভাগ", "জেলা", "উপজেলা", "ইউনিয়ন", 
+                    "উপজেলাতে বিদ্যমান NTTN", "ইউনিয়নে বিদ্যমান NTTN", 
+                    "ব্রডব্যান্ড আওতাভুক্ত", "মোট গ্রাম", "আওতাভুক্ত গ্রাম", 
+                    "ISP মোট সংখ্যা", "উপজেলাতে ISP তথ্য"
+                ]
+                # ডাটাফ্রেমে থাকা অন্যান্য কলামগুলো (যদি থাকে) শেষে যোগ করা
+                final_columns = [c for c in expected_order if c in updated_df.columns] + [c for c in updated_df.columns if c not in expected_order]
+                updated_df = updated_df[final_columns]
+
                 conn.update(data=updated_df)
                 
                 
