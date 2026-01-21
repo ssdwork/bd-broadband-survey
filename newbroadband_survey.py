@@ -278,6 +278,8 @@ def main():
 
     if 'rows' not in st.session_state:
         st.session_state.rows = 1
+    if 'union_rows' not in st.session_state:
+        st.session_state.union_rows = 1
 
     # পদবীর তালিকা
     desig_list = [
@@ -321,7 +323,7 @@ def main():
 
     st.markdown('<div class="section-head">উপজেলা ও ইউনিয়নের তথ্য</div>', unsafe_allow_html=True)
     
-    g1, g2, g3, g4 = st.columns(4)
+    g1, g2, g3 = st.columns(3)
     with g1:
         div_list = list(BD_DATA.keys())
         final_div = smart_geo_input('বিভাগ (Division)', div_list, 'geo_div')
@@ -331,18 +333,39 @@ def main():
     with g3:
         upz_opts = list(BD_DATA[final_div][final_dist].keys()) if (final_div in BD_DATA and final_dist in BD_DATA[final_div]) else []
         final_upz = smart_geo_input('উপজেলা (Upazila)', upz_opts, 'geo_upz')
-    with g4:
-        uni_opts = BD_DATA[final_div][final_dist][final_upz] if (final_div in BD_DATA and final_dist in BD_DATA[final_div] and final_upz in BD_DATA[final_div][final_dist]) else []
-        final_uni = smart_geo_input('ইউনিয়ন (Union)', uni_opts, 'geo_uni')
 
-    # ব্রডব্যান্ড ও গ্রামের তথ্য এক লাইনে
-    gv1, gv2, gv3 = st.columns([2, 1, 1])
-    with gv1:
-        is_broadband = st.selectbox("ইউনিয়নটি কি ব্রডব্যান্ড এর আওতাভুক্ত? *", ["-- নির্বাচন করুন --", "হ্যাঁ", "না"], key="bb_coverage")
-    with gv2:
-        total_villages = st.number_input("ইউনিয়নে মোট গ্রামের সংখ্যা", min_value=0, step=1, key="total_v")
-    with gv3:
-        covered_villages = st.number_input("ব্রডব্যান্ড ইন্টারনেটের আওতাভুক্ত গ্রামের সংখ্যা", min_value=0, max_value=total_villages, step=1, key="covered_v")
+    # Dynamic Union Section
+    uni_opts = BD_DATA[final_div][final_dist][final_upz] if (final_div in BD_DATA and final_dist in BD_DATA[final_div] and final_upz in BD_DATA[final_div][final_dist]) else []
+    
+    union_data_collection = []
+    for i in range(st.session_state.union_rows):
+        ug1, ug2, ug3, ug4 = st.columns([3, 2, 2, 2])
+        with ug1:
+            u_name = smart_geo_input(f'ইউনিয়ন (Union) নং {i+1}', uni_opts, f'geo_uni_{i}')
+        with ug2:
+            u_bb = st.selectbox(f"ব্রডব্যান্ড আওতাভুক্ত? ({i+1}) *", ["-- নির্বাচন করুন --", "হ্যাঁ", "না"], key=f"bb_coverage_{i}")
+        with ug3:
+            u_tot = st.number_input(f"মোট গ্রাম ({i+1})", min_value=0, step=1, key=f"total_v_{i}")
+        with ug4:
+            u_cov = st.number_input(f"আওতাভুক্ত গ্রাম ({i+1})", min_value=0, max_value=u_tot, step=1, key=f"covered_v_{i}")
+        
+        union_data_collection.append({
+            "union": u_name,
+            "bb": u_bb,
+            "total_v": u_tot,
+            "covered_v": u_cov
+        })
+
+    # Union Controls
+    _, uc_add, uc_remove = st.columns([3, 1, 1], vertical_alignment="bottom")
+    with uc_add:
+        if st.button("➕ আরও ইউনিয়ন যোগ করুন", use_container_width=True, key="add_uni_btn"):
+            st.session_state.union_rows += 1
+            st.rerun()
+    with uc_remove:
+        if st.button("➖ বাদ দিন", use_container_width=True, key="rem_uni_btn") and st.session_state.union_rows > 1:
+            st.session_state.union_rows -= 1
+            st.rerun()
 
     # NTTN Section
     nttn_opts = ["সামিট", "ফাইবার@হোম", "বিটিসিএল", "বাহন"]
@@ -424,8 +447,10 @@ def main():
         if not final_div: missing_fields.append("বিভাগ (Division)")
         if not final_dist: missing_fields.append("জেলা (District)")
         if not final_upz: missing_fields.append("উপজেলা (Upazila)")
-        if not final_uni: missing_fields.append("ইউনিয়ন (Union)")
-        if is_broadband == "-- নির্বাচন করুন --": missing_fields.append("ইউনিয়নটি কি ব্রডব্যান্ড এর আওতাভুক্ত? *")
+        
+        for idx, u_data in enumerate(union_data_collection):
+            if not u_data['union']: missing_fields.append(f"ইউনিয়ন (Union) নং {idx+1}")
+            if u_data['bb'] == "-- নির্বাচন করুন --": missing_fields.append(f"ব্রডব্যান্ড আওতাভুক্ত? ({idx+1}) *")
         
         # ৩. যদি কোনো ফিল্ড মিসিং থাকে
         if missing_fields:
@@ -460,24 +485,28 @@ def main():
                 uni_nttn_list = [k for k, v in uni_nttn_vars.items() if v]
                 uni_nttn_final = ", ".join(uni_nttn_list)
                 
-                new_record = pd.DataFrame([{
-                    "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    "নাম": name,
-                    "কর্মকর্তার যোগাযোগ নম্বর": user_contact,
-                    "পদবী": designation,
-                    "কর্মস্থল": workplace,
-                    "বিভাগ": final_div,
-                    "জেলা": final_dist,
-                    "উপজেলা": final_upz,
-                    "ইউনিয়ন": final_uni,
-                    "উপজেলাতে বিদ্যমান NTTN": nttn_final,
-                    "ইউনিয়নে বিদ্যমান NTTN": uni_nttn_final,
-                    "ব্রডব্যান্ড আওতাভুক্ত": is_broadband,
-                    "মোট গ্রাম": total_villages,
-                    "আওতাভুক্ত গ্রাম": covered_villages,
-                    "ISP মোট সংখ্যা": total_isp_count,
-                    "উপজেলাতে ISP তথ্য": isp_final
-                }])
+                records_to_save = []
+                for u_data in union_data_collection:
+                    records_to_save.append({
+                        "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                        "নাম": name,
+                        "কর্মকর্তার যোগাযোগ নম্বর": user_contact,
+                        "পদবী": designation,
+                        "কর্মস্থল": workplace,
+                        "বিভাগ": final_div,
+                        "জেলা": final_dist,
+                        "উপজেলা": final_upz,
+                        "ইউনিয়ন": u_data['union'],
+                        "উপজেলাতে বিদ্যমান NTTN": nttn_final,
+                        "ইউনিয়নে বিদ্যমান NTTN": uni_nttn_final,
+                        "ব্রডব্যান্ড আওতাভুক্ত": u_data['bb'],
+                        "মোট গ্রাম": u_data['total_v'],
+                        "আওতাভুক্ত গ্রাম": u_data['covered_v'],
+                        "ISP মোট সংখ্যা": total_isp_count,
+                        "উপজেলাতে ISP তথ্য": isp_final
+                    })
+                
+                new_record = pd.DataFrame(records_to_save)
                 
                 # ২. গুগল শিটে আপডেট পাঠানো
                 existing_data = conn.read(ttl=0)
@@ -558,12 +587,12 @@ def main():
                # --- ৪. ২ নম্বর ও ৩ নম্বর সেকশন রিসেট করার চূড়ান্ত লজিক ---
                 
                 # ২ নম্বর সেকশন: ইউনিয়ন ও গ্রামের তথ্য ক্লিয়ার করা
-                if "bb_coverage" in st.session_state:
-                    st.session_state["bb_coverage"] = "-- নির্বাচন করুন --"
-                
-                # গুরুত্বপূর্ণ: আগে total_v এবং covered_v কে সরাসরি ০ করে দিতে হবে
-                st.session_state["total_v"] = 0
-                st.session_state["covered_v"] = 0
+                current_keys = list(st.session_state.keys())
+                for key in current_keys:
+                    if any(prefix in key for prefix in ["geo_uni_", "bb_coverage_", "total_v_", "covered_v_"]):
+                        del st.session_state[key]
+
+                st.session_state.union_rows = 1
                 st.session_state["total_isp_count_input"] = 0
 
                 # NTTN Reset
