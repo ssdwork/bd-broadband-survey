@@ -352,7 +352,7 @@ def main():
         st.markdown('<div style="border-left: 2px solid #006400; height: 60px; width: 0px; margin: 25px auto 0 auto;"></div>', unsafe_allow_html=True)
 
     with nttn_c2:
-        st.markdown('<div class="section-head" style="color: blue !important;">ইউনিয়নে বিদ্যমান NTTN (একাধিক হতে পারে)</div>', unsafe_allow_html=True)
+        st.markdown('<div style="color: cyan !important; font-family: \'Calibri\', \'Nikosh\', sans-serif; font-weight: 700; margin: 5px 0 2px 0; border-bottom: 2px solid #006400; font-size: 16px !important; padding-bottom: 5px;">ইউনিয়নে বিদ্যমান NTTN (একাধিক হতে পারে)</div>', unsafe_allow_html=True)
         uni_nttn_cols = st.columns(4)
         uni_nttn_vars = {}
         for i, opt in enumerate(nttn_opts):
@@ -361,7 +361,9 @@ def main():
 
     st.markdown('<div class="section-head">উপজেলাতে সেবা প্রদানকৃত ISP এর তথ্য</div>', unsafe_allow_html=True)
     st.markdown("<div style='font-size: 13px !important; color: #F42A41; margin-top: 2px; margin-bottom: 5px; font-weight: 400 !important;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
-    total_isp_count = st.number_input("উপজেলাতে মোট ISP সংখ্যা", min_value=0, step=1, key="total_isp_count_input")
+    c_total_isp, _ = st.columns([1, 5])
+    with c_total_isp:
+        total_isp_count = st.number_input("উপজেলাতে মোট ISP সংখ্যা", min_value=0, step=1, key="total_isp_count_input")
     isp_records = []
     for i in range(st.session_state.rows):
         ic1, ic2, ic3 = st.columns([3, 2, 1])
