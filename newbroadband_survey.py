@@ -486,7 +486,10 @@ def main():
                 uni_nttn_final = ", ".join(uni_nttn_list)
                 
                 records_to_save = []
-                for u_data in union_data_collection:
+                for idx, u_data in enumerate(union_data_collection):
+                    # Only include Upazila-wide data (NTTN, ISP) in the first row
+                    is_first = (idx == 0)
+                    
                     records_to_save.append({
                         "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                         "নাম": name,
@@ -497,13 +500,13 @@ def main():
                         "জেলা": final_dist,
                         "উপজেলা": final_upz,
                         "ইউনিয়ন": u_data['union'],
-                        "উপজেলাতে বিদ্যমান NTTN": nttn_final,
-                        "ইউনিয়নে বিদ্যমান NTTN": uni_nttn_final,
+                        "উপজেলাতে বিদ্যমান NTTN": nttn_final if is_first else "",
+                        "ইউনিয়নে বিদ্যমান NTTN": uni_nttn_final if is_first else "",
                         "ব্রডব্যান্ড আওতাভুক্ত": u_data['bb'],
                         "মোট গ্রাম": u_data['total_v'],
                         "আওতাভুক্ত গ্রাম": u_data['covered_v'],
-                        "ISP মোট সংখ্যা": total_isp_count,
-                        "উপজেলাতে ISP তথ্য": isp_final
+                        "ISP মোট সংখ্যা": total_isp_count if is_first else "",
+                        "উপজেলাতে ISP তথ্য": isp_final if is_first else ""
                     })
                 
                 new_record = pd.DataFrame(records_to_save)
