@@ -352,7 +352,7 @@ def main():
         st.markdown('<div style="border-left: 2px solid #006400; height: 60px; width: 0px; margin: 25px auto 0 auto;"></div>', unsafe_allow_html=True)
 
     with nttn_c2:
-        st.markdown('<div style="color: cyan !important; font-family: \'Calibri\', \'Nikosh\', sans-serif; font-weight: 700; margin: 5px 0 2px 0; border-bottom: 2px solid #006400; font-size: 18px !important; padding-bottom: 5px;">ইউনিয়নে বিদ্যমান NTTN (একাধিক হতে পারে)</div>', unsafe_allow_html=True)
+        st.markdown('<div style="color: cyan !important; font-family: \'Calibri\', \'Nikosh\', sans-serif; font-weight: 700; margin: 5px 0 2px 0; border-bottom: 2px solid #006400; font-size: 20px !important; padding-bottom: 5px;">ইউনিয়নে বিদ্যমান NTTN (একাধিক হতে পারে)</div>', unsafe_allow_html=True)
         uni_nttn_cols = st.columns(4)
         uni_nttn_vars = {}
         for i, opt in enumerate(nttn_opts):
