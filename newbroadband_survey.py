@@ -343,11 +343,11 @@ def main():
         with ug1:
             u_name = smart_geo_input(f'ইউনিয়ন (Union) নং {i+1}', uni_opts, f'geo_uni_{i}')
         with ug2:
-            u_bb = st.selectbox(f"ব্রডব্যান্ড আওতাভুক্ত? ({i+1}) *", ["-- নির্বাচন করুন --", "হ্যাঁ", "না"], key=f"bb_coverage_{i}")
+            u_bb = st.selectbox(f"ইউনিয়নটি কি ব্রডব্যান্ড এর আওতাভুক্ত? ({i+1}) *", ["-- নির্বাচন করুন --", "হ্যাঁ", "না"], key=f"bb_coverage_{i}")
         with ug3:
-            u_tot = st.number_input(f"মোট গ্রাম ({i+1})", min_value=0, step=1, key=f"total_v_{i}")
+            u_tot = st.number_input(f"ইউনিয়নে মোট গ্রাম ({i+1})", min_value=0, step=1, key=f"total_v_{i}")
         with ug4:
-            u_cov = st.number_input(f"আওতাভুক্ত গ্রাম ({i+1})", min_value=0, max_value=u_tot, step=1, key=f"covered_v_{i}")
+            u_cov = st.number_input(f"ব্রডব্যান্ড ইন্টারনেটের আওতাভুক্ত গ্রাম ({i+1})", min_value=0, max_value=u_tot, step=1, key=f"covered_v_{i}")
         
         union_data_collection.append({
             "union": u_name,
@@ -399,7 +399,7 @@ def main():
     for i in range(st.session_state.rows):
         ic1, ic2, ic3 = st.columns([3, 2, 1])
         with ic1: 
-            iname = st.text_input(f"নং {i+1} - ISP নাম", key=f"in_{i}")
+            iname = st.text_input(f"নং {i+1} - উপজেলাতে ISP নাম", key=f"in_{i}")
         with ic2: 
                 icontact = st.text_input("যোগাযোগের নম্বর", key=f"ic_{i}")
                 # মোবাইল নম্বর ভ্যালিডেশন চেক
@@ -450,7 +450,7 @@ def main():
         
         for idx, u_data in enumerate(union_data_collection):
             if not u_data['union']: missing_fields.append(f"ইউনিয়ন (Union) নং {idx+1}")
-            if u_data['bb'] == "-- নির্বাচন করুন --": missing_fields.append(f"ব্রডব্যান্ড আওতাভুক্ত? ({idx+1}) *")
+            if u_data['bb'] == "-- নির্বাচন করুন --": missing_fields.append(f"ইউনিয়নটি কি ব্রডব্যান্ড এর আওতাভুক্ত? ({idx+1}) *")
         
         # ৩. যদি কোনো ফিল্ড মিসিং থাকে
         if missing_fields:
