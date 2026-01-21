@@ -337,33 +337,31 @@ def main():
         covered_villages = st.number_input("ব্রডব্যান্ড ইন্টারনেটের আওতাভুক্ত গ্রামের সংখ্যা", min_value=0, max_value=total_villages, step=1, key="covered_v")
 
     # NTTN Section
-    nttn_opts = ["সামিট", "ফাইবার@হোম", "বিটিসিএল", "বাহন", "অন্যান্য"]
-    nttn_c1, nttn_c2 = st.columns(2)
+    nttn_opts = ["সামিট", "ফাইবার@হোম", "বিটিসিএল", "বাহন"]
+    nttn_c1, nttn_sep, nttn_c2 = st.columns([10, 1, 10])
 
     with nttn_c1:
-        st.markdown('<div class="section-head">উপজেলাতে বিদ্যমান NTTN</div>', unsafe_allow_html=True)
-        nttn_cols = st.columns(5)
+        st.markdown('<div class="section-head">উপজেলাতে বিদ্যমান NTTN (একাধিক হতে পারে)</div>', unsafe_allow_html=True)
+        nttn_cols = st.columns(4)
         nttn_vars = {}
         for i, opt in enumerate(nttn_opts):
             with nttn_cols[i]:
                 nttn_vars[opt] = st.checkbox(opt, key=f"nttn_chk_{i}")
-        nttn_other_val = ""
-        if nttn_vars["অন্যান্য"]:
-            nttn_other_val = st.text_input("অন্যান্য (লিখুন)", key="nttn_other_input")
+
+    with nttn_sep:
+        st.markdown('<div style="border-left: 2px solid #006400; height: 60px; margin: auto; margin-top: 25px;"></div>', unsafe_allow_html=True)
 
     with nttn_c2:
-        st.markdown('<div class="section-head">ইউনিয়নে বিদ্যমান NTTN</div>', unsafe_allow_html=True)
-        uni_nttn_cols = st.columns(5)
+        st.markdown('<div class="section-head" style="color: cyan !important;">ইউনিয়নে বিদ্যমান NTTN (একাধিক হতে পারে)</div>', unsafe_allow_html=True)
+        uni_nttn_cols = st.columns(4)
         uni_nttn_vars = {}
         for i, opt in enumerate(nttn_opts):
             with uni_nttn_cols[i]:
                 uni_nttn_vars[opt] = st.checkbox(opt, key=f"uni_nttn_chk_{i}")
-        uni_nttn_other_val = ""
-        if uni_nttn_vars["অন্যান্য"]:
-            uni_nttn_other_val = st.text_input("অন্যান্য (লিখুন)", key="uni_nttn_other_input")
 
     st.markdown('<div class="section-head">উপজেলাতে সেবা প্রদানকৃত ISP এর তথ্য</div>', unsafe_allow_html=True)
     st.markdown("<div style='font-size: 13px !important; color: #F42A41; margin-top: 2px; margin-bottom: 5px; font-weight: 400 !important;'>⚠️ সতর্কতা: একটি উপজেলার বিপরীতে একবার ISP তথ্য প্রদান করাই যথেষ্ট। নতুন ইউনিয়নের তথ্য দেওয়ার সময় পুনরায় ISP এন্ট্রি এড়িয়ে চলুন।</div>", unsafe_allow_html=True)
+    total_isp_count = st.number_input("উপজেলাতে মোট ISP সংখ্যা", min_value=0, step=1, key="total_isp_count_input")
     isp_records = []
     for i in range(st.session_state.rows):
         ic1, ic2, ic3 = st.columns([3, 2, 1])
@@ -378,27 +376,14 @@ def main():
                     elif len(icontact) != 11:
                         st.warning("⚠️ নম্বরটি অবশ্যই ১১ ডিজিটের হতে হবে")
         with ic3:
-            # ১. চেক-বক্সের মান আগে থেকে জেনে নেওয়া (যাতে নিচের ইনপুট বক্সটি নিয়ন্ত্রণ করা যায়)
-            is_unknown = st.session_state.get(f"un_subs_{i}", False)
-            
-            # ২. গ্রাহক সংখ্যা ইনপুট বক্স (উপরে থাকবে)
-            if is_unknown:
-                isubs = "জানা নেই"
-                st.text_input("গ্রাহক সংখ্যা", value="জানা নেই", key=f"is_dis_{i}", disabled=True)
-            else:
-                isubs = st.number_input("গ্রাহক সংখ্যা", min_value=0, key=f"is_{i}", step=1)
-            
-            # ৩. চেক-বক্সটি এখন ইনপুট বক্সের নিচে দেখাবে
-            st.checkbox("জানা নেই", key=f"un_subs_{i}")
+            isubs = st.number_input("গ্রাহক সংখ্যা (সম্ভাব্য/আনুমানিক)", min_value=0, key=f"is_{i}", step=1)
         
         # ডাটা অ্যাপেন্ড করা
         if iname:
             isp_records.append({"name": iname, "phone": icontact, "subs": isubs})
 
     # ISP Controls Row: Add Button, Remove Button
-    c_isp_total, _, ic_add, ic_remove = st.columns([1, 2, 1, 1], vertical_alignment="bottom")
-    with c_isp_total:
-        total_isp_count = st.number_input("মোট ISP সংখ্যা", min_value=0, step=1, key="total_isp_count_input")
+    _, ic_add, ic_remove = st.columns([3, 1, 1], vertical_alignment="bottom")
     with ic_add:
         if st.button("➕ আরও ISP যোগ করুন", use_container_width=True):
             st.session_state.rows += 1
@@ -455,14 +440,10 @@ def main():
                 isp_final = " | ".join([f"{r['name']}({r['phone']}):{r['subs']}" for r in isp_records])
                 
                 # NTTN Data Prepare
-                nttn_list = [k for k, v in nttn_vars.items() if v and k != "অন্যান্য"]
-                if nttn_vars["অন্যান্য"]:
-                    nttn_list.append(f"অন্যান্য({nttn_other_val})")
+                nttn_list = [k for k, v in nttn_vars.items() if v]
                 nttn_final = ", ".join(nttn_list)
 
-                uni_nttn_list = [k for k, v in uni_nttn_vars.items() if v and k != "অন্যান্য"]
-                if uni_nttn_vars["অন্যান্য"]:
-                    uni_nttn_list.append(f"অন্যান্য({uni_nttn_other_val})")
+                uni_nttn_list = [k for k, v in uni_nttn_vars.items() if v]
                 uni_nttn_final = ", ".join(uni_nttn_list)
                 
                 new_record = pd.DataFrame([{
@@ -562,16 +543,12 @@ def main():
                 for i in range(len(nttn_opts)):
                     st.session_state[f"nttn_chk_{i}"] = False
                     st.session_state[f"uni_nttn_chk_{i}"] = False
-                if "nttn_other_input" in st.session_state:
-                    del st.session_state["nttn_other_input"]
-                if "uni_nttn_other_input" in st.session_state:
-                    del st.session_state["uni_nttn_other_input"]
 
                 # ৩ নম্বর সেকশন: ISP তথ্য পুরোপুরি মুছে ফেলা
                 #  সেশন স্টেট থেকে সব ISP ডাইনামিক কি (Key) মুছে ফেলা
                 current_keys = list(st.session_state.keys())
                 for key in current_keys:
-                    if any(prefix in key for prefix in ["in_", "ic_", "is_", "un_subs_", "is_dis_"]):
+                    if any(prefix in key for prefix in ["in_", "ic_", "is_"]):
                         del st.session_state[key]
 
                 # রো সংখ্যা ১-এ নামিয়ে আনা
